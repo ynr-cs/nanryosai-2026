@@ -4,14 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>文化祭モバイルオーダー</title>
-
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         min-height: 100vh;
         margin: 0;
         padding: 20px 0;
@@ -37,7 +36,7 @@
         font-size: 16px;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background-color 0.3s, opacity 0.3s;
       }
       button:hover {
         background-color: #357ae8;
@@ -50,8 +49,6 @@
       .hidden {
         display: none;
       }
-
-      /* ▼▼▼ 追加 ▼▼▼ */
       #menu-container {
         margin-top: 30px;
         text-align: left;
@@ -70,48 +67,119 @@
       #menu-list li {
         padding: 15px 10px;
         border-bottom: 1px solid #f0f0f0;
-      }
-      #menu-list li:last-child {
-        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
       .menu-item-name {
         font-weight: bold;
         font-size: 1.1em;
       }
       .menu-item-price {
-        float: right;
-        color: #e53935;
+        color: #555;
+        font-weight: normal;
+      }
+      .add-to-cart-button {
+        background-color: #4caf50;
+        padding: 8px 12px;
+        font-size: 14px;
+        margin-left: 15px;
+      }
+      .add-to-cart-button:hover {
+        background-color: #45a049;
+      }
+      #cart-container {
+        margin-top: 30px;
+        border-top: 3px solid #4285f4;
+        padding-top: 20px;
+      }
+      #cart-container h2 {
+        text-align: center;
+        color: #444;
+      }
+      #cart-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      #cart-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+      }
+      #cart-total {
+        text-align: right;
+        margin-top: 20px;
+        font-size: 1.2em;
         font-weight: bold;
       }
-      /* ▲▲▲ 追加 ▲▲▲ */
+      #submit-order-button {
+        width: 100%;
+        margin-top: 20px;
+        background-color: #ff5722;
+        padding: 15px;
+        font-size: 18px;
+      }
+      #submit-order-button:hover {
+        background-color: #f4511e;
+      }
+      #submit-order-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+      #order-complete-container {
+        padding: 40px 20px;
+        text-align: center;
+      }
+      #order-complete-container h2 {
+        color: #4caf50;
+      }
+      #order-complete-container p {
+        font-size: 1.2em;
+      }
+      #order-id {
+        font-weight: bold;
+        color: #e53935;
+        background-color: #fce4ec;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>文化祭モバイルオーダー</h1>
 
-      <!-- ログインボタン -->
       <button id="login-button">Googleでログイン</button>
 
-      <!-- ログイン後情報エリア -->
       <div id="user-info" class="hidden">
         <p id="user-name"></p>
         <button id="logout-button">ログアウト</button>
       </div>
 
-      <!-- ▼▼▼ 追加 ▼▼▼ -->
-      <!-- 商品メニュー表示エリア -->
       <div id="menu-container" class="hidden">
         <h2>商品メニュー</h2>
-        <ul id="menu-list">
-          <!-- ここにJavaScriptで商品リストが挿入される -->
-        </ul>
+        <ul id="menu-list"></ul>
       </div>
-      <!-- ▲▲▲ 追加 ▲▲▲ -->
+
+      <div id="cart-container" class="hidden">
+        <h2>ショッピングカート</h2>
+        <ul id="cart-list"></ul>
+        <div id="cart-total">合計金額: <span id="total-price">0</span>円</div>
+        <!--【追加点1】注文確定ボタン -->
+        <button id="submit-order-button" disabled>注文を確定する</button>
+      </div>
+
+      <!--【追加点2】注文完了メッセージ -->
+      <div id="order-complete-container" class="hidden">
+        <h2>ご注文ありがとうございました！</h2>
+        <p>受付番号は <span id="order-id"></span> です。</p>
+        <p>商品準備の連絡をお待ちください。</p>
+      </div>
     </div>
 
     <script type="module">
-      // Firebase v9のモジュラースタイルで各機能をインポートする
+      //【追加点3】addDoc と serverTimestamp をインポート
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
       import {
         getAuth,
@@ -124,12 +192,13 @@
         getFirestore,
         doc,
         setDoc,
-        collection, // ▼▼▼ 追加 ▼▼▼
-        getDocs, // ▼▼▼ 追加 ▼▼▼
+        collection,
+        getDocs,
+        addDoc,
+        serverTimestamp,
       } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
       // =================================================================
-      // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ ここに自分のfirebaseConfigを貼り付け ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
       const firebaseConfig = {
         apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do",
         authDomain: "nanryosai-2026-a4091.firebaseapp.com",
@@ -141,42 +210,46 @@
       };
       // =================================================================
 
-      // ■ 1. Firebaseの初期化
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
       const provider = new GoogleAuthProvider();
 
-      // ■ 2. HTML要素の取得
       const loginButton = document.getElementById("login-button");
       const logoutButton = document.getElementById("logout-button");
       const userInfoDiv = document.getElementById("user-info");
       const userNameP = document.getElementById("user-name");
-      // ▼▼▼ 追加 ▼▼▼
       const menuContainer = document.getElementById("menu-container");
       const menuList = document.getElementById("menu-list");
-      // ▲▲▲ 追加 ▲▲▲
+      const cartContainer = document.getElementById("cart-container");
+      const cartList = document.getElementById("cart-list");
+      const totalPriceSpan = document.getElementById("total-price");
+      //【追加点4】追加したHTML要素を取得
+      const submitOrderButton = document.getElementById("submit-order-button");
+      const orderCompleteContainer = document.getElementById(
+        "order-complete-container"
+      );
+      const orderIdSpan = document.getElementById("order-id");
 
-      // ■ 3. ログイン処理
+      let cart = [];
+
       loginButton.addEventListener("click", () => {
         signInWithPopup(auth, provider)
           .then((result) => {
-            console.log("ログイン成功！", result.user);
             saveUserToFirestore(result.user);
           })
-          .catch((error) => {
-            console.error("ログインエラー:", error);
-          });
+          .catch((error) => console.error("ログインエラー:", error));
       });
 
-      // ■ 4. ログアウト処理
       logoutButton.addEventListener("click", () => {
-        signOut(auth).catch((error) => {
-          console.error("ログアウトエラー:", error);
-        });
+        signOut(auth).catch((error) =>
+          console.error("ログアウトエラー:", error)
+        );
       });
 
-      // ■ 5. ユーザー情報をFirestoreに保存する関数
+      //【追加点5】注文ボタンにクリックイベントを追加
+      submitOrderButton.addEventListener("click", submitOrder);
+
       async function saveUserToFirestore(user) {
         const userData = {
           uid: user.uid,
@@ -187,83 +260,114 @@
         };
         try {
           await setDoc(doc(db, "users", user.uid), userData);
-          console.log("Firestoreにユーザー情報を保存しました。");
-        } catch (error) {
-          console.error("Firestoreへの保存エラー:", error);
+        } catch (e) {
+          console.error("Firestoreへの保存エラー:", e);
         }
       }
 
-      // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ ここから新しい関数を追加 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-      // ■ 6. Firestoreから商品メニューを取得して表示する関数
-      // -----------------------------------------------------------------
-      // asyncキーワードは、この関数が非同期処理（完了を待つ必要がある処理）を含むことを示す
+      //【変更点1】カートの更新処理に、注文ボタンの活性/非活性の制御を追加
+      function updateCartView() {
+        cartList.innerHTML = "";
+        let totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+
+        cart.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = `${item.name} - ${item.price}円`;
+          cartList.appendChild(li);
+        });
+
+        totalPriceSpan.textContent = totalPrice;
+
+        if (cart.length > 0) {
+          cartContainer.classList.remove("hidden");
+          submitOrderButton.disabled = false; // カートに商品があればボタンを押せるようにする
+        } else {
+          cartContainer.classList.add("hidden");
+          submitOrderButton.disabled = true; // カートが空ならボタンを押せないようにする
+        }
+      }
+
+      function addToCart(productId, productName, productPrice) {
+        cart.push({ id: productId, name: productName, price: productPrice });
+        updateCartView();
+      }
+
       async function displayMenu() {
-        console.log("商品メニューの読み込みを開始します...");
+        menuList.innerHTML = "";
         try {
-          // getDocsを使って'products'コレクションから全てのドキュメントを取得
-          // collection(db, 'コレクション名')で対象のコレクションを指定
           const querySnapshot = await getDocs(collection(db, "products"));
-
-          // 取得したドキュメントをループ処理で一つずつ取り出す
-          let htmlContent = ""; // HTML文字列を格納する変数を初期化
           querySnapshot.forEach((doc) => {
-            // doc.id でドキュメントID、 doc.data() でドキュメントの中身を取得
-            console.log(`${doc.id} => `, doc.data());
             const product = doc.data();
-
-            // 取得したデータを使って、表示するHTML(liタグ)を生成
-            // ``(バッククォート)で囲むと、文字列内に変数を埋め込める
-            htmlContent += `
-                        <li>
-                            <span class="menu-item-price">${product.price}円</span>
-                            <span class="menu-item-name">${product.name}</span>
-                        </li>
-                    `;
+            const li = document.createElement("li");
+            const infoDiv = document.createElement("div");
+            infoDiv.innerHTML = `<span class="menu-item-name">${product.name}</span><span class="menu-item-price"> - ${product.price}円</span>`;
+            const btn = document.createElement("button");
+            btn.textContent = "カートに入れる";
+            btn.className = "add-to-cart-button";
+            btn.addEventListener("click", () =>
+              addToCart(doc.id, product.name, product.price)
+            );
+            li.appendChild(infoDiv);
+            li.appendChild(btn);
+            menuList.appendChild(li);
           });
-
-          // 生成したHTMLをulタグ(menu-list)の中に挿入
-          menuList.innerHTML = htmlContent;
-
-          // メニューコンテナを表示状態にする
           menuContainer.classList.remove("hidden");
-        } catch (error) {
-          // データ取得でエラーが発生した場合の処理
-          console.error("メニューデータの取得エラー:", error);
-          menuList.innerHTML = "<li>メニューの読み込みに失敗しました。</li>";
+        } catch (e) {
+          console.error("メニューデータの取得エラー:", e);
         }
       }
-      // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-      // ■ 7. ユーザーのログイン状態を監視する (★変更あり★)
-      // -----------------------------------------------------------------
+      //【追加点6】注文をFirestoreに保存するための関数
+      async function submitOrder() {
+        const user = auth.currentUser;
+        if (!user || cart.length === 0) return; // 未ログインまたはカートが空なら何もしない
+
+        submitOrderButton.disabled = true; // 連打防止
+        const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+        const orderData = {
+          userId: user.uid,
+          userName: user.displayName,
+          items: cart,
+          totalPrice: totalPrice,
+          status: "new", // 注文ステータス
+          createdAt: serverTimestamp(), // 注文時刻
+        };
+
+        try {
+          const docRef = await addDoc(collection(db, "orders"), orderData);
+          // 注文成功後の処理
+          cart = [];
+          updateCartView();
+          menuContainer.classList.add("hidden");
+          cartContainer.classList.add("hidden");
+          orderIdSpan.textContent = docRef.id; // 自動生成されたIDを受付番号として表示
+          orderCompleteContainer.classList.remove("hidden");
+        } catch (error) {
+          console.error("注文の保存中にエラーが発生しました: ", error);
+          alert("注文処理に失敗しました。もう一度お試しください。");
+          submitOrderButton.disabled = false; // エラーなら再度押せるようにする
+        }
+      }
+
+      //【変更点2】ログイン状態の監視処理を修正
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          // --- ログインしている場合の処理 ---
-          console.log("ログイン状態です:", user);
-
-          // UIをログイン後の状態に更新
-          userNameP.textContent = `ようこそ、${user.displayName}さん`;
+          // ログイン時の処理
           userInfoDiv.classList.remove("hidden");
           loginButton.classList.add("hidden");
-
-          // ▼▼▼ 追加 ▼▼▼
-          // ログインが確認できたら、メニュー表示関数を呼び出す
+          userNameP.textContent = `ようこそ、${user.displayName}さん`;
+          orderCompleteContainer.classList.add("hidden"); // ログインしたら注文完了画面は隠す
           displayMenu();
-          // ▲▲▲ 追加 ▲▲▲
         } else {
-          // --- ログアウトしている場合の処理 ---
-          console.log("ログアウト状態です。");
-
-          // UIをログアウト後の状態（初期状態）に更新
-          userNameP.textContent = "";
+          // ログアウト時の処理
           userInfoDiv.classList.add("hidden");
-          loginButton.classList.remove("hidden");
-
-          // ▼▼▼ 追加 ▼▼▼
-          // ログアウトしたら、メニューリストを空にして非表示にする
-          menuList.innerHTML = "";
+          loginButton.classList.remove("hidden"); // ★バグ修正：ログアウトしたらログインボタンを再表示
+          userNameP.textContent = "";
           menuContainer.classList.add("hidden");
-          // ▲▲▲ 追加 ▲▲▲
+          cartContainer.classList.add("hidden");
+          orderCompleteContainer.classList.add("hidden");
+          cart = [];
+          updateCartView();
         }
       });
     </script>

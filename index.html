@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Nanryosai 2026 - 開発テストページ</title>
-</head>
-<body>
-
+  </head>
+  <body>
     <h1>南陵祭2026 POS・ウェブサイト</h1>
     <p>こんにちは!</p>
     <p>これはテストです。</p>
-    <p>Firebaseとの接続を確認し、ログインとデータベース書き込みをテストします。</p>
+    <p>
+      Firebaseとの接続を確認し、ログインとデータベース書き込みをテストします。
+    </p>
 
     <button id="loginButton">Googleでログイン</button>
-    <button id="logoutButton" style="display: none;">ログアウト</button>
+    <button id="logoutButton" style="display: none">ログアウト</button>
     <div id="userInfo"></div>
-
 
     <!-- Firebase SDK の読み込み (バージョンはv8系列の例) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -22,110 +22,110 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        // =================================================================
-        // Firebase Configuration
-        // ▼▼▼▼▼ ここにあなたのFirebase設定を貼り付けてください ▼▼▼▼▼
-        // (注意: この情報は絶対に公開しないでください)
-        // =================================================================const firebaseConfig = {
-  const firebaseConfig = {
-            apiKey: "AIzaSyCPbfvQFZiNqKFOL4IIgOYpyhw-1fGXF8M",
-            authDomain: "nanryousai-2026.firebaseapp.com",
-            projectId: "nanryousai-2026",
-            storageBucket: "nanryousai-2026.appspot.com",
-            messagingSenderId: "152456819011",
-            appId: "1:152456819011:web:55edecc0ac0aa7c63bfff6",
-            measurementId: "G-EL9TPFGSJF"
-        };
+      // =================================================================
+      // Firebase Configuration
+      // ▼▼▼▼▼ ここにあなたのFirebase設定を貼り付けてください ▼▼▼▼▼
+      // (注意: この情報は絶対に公開しないでください)
+      // =================================================================const firebaseConfig = {
+      //
+      const firebaseConfig = {
+        apiKey: "AIzaSyCPbfvQFZiNqKFOL4IIgOYpyhw-1fGXF8M",
+        authDomain: "nanryousai-2026.firebaseapp.com",
+        projectId: "nanryousai-2026",
+        storageBucket: "nanryousai-2026.appspot.com",
+        messagingSenderId: "152456819011",
+        appId: "1:152456819011:web:55edecc0ac0aa7c63bfff6",
+        measurementId: "G-EL9TPFGSJF",
+      };
 
-        // ▲▲▲▲▲ ここまで ▲▲▲▲▲
+      // ▲▲▲▲▲ ここまで ▲▲▲▲▲
 
+      // =================================================================
+      // Firebase の初期化とサービス準備
+      // =================================================================
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase 接続成功！");
 
-        // =================================================================
-        // Firebase の初期化とサービス準備
-        // =================================================================
-        firebase.initializeApp(firebaseConfig);
-        console.log("Firebase 接続成功！");
+      const auth = firebase.auth();
+      const db = firebase.firestore();
 
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+      // =================================================================
+      // HTML要素の取得
+      // =================================================================
+      const loginButton = document.getElementById("loginButton");
+      const logoutButton = document.getElementById("logoutButton");
+      const userInfoDiv = document.getElementById("userInfo");
 
+      // =================================================================
+      // ログイン処理
+      // =================================================================
+      loginButton.onclick = () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth
+          .signInWithPopup(provider)
+          .then((result) => {
+            const user = result.user;
+            console.log("ログイン成功:", user.displayName);
+            alert(`ようこそ、${user.displayName}さん！`);
 
-        // =================================================================
-        // HTML要素の取得
-        // =================================================================
-        const loginButton = document.getElementById('loginButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const userInfoDiv = document.getElementById('userInfo');
-
-
-        // =================================================================
-        // ログイン処理
-        // =================================================================
-        loginButton.onclick = () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    console.log("ログイン成功:", user.displayName);
-                    alert(`ようこそ、${user.displayName}さん！`);
-
-                    // Firestoreの'users'コレクションにユーザー情報を書き込む
-                    // .doc(user.uid)で、ユーザー固有のIDをドキュメント名に設定
-                    return db.collection('users').doc(user.uid).set({
-                        name: user.displayName,
-                        email: user.email,
-                        photoURL: user.photoURL,
-                        lastLogin: new Date() // 現在の日時を記録
-                    });
-                })
-                .then(() => {
-                    console.log("Firestoreへの書き込み成功！");
-                    alert("ユーザー情報をデータベースに保存しました。");
-                })
-                .catch((error) => {
-                    // エラー処理
-                    console.error("処理中にエラーが発生しました:", error);
-                    alert("エラーが発生しました。コンソールを確認してください。");
-                });
-        };
-        
-        // =================================================================
-        // ログアウト処理
-        // =================================================================
-        logoutButton.onclick = () => {
-            auth.signOut().then(() => {
-                console.log("ログアウト成功");
-                alert("ログアウトしました。");
-            }).catch((error) => {
-                console.error("ログアウトエラー:", error);
+            // Firestoreの'users'コレクションにユーザー情報を書き込む
+            // .doc(user.uid)で、ユーザー固有のIDをドキュメント名に設定
+            return db.collection("users").doc(user.uid).set({
+              name: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL,
+              lastLogin: new Date(), // 現在の日時を記録
             });
-        };
+          })
+          .then(() => {
+            console.log("Firestoreへの書き込み成功！");
+            alert("ユーザー情報をデータベースに保存しました。");
+          })
+          .catch((error) => {
+            // エラー処理
+            console.error("処理中にエラーが発生しました:", error);
+            alert("エラーが発生しました。コンソールを確認してください。");
+          });
+      };
 
+      // =================================================================
+      // ログアウト処理
+      // =================================================================
+      logoutButton.onclick = () => {
+        auth
+          .signOut()
+          .then(() => {
+            console.log("ログアウト成功");
+            alert("ログアウトしました。");
+          })
+          .catch((error) => {
+            console.error("ログアウトエラー:", error);
+          });
+      };
 
-        // =================================================================
-        // ログイン状態の監視
-        // =================================================================
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // ログインしている場合
-                console.log("ログイン状態:", user.displayName);
-                loginButton.style.display = 'none';
-                logoutButton.style.display = 'block';
-                userInfoDiv.innerHTML = `
+      // =================================================================
+      // ログイン状態の監視
+      // =================================================================
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          // ログインしている場合
+          console.log("ログイン状態:", user.displayName);
+          loginButton.style.display = "none";
+          logoutButton.style.display = "block";
+          userInfoDiv.innerHTML = `
                     <h3>ログイン中</h3>
                     <p>名前: ${user.displayName}</p>
                     <p>メール: ${user.email}</p>
                     <img src="${user.photoURL}" alt="プロフィール画像" width="50">
                 `;
-            } else {
-                // ログアウトしている場合
-                console.log("ログアウト状態");
-                loginButton.style.display = 'block';
-                logoutButton.style.display = 'none';
-                userInfoDiv.innerHTML = "";
-            }
-        });
-
+        } else {
+          // ログアウトしている場合
+          console.log("ログアウト状態");
+          loginButton.style.display = "block";
+          logoutButton.style.display = "none";
+          userInfoDiv.innerHTML = "";
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

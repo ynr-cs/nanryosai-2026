@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文化祭POS - Custom Dialogs</title>
+    <title>文化祭POS - Cloud Functions Integration</title>
     <style>
         :root {
             --bg-color: #333;
@@ -222,18 +222,15 @@
         }
         .modal-overlay.active { display: flex; }
         
-        /* 汎用モーダルボックス */
         .modal-box {
             background: white; padding: 40px; border-radius: 12px;
             text-align: center; min-width: 450px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* 完了画面用 */
         .receipt-num { font-size: 5em; font-weight: bold; color: #333; margin: 20px 0; }
         .close-btn { padding: 10px 30px; font-size: 1.2em; cursor: pointer; border-radius: 6px; border: 1px solid #aaa; background: #eee; }
 
-        /* 確認画面用 */
         .confirm-title { font-size: 1.5em; font-weight: bold; margin-bottom: 20px; }
         .confirm-total { font-size: 3em; font-weight: bold; color: #2e7d32; margin: 20px 0; font-family: 'Courier New', monospace; }
         .confirm-text { font-size: 1.2em; color: #555; margin-bottom: 30px; }
@@ -246,8 +243,8 @@
         .modal-btn:active { transform: translateY(2px); box-shadow: none; }
 
         .modal-btn.cancel { background: #999; color: white; }
-        .modal-btn.confirm-checkout { background: #2e7d32; color: white; } /* お会計用(緑) */
-        .modal-btn.confirm-clear { background: #d32f2f; color: white; } /* 削除用(赤) */
+        .modal-btn.confirm-checkout { background: #2e7d32; color: white; }
+        .modal-btn.confirm-clear { background: #d32f2f; color: white; }
 
     </style>
 </head>
@@ -354,6 +351,8 @@
             from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } 
             from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        // MOD: Functionsのインポート追加
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do", 
@@ -367,6 +366,8 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        // MOD: Functions初期化 (デフォルトリージョン: us-central1)
+        const functions = getFunctions(app);
 
         // State
         let products = [];
@@ -643,25 +644,31 @@
         }
 
         // --- Modals Logic ---
-
-        // モーダルを閉じる
         window.closeAllModals = () => {
             checkoutModal.classList.remove('active');
             clearModal.classList.remove('active');
             successModal.classList.remove('active');
         };
 
-        // チェックアウト開始（確認モーダル表示）
         window.openCheckoutModal = () => {
             if (cart.length === 0) return;
-            // 現在の合計金額をモーダルにセット
             modalTotalEl.innerText = totalEl.innerText;
             checkoutModal.classList.add('active');
         };
 
-        // チェックアウト実行（Firebase送信）
+        // MOD: 採番ロジックをCloud Functions呼び出しに変更
         window.processCheckout = async () => {
             try {
+                // MOD: Callable Functionの参照を作成
+                const getNextReceiptNumber = httpsCallable(functions, 'getNextReceiptNumber');
+                
+                console.log("Cloud Function 'getNextReceiptNumber' を呼び出します...");
+                // MOD: サーバーから採番 (await)
+                // ローディング中のUXが必要ならここでボタン無効化やスピナー表示などを入れる
+                const result = await getNextReceiptNumber();
+                const receiptNumber = result.data.receiptNumber;
+                console.log("サーバーから新しい受付番号を取得しました:", receiptNumber);
+
                 const orderData = {
                     items: cart.map(i => ({
                         productId: i.productId,
@@ -673,33 +680,31 @@
                     totalPrice: cart.reduce((s, i) => s + (i.price * i.quantity), 0),
                     status: 'unpaid_at_pos',
                     createdAt: serverTimestamp(),
-                    receiptNumber: Math.floor(Math.random() * 900) + 100
+                    receiptNumber: receiptNumber // MOD: Cloud Functionsから取得した番号
                 };
+                
                 await addDoc(collection(db, "orders"), orderData);
                 
-                // 成功処理
-                closeAllModals(); // 確認画面を閉じる
+                closeAllModals();
                 document.getElementById('receipt-display').innerText = `No. ${orderData.receiptNumber}`;
-                successModal.classList.add('active'); // 完了画面を開く
+                successModal.classList.add('active');
 
-                // リセット
                 cart = []; selectedUniqueId = null;
                 renderCart(); renderDynamicToppingButtons(); updateQtyDisplay();
                 resetOrderTimer();
 
             } catch (e) {
-                alert("エラー: " + e.message);
+                console.error("注文確定処理中にエラーが発生しました:", e);
+                alert("エラーが発生しました。注文を確定できませんでした。\n" + e.message);
                 closeAllModals();
             }
         };
 
-        // 全消去開始（確認モーダル表示）
         window.openClearModal = () => {
             if (cart.length === 0) return;
             clearModal.classList.add('active');
         };
 
-        // 全消去実行
         window.processClearCart = () => {
             cart = []; selectedUniqueId = null; currentMode = null;
             renderCart(); renderDynamicToppingButtons(); updateModeButtons(); updateQtyDisplay();

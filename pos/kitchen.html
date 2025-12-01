@@ -1,202 +1,446 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>キッチンモニター | POSシステム</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KVS | History Full</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&family=Roboto:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        /* --- デザイン設定 (視認性重視のダークモード) --- */
-        body {
-            font-family: "Helvetica Neue", Arial, sans-serif;
-            background-color: #2c2c2c;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 20px;
-        }
+      /* --- ベース設定 --- */
+      body {
+        font-family: "Noto Sans JP", "Roboto", sans-serif;
+        background-color: #000000;
+        color: #e0e0e0;
+        margin: 0;
+        padding: 15px;
+      }
 
-        /* --- ログイン画面 --- */
-        #login-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 80vh;
-            text-align: center;
-        }
+      /* --- ヘッダー --- */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 12px 20px;
+        background-color: #1a1a1a;
+        border-bottom: 1px solid #333;
+        border-radius: 8px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #fff;
+        font-weight: 900;
+      }
 
-        .btn-google-login {
-            background-color: #4285F4;
-            color: white;
-            font-size: 1.2rem;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: background-color 0.3s;
-        }
-        .btn-google-login:hover {
-            background-color: #357ae8;
-        }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .user-info {
+        font-size: 0.9rem;
+        color: #aaa;
+      }
 
-        /* --- メイン画面 (初期非表示) --- */
-        #main-content {
-            display: none;
-        }
+      .btn-header {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: bold;
+        transition: background 0.2s;
+      }
+      .btn-header:hover {
+        background-color: #444;
+      }
+      .btn-history {
+        border-color: #888;
+        background-color: #2c2c2c;
+      }
 
-        /* --- ヘッダー --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #444;
-            margin-bottom: 20px;
-        }
-        h1 { margin: 0; font-size: 1.8rem; }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-info {
-            font-size: 0.9rem;
-            color: #aaa;
-        }
+      /* --- ログイン画面 --- */
+      #login-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+      }
+      .btn-google-login {
+        background-color: #4285f4;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+      }
 
-        .btn-logout {
-            background-color: #555;
-            color: white;
-            border: 1px solid #777;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-logout:hover { background-color: #666; }
+      /* --- グリッドレイアウト --- */
+      .orders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+      }
 
-        /* --- エラー表示 --- */
-        #error-message {
-            display: none;
-            background-color: #ff5252;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+      /* --- 注文カードデザイン --- */
+      .order-card {
+        background-color: #ffffff;
+        color: #111;
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: fadeIn 0.3s ease-out;
+        border: 1px solid #444;
+      }
 
-        /* --- 注文グリッド --- */
-        .orders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        /* --- 注文カード --- */
-        .order-card {
-            background-color: #ffffff;
-            color: #333;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            animation: fadeIn 0.3s ease-in-out;
-            border-left: 10px solid #ff9800; /* 未調理を示すアクセントカラー */
-        }
+      .card-body {
+        padding: 12px 15px;
+        flex-grow: 1;
+      }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+      .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .order-id {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #000;
+      }
+      .order-timer {
+        font-family: "Roboto", monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #333;
+      }
+      .timer-alert {
+        color: #d32f2f;
+        animation: flash 2s infinite;
+      }
+      @keyframes flash {
+        50% {
+          opacity: 0.5;
         }
+      }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: #666;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 8px;
-            margin-bottom: 10px;
-        }
+      .card-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+      }
+      .order-time {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: bold;
+      }
 
-        .card-items {
-            flex-grow: 1;
-            margin-bottom: 15px;
-        }
+      .source-badge {
+        font-size: 0.8rem;
+        font-weight: 900;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+      }
+      .badge-pos {
+        background-color: #e3f2fd;
+        color: #1565c0;
+      }
+      .badge-mobile {
+        background-color: #fce4ec;
+        color: #c2185b;
+      }
 
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .item-options {
-            font-size: 0.85rem;
-            color: #666;
-            font-weight: normal;
-            display: block;
-            margin-left: 10px;
-        }
+      .item-row {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #ddd;
+      }
+      .item-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .item-main {
+        display: flex;
+        align-items: baseline;
+      }
+      .item-qty {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #000;
+        width: 35px;
+        text-align: right;
+        margin-right: 12px;
+      }
+      .item-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #222;
+        line-height: 1.2;
+      }
 
-        /* --- 調理完了ボタン --- */
-        .btn-complete {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #333;
-            background-color: #ffc107;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .btn-complete:hover {
-            background-color: #ffca2c;
-        }
-        .btn-complete:active {
-            transform: scale(0.98);
-        }
+      .item-customizations {
+        margin-top: 8px;
+        padding-left: 50px;
+      }
+      .customization-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .customization-row:last-child {
+        border-bottom: none;
+      }
+      .cust-badge {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 10px;
+        min-width: 40px;
+        text-align: center;
+      }
+      .cust-text {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #333;
+      }
+      .bg-red {
+        background-color: #d32f2f;
+      }
+      .bg-green {
+        background-color: #2e7d32;
+      }
+      .bg-gray {
+        background-color: #757575;
+      }
 
+      .btn-complete {
+        width: 100%;
+        padding: 15px;
+        background-color: #3b82f6;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 900;
+        border: none;
+        cursor: pointer;
+        margin-top: auto;
+      }
+      .btn-complete:hover {
+        background-color: #2563eb;
+      }
+
+      /* --- 履歴モーダル (全件スクロール対応) --- */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background-color: #fff;
+        width: 90%;
+        max-width: 700px;
+        height: 85vh; /* 高さ固定 */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        color: #333;
+      }
+      .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9fafb;
+        border-radius: 8px 8px 0 0;
+      }
+      .modal-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #333;
+      }
+      .modal-close {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #aaa;
+        padding: 0 10px;
+      }
+
+      /* リスト部分のみスクロールさせる */
+      .history-list {
+        overflow-y: auto;
+        padding: 0;
+        flex-grow: 1;
+      }
+
+      .history-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .history-item:nth-child(even) {
+        background-color: #fafafa;
+      }
+
+      .h-info {
+        flex-grow: 1;
+        padding-right: 15px;
+      }
+      .h-title {
+        font-weight: 900;
+        font-size: 1.1rem;
+        color: #111;
+        margin-bottom: 4px;
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .h-time {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: normal;
+      }
+      .h-details {
+        font-size: 0.95rem;
+        color: #333;
+        margin-top: 6px;
+        line-height: 1.4;
+      }
+
+      .btn-revert {
+        background-color: #f59e0b;
+        color: #fff;
+        border: none;
+        font-weight: 900;
+        padding: 10px 18px;
+        border-radius: 4px;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .btn-revert:hover {
+        background-color: #fbbf24;
+      }
+
+      .modal-footer {
+        padding: 15px;
+        border-top: 1px solid #eee;
+        text-align: center;
+        background-color: #fff;
+        border-radius: 0 0 8px 8px;
+      }
+      .btn-modal-close {
+        background-color: #f3f4f6;
+        color: #333;
+        border: 1px solid #ddd;
+        padding: 10px 30px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+      }
+
+      /* エラー */
+      #error-message {
+        display: none;
+        background: #b71c1c;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      #error-message a {
+        color: #ffd700;
+      }
     </style>
-</head>
-<body>
-
-    <!-- エラーメッセージ表示エリア -->
+  </head>
+  <body>
     <div id="error-message"></div>
 
-    <!-- ログイン画面 -->
     <div id="login-screen">
-        <h2>キッチンスタッフ認証</h2>
-        <p>注文を表示するにはGoogleアカウントで<br>ログインしてください。</p>
-        <button class="btn-google-login" onclick="googleLogin()">Googleでログイン</button>
+      <h2 style="color: white">キッチンモニター</h2>
+      <button class="btn-google-login" onclick="googleLogin()">
+        Googleアカウントでログイン
+      </button>
     </div>
 
-    <!-- メインコンテンツ (ログイン後に表示) -->
-    <div id="main-content">
-        <header>
-            <div>
-                <h1>キッチンオーダー</h1>
-                <span style="font-size:0.9rem; color:#aaa;">店舗ID: <span id="display-store-id">---</span></span>
-            </div>
-            <div class="header-right">
-                <span class="user-info" id="user-name"></span>
-                <button class="btn-logout" onclick="logout()">ログアウト</button>
-            </div>
-        </header>
-
-        <div id="orders-container" class="orders-grid">
-            <!-- 注文カードがここに追加されます -->
+    <div id="main-content" style="display: none">
+      <header>
+        <div>
+          <h1>KVS Monitor</h1>
+          <span style="font-size: 0.8rem; color: #888"
+            >Store ID: <span id="display-store-id">--</span></span
+          >
         </div>
+        <div class="header-right">
+          <button class="btn-header btn-history" onclick="openHistory()">
+            最近の完了リスト
+          </button>
+          <span class="user-info" id="user-name"></span>
+          <button class="btn-header" onclick="logout()">Logout</button>
+        </div>
+      </header>
+
+      <div id="orders-container" class="orders-grid"></div>
+    </div>
+
+    <!-- 履歴モーダル -->
+    <div id="history-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>完了済み注文 (全件)</h2>
+          <span class="modal-close" onclick="closeHistory()">&times;</span>
+        </div>
+        <div id="history-list-container" class="history-list">
+          <!-- JSで挿入 -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn-modal-close" onclick="closeHistory()">
+            閉じる
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -205,205 +449,350 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- 1. Firebase設定 (修正済み) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do", 
-            authDomain: "nanryosai-2026-a4091.firebaseapp.com",
-            projectId: "nanryosai-2026-a4091",
-            storageBucket: "nanryosai-2026-a4091.firebasestorage.app", 
-            messagingSenderId: "360316480856",
-            appId: "1:360316480856:web:1234567890abcdef" 
-        };
+      // --- Firebase Config ---
+      const firebaseConfig = {
+        apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do",
+        authDomain: "nanryosai-2026-a4091.firebaseapp.com",
+        projectId: "nanryosai-2026-a4091",
+        storageBucket: "nanryosai-2026-a4091.firebasestorage.app",
+        messagingSenderId: "360316480856",
+        appId: "1:360316480856:web:1234567890abcdef",
+      };
 
-        // 初期化
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      const auth = firebase.auth();
+      const provider = new firebase.auth.GoogleAuthProvider();
 
-        // --- 2. 変数定義 ---
-        let unsubscribe = null; // リスナー解除用関数
-        const urlParams = new URLSearchParams(window.location.search);
-        const storeId = urlParams.get('storeId');
+      let unsubscribe = null;
+      const urlParams = new URLSearchParams(window.location.search);
+      const storeId = urlParams.get("storeId");
 
-        // DOM要素
-        const loginScreen = document.getElementById('login-screen');
-        const mainContent = document.getElementById('main-content');
-        const errorMsgEl = document.getElementById('error-message');
-        const ordersContainer = document.getElementById('orders-container');
-        const userNameEl = document.getElementById('user-name');
-        const storeIdDisplayEl = document.getElementById('display-store-id');
+      const ordersContainer = document.getElementById("orders-container");
+      const errorMsgEl = document.getElementById("error-message");
+      const historyModal = document.getElementById("history-modal");
+      const historyListEl = document.getElementById("history-list-container");
 
-        // エラー表示用関数
-        function showError(msg, isPermanent = false) {
-            errorMsgEl.innerHTML = msg; // リンクを含めるためinnerHTMLを使用
-            errorMsgEl.style.display = 'block';
-            if (!isPermanent) {
-                setTimeout(() => { errorMsgEl.style.display = 'none'; }, 10000);
+      function showError(html, isPermanent = false) {
+        errorMsgEl.innerHTML = html;
+        errorMsgEl.style.display = "block";
+        if (!isPermanent)
+          setTimeout(() => {
+            errorMsgEl.style.display = "none";
+          }, 10000);
+      }
+
+      // --- Auth ---
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          document.getElementById("login-screen").style.display = "none";
+          document.getElementById("main-content").style.display = "block";
+          document.getElementById("user-name").textContent = user.displayName;
+          document.getElementById("display-store-id").textContent =
+            storeId || "なし";
+
+          if (!storeId) {
+            showError("Error: URLに ?storeId=XXX がありません");
+            return;
+          }
+          startOrderListener();
+          startTimerLoop();
+        } else {
+          document.getElementById("login-screen").style.display = "flex";
+          document.getElementById("main-content").style.display = "none";
+          if (unsubscribe) unsubscribe();
+        }
+      });
+
+      function googleLogin() {
+        auth.signInWithPopup(provider).catch((e) => alert(e.message));
+      }
+      function logout() {
+        if (confirm("ログアウトしますか？"))
+          auth.signOut().then(() => location.reload());
+      }
+
+      // --- Firestore Listener (調理中) ---
+      function startOrderListener() {
+        unsubscribe = db
+          .collection("orders")
+          .where("storeId", "==", storeId)
+          .where("status", "in", ["unpaid_at_pos", "authorized"])
+          .orderBy("createdAt", "asc")
+          .onSnapshot(
+            (snapshot) => {
+              snapshot.docChanges().forEach((change) => {
+                // addedでもmodifiedでも、DOM上の位置を正しく判定して挿入・移動する
+                if (change.type === "added" || change.type === "modified") {
+                  // 既存があれば削除（位置移動のため）
+                  removeCard(change.doc.id);
+                  // 正しい位置に挿入
+                  renderCardSorted(change.doc);
+                }
+                if (change.type === "removed") {
+                  removeCard(change.doc.id);
+                }
+              });
+            },
+            (error) => {
+              console.error("Firestore Error:", error);
+              if (error.code === "permission-denied")
+                showError("アクセス権限がありません。");
             }
+          );
+      }
+
+      // --- 注文カード描画 (自動ソート挿入) ---
+      function renderCardSorted(doc) {
+        const data = doc.data();
+        const orderId = doc.id;
+        const createdDate = data.createdAt
+          ? data.createdAt.toDate()
+          : new Date();
+        const createdTimeMs = createdDate.getTime();
+
+        // HTML生成
+        const cardEl = createCardElement(doc, createdDate);
+
+        // 挿入位置を探す（日付順）
+        const children = ordersContainer.children;
+        let inserted = false;
+
+        for (let i = 0; i < children.length; i++) {
+          const childTime = parseInt(children[i].dataset.createdAt);
+          // もし新しいカードの方が古い(小さい)時間なら、この要素の前に挿入
+          if (createdTimeMs < childTime) {
+            ordersContainer.insertBefore(cardEl, children[i]);
+            inserted = true;
+            break;
+          }
         }
 
-        // --- 3. 認証状態の監視 ---
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // ログイン中
-                console.log("Logged in as:", user.displayName);
-                loginScreen.style.display = 'none';
-                
-                // storeIdチェック
-                if (!storeId) {
-                    showError("エラー: URLに店舗ID (?storeId=XXX) が指定されていません。", true);
-                    return;
-                }
+        // 最後までループしても挿入されなかったら（一番新しい場合）、末尾に追加
+        if (!inserted) {
+          ordersContainer.appendChild(cardEl);
+        }
 
-                mainContent.style.display = 'block';
-                userNameEl.textContent = user.displayName;
-                storeIdDisplayEl.textContent = storeId;
+        // タイマー更新
+        updateSingleTimer(cardEl, Date.now());
+      }
 
-                // Firestore監視開始
-                startOrderListener();
-            } else {
-                // ログアウト状態
-                console.log("Not logged in");
-                if (unsubscribe) unsubscribe(); // 監視停止
-                loginScreen.style.display = 'flex';
-                mainContent.style.display = 'none';
-                ordersContainer.innerHTML = ''; // 画面クリア
-            }
+      // カード要素作成関数
+      function createCardElement(doc, createdDate) {
+        const data = doc.data();
+        const orderId = doc.id;
+        const displayId = data.receiptNumber
+          ? `#${data.receiptNumber}`
+          : `#${orderId.slice(-4).toUpperCase()}`;
+        const dateStr = createdDate.toLocaleString("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit",
         });
 
-        // --- 4. ログイン・ログアウト処理 ---
-        function googleLogin() {
-            auth.signInWithPopup(provider)
-                .catch((error) => {
-                    console.error("Login failed:", error);
-                    showError(`ログイン失敗: ${error.message}`);
-                });
+        let sourceLabel = "POS";
+        let sourceClass = "badge-pos";
+        if (data.status === "authorized") {
+          sourceLabel = "Mobile";
+          sourceClass = "badge-mobile";
         }
 
-        function logout() {
-            if (confirm("ログアウトしますか？")) {
-                auth.signOut().then(() => {
-                    window.location.reload();
-                });
-            }
-        }
+        let itemsHtml = buildItemsHtml(data.items);
 
-        // --- 5. リアルタイムリスナー (Firestore) ---
-        function startOrderListener() {
-            if (unsubscribe) unsubscribe();
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.id = `card-${orderId}`;
+        div.dataset.createdAt = createdDate.getTime();
+        div.dataset.currentStatus = data.status;
 
-            console.log(`Listening for orders: storeId=${storeId}, status=unpaid_at_pos`);
-
-            // Firestoreへのクエリ
-            unsubscribe = db.collection("orders")
-                .where("storeId", "==", storeId)
-                .where("status", "==", "unpaid_at_pos")
-                .orderBy("createdAt", "asc")
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === "added") {
-                            renderOrderCard(change.doc);
-                        }
-                        if (change.type === "removed") {
-                            removeOrderCard(change.doc.id);
-                        }
-                        if (change.type === "modified") {
-                            removeOrderCard(change.doc.id);
-                            renderOrderCard(change.doc);
-                        }
-                    });
-                }, (error) => {
-                    console.error("Firestore Error:", error);
-                    // インデックス作成が必要な場合のエラー処理
-                    if (error.message.includes('requires an index')) {
-                        const indexLink = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-                        if (indexLink) {
-                            showError(`システムエラー: インデックスの作成が必要です。<a href="${indexLink[0]}" target="_blank" style="color:yellow;">ここをクリックして作成してください</a>`, true);
-                        }
-                    } else if (error.code === 'permission-denied') {
-                        showError("アクセス権限がありません。ログインしているアカウントが正しいか確認してください。", true);
-                    } else {
-                        showError(`データ取得エラー: ${error.message}`);
-                    }
-                });
-        }
-
-        // --- 6. 注文カード描画処理 ---
-        function renderOrderCard(doc) {
-            const data = doc.data();
-            const orderId = doc.id;
-
-            let timeString = "--:--";
-            if (data.createdAt) {
-                const date = data.createdAt.toDate();
-                timeString = date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            }
-
-            const card = document.createElement('div');
-            card.className = 'order-card';
-            card.id = `card-${orderId}`;
-
-            let itemsHtml = '';
-            if (data.items && Array.isArray(data.items)) {
-                data.items.forEach(item => {
-                    let optionsHtml = '';
-                    if (item.customizations && item.customizations.length > 0) {
-                        const optionsText = item.customizations.map(opt => 
-                            typeof opt === 'object' ? opt.name : opt
-                        ).join(', ');
-                        optionsHtml = `<span class="item-options">(${optionsText})</span>`;
-                    }
-
-                    itemsHtml += `
-                        <div class="order-item">
-                            <div class="item-details">
-                                <span>${item.name}</span>
-                                ${optionsHtml}
-                            </div>
-                            <span>x ${item.quantity}</span>
-                        </div>
-                    `;
-                });
-            }
-
-            card.innerHTML = `
-                <div class="card-header">
-                    <span>注文時刻: ${timeString}</span>
-                    <span>ID: ${orderId.slice(-4)}</span>
+        div.innerHTML = `
+                <div class="card-body">
+                    <div class="card-header-row">
+                        <span class="order-id">注文 ${displayId}</span>
+                        <span class="order-timer" id="timer-${orderId}">00:00</span>
+                    </div>
+                    <div class="card-meta-row">
+                        <span class="order-time">${dateStr}</span>
+                        <span class="source-badge ${sourceClass}">${sourceLabel}</span>
+                    </div>
+                    <div>${itemsHtml}</div>
                 </div>
-                <div class="card-items">
-                    ${itemsHtml}
-                </div>
-                <button class="btn-complete" onclick="completeOrder('${orderId}')">
-                    調理完了
-                </button>
+                <button class="btn-complete" onclick="completeOrder('${orderId}')">完了</button>
             `;
+        return div;
+      }
 
-            ordersContainer.appendChild(card);
-        }
+      function buildItemsHtml(items) {
+        if (!items || !Array.isArray(items)) return "";
+        const sortedItems = [...items].sort((a, b) =>
+          a.name.localeCompare(b.name, "ja")
+        );
 
-        // カードを画面から削除
-        function removeOrderCard(orderId) {
-            const card = document.getElementById(`card-${orderId}`);
-            if (card) card.remove();
-        }
+        return sortedItems
+          .map((item) => {
+            let customizationHtml = "";
+            if (item.customizations && item.customizations.length > 0) {
+              const rows = item.customizations
+                .map((c) => {
+                  let mode = "",
+                    target = c;
+                  if (typeof c === "object") {
+                    mode = c.mode || "";
+                    target = c.target || c.name || "";
+                  }
+                  let badgeClass = "bg-gray",
+                    displayMode = mode || "OPT";
+                  if (mode === "ADD") badgeClass = "bg-green";
+                  else if (mode === "NO" || mode === "REMOVE") {
+                    badgeClass = "bg-red";
+                    displayMode = "NO";
+                  }
+                  return `<div class="customization-row"><span class="cust-badge ${badgeClass}">${displayMode}</span><span class="cust-text">${target}</span></div>`;
+                })
+                .join("");
+              customizationHtml = `<div class="item-customizations">${rows}</div>`;
+            }
+            return `<div class="item-row"><div class="item-main"><div class="item-qty">${item.quantity}</div><div class="item-name">${item.name}</div></div>${customizationHtml}</div>`;
+          })
+          .join("");
+      }
 
-        // --- 7. 調理完了アクション ---
-        window.completeOrder = function(orderId) {
-            // ステータスを 'ready_to_serve' に更新
-            db.collection("orders").doc(orderId).update({
-                status: "ready_to_serve"
-            })
-            .then(() => {
-                console.log(`Order ${orderId} status updated to 'ready_to_serve'.`);
-            })
-            .catch((error) => {
-                console.error("Update failed:", error);
-                alert("ステータス更新に失敗しました。再試行してください。");
+      function removeCard(id) {
+        const el = document.getElementById(`card-${id}`);
+        if (el) el.remove();
+      }
+
+      // --- タイマー ---
+      function startTimerLoop() {
+        setInterval(() => {
+          const now = Date.now();
+          document
+            .querySelectorAll(".order-card")
+            .forEach((c) => updateSingleTimer(c, now));
+        }, 1000);
+      }
+
+      function updateSingleTimer(cardEl, now) {
+        const createdAt = parseInt(cardEl.dataset.createdAt);
+        if (!createdAt) return;
+        const diffSeconds = Math.floor((now - createdAt) / 1000);
+        const mm = String(Math.floor(diffSeconds / 60)).padStart(2, "0");
+        const ss = String(diffSeconds % 60).padStart(2, "0");
+        const timerSpan = cardEl.querySelector(".order-timer");
+        timerSpan.textContent = `${mm}:${ss}`;
+        if (diffSeconds > 600) timerSpan.classList.add("timer-alert");
+        else timerSpan.classList.remove("timer-alert");
+      }
+
+      // --- 完了処理 ---
+      window.completeOrder = function (orderId) {
+        const card = document.getElementById(`card-${orderId}`);
+        const currentStatus = card
+          ? card.dataset.currentStatus
+          : "unpaid_at_pos";
+        db.collection("orders")
+          .doc(orderId)
+          .update({
+            status: "ready_to_serve",
+            previousStatus: currentStatus,
+            completedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .catch((e) => alert("更新失敗: " + e.message));
+      };
+
+      // --- 履歴機能 (全件) ---
+      window.openHistory = function () {
+        historyModal.style.display = "flex";
+        loadHistory();
+      };
+
+      window.closeHistory = function () {
+        historyModal.style.display = "none";
+      };
+
+      function loadHistory() {
+        historyListEl.innerHTML =
+          '<p style="text-align:center; color:#999; margin-top:20px;">読み込み中...</p>';
+
+        // limitなしで取得
+        db.collection("orders")
+          .where("storeId", "==", storeId)
+          .where("status", "==", "ready_to_serve")
+          .orderBy("completedAt", "desc")
+          .get()
+          .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+              historyListEl.innerHTML =
+                '<p style="text-align:center; color:#333; margin-top:20px;">完了した注文はありません。</p>';
+              return;
+            }
+
+            let html = "";
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const orderId = doc.id;
+              const displayId = data.receiptNumber
+                ? `#${data.receiptNumber}`
+                : `#${orderId.slice(-4).toUpperCase()}`;
+
+              let completedTimeStr = "不明";
+              if (data.completedAt)
+                completedTimeStr = data.completedAt
+                  .toDate()
+                  .toLocaleString("ja-JP");
+              else if (data.updatedAt)
+                completedTimeStr = data.updatedAt
+                  .toDate()
+                  .toLocaleString("ja-JP");
+
+              let itemsSummary = "";
+              if (data.items)
+                itemsSummary = data.items
+                  .map((i) => `${i.quantity} ${i.name}`)
+                  .join(", ");
+
+              const prevStatus = data.previousStatus || "unpaid_at_pos";
+
+              html += `
+                            <div class="history-item">
+                                <div class="h-info">
+                                    <div class="h-title">${displayId} <span class="h-time">(${completedTimeStr})</span></div>
+                                    <div class="h-details">${itemsSummary}</div>
+                                </div>
+                                <button class="btn-revert" onclick="revertOrder('${orderId}', '${prevStatus}')">元に戻す</button>
+                            </div>
+                        `;
             });
-        };
+            historyListEl.innerHTML = html;
+          })
+          .catch((error) => {
+            console.error(error);
+            let msg = "履歴の読み込みに失敗しました。";
+            if (error.message.includes("requires an index")) {
+              const link = error.message.match(
+                /https:\/\/console\.firebase\.google\.com[^\s]*/
+              );
+              if (link)
+                msg = `システム: <a href="${link[0]}" target="_blank">ここをクリックしてインデックスを作成してください</a>`;
+            }
+            historyListEl.innerHTML = `<p style="text-align:center; color:red; padding:20px;">${msg}</p>`;
+          });
+      }
 
+      window.revertOrder = function (orderId, prevStatus) {
+        if (!confirm("この注文を調理中に戻しますか？")) return;
+        db.collection("orders")
+          .doc(orderId)
+          .update({
+            status: prevStatus,
+            completedAt: firebase.firestore.FieldValue.delete(),
+          })
+          .then(() => loadHistory())
+          .catch((e) => alert("エラー: " + e.message));
+      };
+
+      window.onclick = function (event) {
+        if (event.target == historyModal) closeHistory();
+      };
     </script>
-</body>
+  </body>
 </html>

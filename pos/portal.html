@@ -5,385 +5,252 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>店舗管理ポータル | 南陵祭2026</title>
     <style>
-        /* 基本スタイル */
+        /* ============================
+           基本スタイル
+           ============================ */
         body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             background-color: #f4f6f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
+            margin: 0; padding: 0; color: #333;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h1, h2, h3 {
-            text-align: center;
-            color: #2c3e50;
-        }
-
-        /* 画面切り替え用のセクション */
-        .view-section {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        /* カード共通スタイル */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+        h1, h2, h3 { text-align: center; color: #2c3e50; }
+        
+        /* カードスタイル */
         .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            background: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;
         }
 
-        .login-card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 480px;
-            text-align: center;
-            margin: 0 auto;
+        /* フォーム要素 */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        input[type="text"], input[type="password"], input[type="number"], textarea {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: 6px; font-size: 16px; box-sizing: border-box;
         }
+        textarea { resize: vertical; height: 80px; font-family: inherit; }
 
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        /* ログイン画面の説明文 */
-        .login-step-badge {
-            display: inline-block;
-            background-color: #e9ecef;
-            color: #495057;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .login-description {
-            text-align: left;
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #555;
-        }
-
-        /* ボタン共通 */
+        /* ボタン */
         button {
-            width: 100%;
-            padding: 12px;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 10px;
+            width: 100%; padding: 12px; border: none; border-radius: 6px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: opacity 0.2s; color: white; margin-bottom: 10px;
         }
+        button:hover { opacity: 0.9; }
+        button:disabled { background-color: #ccc !important; cursor: not-allowed; }
 
         .btn-primary { background-color: #007bff; }
-        .btn-primary:hover { background-color: #0056b3; }
-
         .btn-google { background-color: #db4437; }
-        .btn-google:hover { background-color: #c53929; }
-
         .btn-add { background-color: #6610f2; }
-        .btn-add:hover { background-color: #520dc2; }
+        .btn-update { background-color: #28a745; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-secondary { background-color: #6c757d; }
 
-        .error-message {
-            color: #dc3545;
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        /* ダッシュボード用 */
-        #dashboard-section {
-            display: none;
-            padding-top: 20px;
-        }
-
-        .store-title {
-            font-size: 1.5rem;
-            margin: 0;
-            color: #007bff;
-            text-align: center;
-        }
-        .store-subtitle {
-            text-align: center;
-            color: #6c757d;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .menu-btn {
-            display: block;
-            text-decoration: none;
-            background-color: white;
-            color: #2c3e50;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            font-weight: bold;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .menu-btn:hover {
-            border-color: #007bff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        /* 商品追加フォーム */
-        .add-item-form {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .checkbox-group input {
-            width: auto;
-            margin-right: 10px;
-        }
-        .checkbox-group label {
-            margin: 0;
-            font-weight: normal;
-        }
+        /* トッピング入力エリア */
+        .topping-row { display: flex; gap: 10px; margin-bottom: 8px; }
+        .topping-row input { flex: 1; }
+        .btn-sm-delete { width: auto; padding: 0 15px; background: #dc3545; color: white; margin: 0; }
+        .btn-sm-add { width: auto; background: #17a2b8; display: inline-block; padding: 8px 16px; font-size: 0.9rem; color: white; border:none; border-radius:4px; cursor:pointer;}
 
         /* 商品リスト */
-        .item-list {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-
         .item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 15px; border-bottom: 1px solid #eee; gap: 15px;
         }
         .item-row:last-child { border-bottom: none; }
 
+        .item-img {
+            width: 80px; height: 80px; object-fit: cover; border-radius: 8px; background: #eee; flex-shrink: 0;
+        }
         .item-info { flex: 1; }
         .item-name { font-weight: bold; font-size: 1.1rem; }
-        .item-price { color: #666; font-size: 0.9rem; }
-        .item-toppings { font-size: 0.8rem; color: #888; margin-top: 4px; }
-        .badge-recommend { 
-            background: #ffc107; color: #333; 
-            font-size: 0.7rem; padding: 2px 6px; 
-            border-radius: 4px; margin-left: 8px; vertical-align: middle; 
+        .item-desc { font-size: 0.85rem; color: #666; margin: 4px 0; white-space: pre-wrap; }
+        .badge-recommend {
+            background: #ffc107; color: #333; font-size: 0.7rem;
+            padding: 2px 6px; border-radius: 4px; margin-left: 5px; vertical-align: middle;
+        }
+        .item-actions {
+            display: flex; flex-direction: column; gap: 8px; width: 100px; flex-shrink: 0;
+        }
+        .action-btn { font-size: 0.8rem; padding: 6px; margin: 0; }
+
+        /* 画面切り替え */
+        .view-section { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* ログイン関連 */
+        .login-card { max-width: 400px; width: 100%; text-align: center; }
+        .auth-info { background: #eee; padding: 5px; font-size: 0.8rem; margin-bottom: 10px; border-radius: 4px; }
+
+        /* モーダル (編集用) */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 25px; border-radius: 12px;
+            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        .status-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* リンクメニュー */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+        .menu-link { 
+            text-decoration: none; background: white; border: 1px solid #ddd; 
+            color: #333; padding: 15px; text-align: center; border-radius: 8px; font-weight: bold; display: block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s;
         }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .status-available { background-color: #d4edda; color: #155724; }
-        .status-soldout { background-color: #f8d7da; color: #721c24; }
-
-        .toggle-btn {
-            width: auto;
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            margin-bottom: 0;
-        }
-        .toggle-btn.btn-to-soldout { background-color: #dc3545; }
-        .toggle-btn.btn-to-available { background-color: #28a745; }
-
-        .auth-info {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 15px;
-            background: #eee;
-            padding: 5px 10px;
-            border-radius: 4px;
-            display: inline-block;
-        }
+        .menu-link:hover { background: #f8f9fa; border-color: #007bff; color: #007bff; }
     </style>
 </head>
 <body>
 
-    <!-- =========================
-         1. Google認証セクション
-    ========================== -->
+    <!-- 1. Google認証セクション -->
     <div id="google-auth-section" class="view-section" style="display: flex;">
-        <div class="login-card">
-            <span class="login-step-badge">STEP 1/2</span>
-            <h2>Google認証</h2>
-            <div class="login-description">
-                <p style="margin-top:0;">システムの安全性を確保するため、Googleアカウントによる本人確認を行います。</p>
-                <p><strong>誰のアカウントを使っても構いません。</strong><br>
-                （代表者個人のアカウントでも、学校のアカウントでもOKです）</p>
-                <p style="margin-bottom:0; font-size:0.85rem; color:#888;">※この情報はDB接続許可のためだけに使用されます。</p>
-            </div>
-            <button id="googleLoginBtn" class="btn-google">Googleアカウントで認証する</button>
-            <div id="googleAuthError" class="error-message"></div>
+        <div class="card login-card">
+            <h2>管理者認証</h2>
+            <p style="color:#666; font-size:0.9rem;">
+                DB接続許可のため、Googleアカウントでログインしてください。<br>
+                (どのアカウントでも構いません)
+            </p>
+            <button id="googleLoginBtn" class="btn-google">Googleでログイン</button>
+            <div id="googleAuthError" style="color:red; font-size:0.9rem;"></div>
         </div>
     </div>
 
-    <!-- =========================
-         2. 店舗ログインセクション
-    ========================== -->
+    <!-- 2. 店舗ログインセクション -->
     <div id="store-login-section" class="view-section">
-        <div class="login-card">
-            <span class="login-step-badge">STEP 2/2</span>
+        <div class="card login-card">
             <div class="auth-info">認証済み: <span id="userEmailDisplay"></span></div>
-            <h2>店舗管理ログイン</h2>
-            <div class="login-description" style="text-align: center; border: none; background: none; padding: 0 0 15px 0;">
-                クラスごとの<strong>ID</strong>と<strong>パスワード</strong>を入力してください。
+            <h2>店舗ログイン</h2>
+            <div class="form-group">
+                <input type="text" id="loginId" placeholder="店舗ID (例: class101)">
             </div>
             <div class="form-group">
-                <label for="loginId">ログインID</label>
-                <input type="text" id="loginId" placeholder="例: class101">
-            </div>
-            <div class="form-group">
-                <label for="password">パスワード</label>
                 <input type="password" id="password" placeholder="パスワード">
             </div>
             <button id="storeLoginBtn" class="btn-primary">ログイン</button>
-            <div id="storeLoginError" class="error-message"></div>
+            <div id="storeLoginError" style="color:red; margin-top:10px; font-size:0.9rem;"></div>
         </div>
     </div>
 
-    <!-- =========================
-         3. ダッシュボードセクション
-    ========================== -->
-    <div id="dashboard-section">
+    <!-- 3. ダッシュボードセクション -->
+    <div id="dashboard-section" style="display: none; padding-top: 20px;">
         <div class="container">
             <!-- ヘッダー -->
-            <div class="card header-card">
-                <h1 class="store-title" id="displayStoreName">店舗名</h1>
-                <p class="store-subtitle"><span id="displayTeamName"></span> (ID: <span id="displayStoreId"></span>)</p>
+            <div class="card" style="text-align:center;">
+                <h1 id="displayStoreName" style="margin:0; color:#007bff;">店舗名</h1>
+                <p style="color:#666; margin:5px 0;"><span id="displayTeamName"></span> (ID: <span id="displayStoreId"></span>)</p>
             </div>
 
             <!-- メニューリンク -->
-            <h2>機能メニュー</h2>
-            <div class="menu-grid">
-                <a href="#" id="linkPos" class="menu-btn">POSレジ</a>
-                <a href="#" id="linkKitchen" class="menu-btn">厨房画面</a>
-                <a href="#" id="linkPresenter" class="menu-btn">提供口画面</a>
-                <a href="#" id="linkMonitor" class="menu-btn">モニター画面</a>
-                <a href="#" id="linkReport" class="menu-btn">売上レポート</a>
+            <div class="card">
+                <h3 style="margin-top:0;">機能メニュー</h3>
+                <div class="menu-grid">
+                    <a href="#" id="linkPos" class="menu-link">📱 POSレジ</a>
+                    <a href="#" id="linkKitchen" class="menu-link">🍳 厨房</a>
+                    <a href="#" id="linkPresenter" class="menu-link">🎁 提供口</a>
+                    <a href="#" id="linkMonitor" class="menu-link">📺 モニター</a>
+                    <a href="#" id="linkReport" class="menu-link">📊 売上</a>
+                </div>
             </div>
 
-            <!-- 商品追加エリア -->
-            <h2>商品管理</h2>
-            <div class="card add-item-form">
-                <h3 style="margin-top:0; text-align:left; font-size:1.1rem;">新規商品の追加</h3>
+            <!-- 商品追加フォーム -->
+            <div class="card">
+                <h3 style="margin-top:0;">新規商品の追加</h3>
                 <div class="form-group">
-                    <label>商品名</label>
-                    <input type="text" id="newItemName" placeholder="例: フランクフルト">
-                </div>
-                <div class="form-group">
-                    <label>価格 (円)</label>
-                    <input type="number" id="newItemPrice" placeholder="例: 200">
+                    <label>商品名 *</label>
+                    <input type="text" id="addName" placeholder="例: 焼きそば">
                 </div>
                 <div class="form-group">
-                    <label>トッピング (任意・カンマ区切り)</label>
-                    <input type="text" id="newItemToppings" placeholder="例: ケチャップ, マスタード">
+                    <label>価格 (円) *</label>
+                    <input type="number" id="addPrice" placeholder="例: 300">
                 </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="newItemRecommended">
-                    <label for="newItemRecommended">おすすめ商品として表示する</label>
+                <div class="form-group">
+                    <label>説明文</label>
+                    <textarea id="addDesc" placeholder="商品の特徴などを入力"></textarea>
                 </div>
-                <button id="addItemBtn" class="btn-add">商品を追加する</button>
+                <div class="form-group">
+                    <label>商品画像</label>
+                    <input type="file" id="addImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>トッピング・オプション</label>
+                    <div id="addToppingsContainer">
+                        <!-- ここに入力欄が追加されます -->
+                    </div>
+                    <button type="button" class="btn-sm-add" onclick="window.addToppingInput('addToppingsContainer')">＋ トッピング枠を追加</button>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center;">
+                    <input type="checkbox" id="addRecommended" style="width:auto; margin-right:8px;">
+                    <label for="addRecommended" style="margin:0; cursor:pointer;">おすすめ商品として強調する</label>
+                </div>
+                <button id="addItemBtn" class="btn-add">商品を登録する</button>
             </div>
 
             <!-- 商品リスト -->
-            <h3>登録済み商品一覧</h3>
-            <div class="item-list" id="itemsContainer">
-                <div style="padding:20px; text-align:center; color:#999;">読み込み中...</div>
+            <h3 style="text-align:left; border-left: 5px solid #007bff; padding-left:10px;">商品一覧</h3>
+            <div class="card" id="itemsContainer" style="padding:0; overflow:hidden;">
+                <div style="text-align:center; padding:20px; color:#999;">読み込み中...</div>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK (v9) -->
+    <!-- 4. 編集用モーダル -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">商品を編集</h3>
+            <input type="hidden" id="editDocId">
+            
+            <div class="form-group">
+                <label>商品名</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>価格</label>
+                <input type="number" id="editPrice">
+            </div>
+            <div class="form-group">
+                <label>説明文</label>
+                <textarea id="editDesc"></textarea>
+            </div>
+            <div class="form-group">
+                <label>画像を変更</label>
+                <input type="file" id="editImage" accept="image/*">
+                <div id="currentImagePreview" style="margin-top:5px; font-size:0.8rem; color:#666;"></div>
+            </div>
+            <div class="form-group">
+                <label>トッピング</label>
+                <div id="editToppingsContainer"></div>
+                <button type="button" class="btn-sm-add" onclick="window.addToppingInput('editToppingsContainer')">＋ 追加</button>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center;">
+                <input type="checkbox" id="editRecommended" style="width:auto; margin-right:8px;">
+                <label for="editRecommended" style="margin:0; cursor:pointer;">おすすめ</label>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button id="updateItemBtn" class="btn-update">更新保存</button>
+                <button onclick="document.getElementById('editModal').style.display='none'" class="btn-secondary">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (v9 Module) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { 
-            getAuth, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { 
-            getFirestore, 
-            collection, 
-            query, 
-            where, 
-            getDocs, 
-            onSnapshot, 
-            doc, 
-            updateDoc,
-            addDoc
-        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, onSnapshot, doc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        // Firebase Config
+        // ==========================================
+        //  設定: 正しいバケット名に修正済み
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do", 
             authDomain: "nanryosai-2026-a4091.firebaseapp.com",
             projectId: "nanryosai-2026-a4091",
-            storageBucket: "nanryosai-2026-a4091.appspot.com",
+            // 画像アップロードに必須
+            storageBucket: "nanryosai-2026-a4091.firebasestorage.app", 
             messagingSenderId: "360316480856",
             appId: "1:360316480856:web:1234567890abcdef" 
         };
@@ -391,261 +258,323 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        // --- DOM Elements ---
-        const googleSection = document.getElementById('google-auth-section');
-        const storeLoginSection = document.getElementById('store-login-section');
-        const dashboardSection = document.getElementById('dashboard-section');
-        
-        const googleLoginBtn = document.getElementById('googleLoginBtn');
-        const googleAuthError = document.getElementById('googleAuthError');
-        const userEmailDisplay = document.getElementById('userEmailDisplay');
-
-        const storeLoginBtn = document.getElementById('storeLoginBtn');
-        const loginIdInput = document.getElementById('loginId');
-        const passwordInput = document.getElementById('password');
-        const storeLoginError = document.getElementById('storeLoginError');
-
-        // Dashboard Display Elements
-        const displayStoreName = document.getElementById('displayStoreName');
-        const displayTeamName = document.getElementById('displayTeamName');
-        const displayStoreId = document.getElementById('displayStoreId');
-        const itemsContainer = document.getElementById('itemsContainer');
-
-        // Add Item Form Elements
-        const newItemName = document.getElementById('newItemName');
-        const newItemPrice = document.getElementById('newItemPrice');
-        const newItemToppings = document.getElementById('newItemToppings');
-        const newItemRecommended = document.getElementById('newItemRecommended');
-        const addItemBtn = document.getElementById('addItemBtn');
-
-        // Link Elements
-        const links = {
-            pos: document.getElementById('linkPos'),
-            kitchen: document.getElementById('linkKitchen'),
-            presenter: document.getElementById('linkPresenter'),
-            monitor: document.getElementById('linkMonitor'),
-            report: document.getElementById('linkReport')
-        };
-
-        let currentStoreId = null; // ログイン中の店舗IDを保持
+        // 現在の状態保持
+        let currentStoreId = null;
+        let itemsCache = {}; // 編集用にデータを一時保存
 
         // ==========================================
-        //  1. Google認証
+        //  グローバル関数 (HTMLのonclickから呼ぶため)
+        // ==========================================
+        
+        // トッピング入力枠を追加
+        window.addToppingInput = (containerId, value = "") => {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'topping-row';
+            div.innerHTML = `
+                <input type="text" class="topping-input" value="${value}" placeholder="トッピング名">
+                <button type="button" class="btn-sm-delete" onclick="this.parentElement.remove()">削除</button>
+            `;
+            container.appendChild(div);
+        };
+
+        // ステータス切替 (販売中/売切)
+        window.toggleStatus = async (id, newStatus) => {
+            try { await updateDoc(doc(db, "items", id), { isAvailable: newStatus }); }
+            catch(e) { alert("更新失敗: " + e.message); }
+        };
+
+        // 商品削除
+        window.deleteItem = async (id) => {
+            if(!confirm("本当にこの商品を削除しますか？\n(元に戻せません)")) return;
+            try { await deleteDoc(doc(db, "items", id)); }
+            catch(e) { alert("削除失敗: " + e.message); }
+        };
+
+        // 編集モーダルを開く
+        window.setupEditModal = (id) => {
+            const item = itemsCache[id];
+            if(!item) return;
+
+            document.getElementById('editDocId').value = id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editPrice').value = item.price;
+            document.getElementById('editDesc').value = item.description || "";
+            document.getElementById('editRecommended').checked = item.isRecommended || false;
+            document.getElementById('editImage').value = ""; // ファイル選択リセット
+            
+            // 現在の画像表示
+            const preview = document.getElementById('currentImagePreview');
+            preview.innerHTML = item.imageUrl 
+                ? `現在の画像: <a href="${item.imageUrl}" target="_blank" style="color:#007bff;">確認する</a>` 
+                : "現在の画像: なし";
+
+            // トッピング一覧を展開
+            const container = document.getElementById('editToppingsContainer');
+            container.innerHTML = "";
+            if(item.allowedToppings) {
+                item.allowedToppings.forEach(t => window.addToppingInput('editToppingsContainer', t));
+            } else {
+                // トッピングがない場合でも空欄は出さない（追加ボタンで出してもらう）
+            }
+
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        // ==========================================
+        //  内部ヘルパー関数
+        // ==========================================
+
+        // コンテナ内のトッピング入力値を取得
+        function getToppingsFromContainer(containerId) {
+            const inputs = document.querySelectorAll(`#${containerId} .topping-input`);
+            const list = [];
+            inputs.forEach(input => {
+                const val = input.value.trim();
+                if(val) list.push(val);
+            });
+            return list;
+        }
+
+        // 画像アップロード処理
+        async function uploadImage(file) {
+            if (!file) return null;
+            // ユニークなファイル名生成 (店舗ID/タイムスタンプ_ファイル名)
+            const fileName = `product_images/${currentStoreId}/${Date.now()}_${file.name}`;
+            const storageRef = ref(storage, fileName);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+        }
+
+        // ==========================================
+        //  1. 認証 & ログインフロー
         // ==========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("Google Auth Success:", user.email);
-                userEmailDisplay.textContent = user.email;
-                googleSection.style.display = 'none';
-                storeLoginSection.style.display = 'flex';
+                // Google認証済み
+                document.getElementById('userEmailDisplay').textContent = user.email;
+                document.getElementById('google-auth-section').style.display = 'none';
+                document.getElementById('store-login-section').style.display = 'flex';
             } else {
-                dashboardSection.style.display = 'none';
-                storeLoginSection.style.display = 'none';
-                googleSection.style.display = 'flex';
+                // 未認証
+                document.getElementById('dashboard-section').style.display = 'none';
+                document.getElementById('store-login-section').style.display = 'none';
+                document.getElementById('google-auth-section').style.display = 'flex';
             }
         });
 
-        googleLoginBtn.addEventListener('click', async () => {
-            const provider = new GoogleAuthProvider();
+        // Googleログインボタン
+        document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+            try { 
+                await signInWithPopup(auth, new GoogleAuthProvider()); 
+            } catch (e) { 
+                document.getElementById('googleAuthError').textContent = "認証エラー: " + e.message; 
+            }
+        });
+
+        // 店舗ログインボタン
+        document.getElementById('storeLoginBtn').addEventListener('click', async () => {
+            const id = document.getElementById('loginId').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            if(!id || !pass) return;
+
             try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                googleAuthError.textContent = "認証エラー: " + error.message;
+                // Firestoreから店舗検索
+                const q = query(collection(db, "stores"), where("loginId", "==", id));
+                const snap = await getDocs(q);
+                
+                if(snap.empty) throw new Error("IDが見つかりません");
+                
+                const storeDoc = snap.docs[0];
+                const data = storeDoc.data();
+                
+                // パスワード照合
+                if(String(data.password) !== String(pass)) throw new Error("パスワードが違います");
+
+                // ログイン成功 -> ダッシュボード初期化
+                currentStoreId = storeDoc.id;
+                initDashboard(storeDoc.id, data);
+            } catch(e) {
+                document.getElementById('storeLoginError').textContent = e.message;
             }
         });
 
         // ==========================================
-        //  2. 店舗ログイン
+        //  2. ダッシュボード初期化
         // ==========================================
-        storeLoginBtn.addEventListener('click', async () => {
-            const inputId = loginIdInput.value.trim();
-            const inputPass = passwordInput.value.trim();
-
-            if (!inputId || !inputPass) return;
-
-            storeLoginError.textContent = "確認中...";
+        function initDashboard(storeId, data) {
+            document.getElementById('store-login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
             
-            try {
-                const q = query(collection(db, "stores"), where("loginId", "==", inputId));
-                const querySnapshot = await getDocs(q);
+            document.getElementById('displayStoreName').textContent = data.name;
+            document.getElementById('displayTeamName').textContent = data.teamName;
+            document.getElementById('displayStoreId').textContent = storeId;
 
-                if (querySnapshot.empty) {
-                    storeLoginError.textContent = "IDが見つかりません";
-                    return;
-                }
+            // 各ページへのリンク設定 (storeIdを付与)
+            ['Pos','Kitchen','Presenter','Monitor','Report'].forEach(key => {
+                const fileName = key === 'Report' ? 'sales-report.html' : `${key.toLowerCase()}.html`;
+                document.getElementById(`link${key}`).href = `${fileName}?storeId=${storeId}`;
+            });
 
-                const storeDoc = querySnapshot.docs[0];
-                const storeData = storeDoc.data();
-
-                if (String(storeData.password) === String(inputPass)) {
-                    currentStoreId = storeDoc.id; // Store IDを保存
-                    initDashboard(currentStoreId, storeData);
-                } else {
-                    storeLoginError.textContent = "パスワードが違います";
-                }
-
-            } catch (error) {
-                console.error("Login Error:", error);
-                storeLoginError.textContent = "エラー: " + error.message;
-            }
-        });
-
-        // ==========================================
-        //  3. ダッシュボード初期化
-        // ==========================================
-        function initDashboard(storeId, storeData) {
-            storeLoginSection.style.display = 'none';
-            dashboardSection.style.display = 'block';
-
-            displayStoreName.textContent = storeData.name;
-            displayTeamName.textContent = storeData.teamName;
-            displayStoreId.textContent = storeId;
-
-            // 各ページへのリンク設定
-            links.pos.href = `pos.html?storeId=${storeId}`;
-            links.kitchen.href = `kitchen.html?storeId=${storeId}`;
-            links.presenter.href = `presenter.html?storeId=${storeId}`;
-            links.monitor.href = `monitor.html?storeId=${storeId}`;
-            links.report.href = `sales-report.html?storeId=${storeId}`;
-
+            // 商品一覧の監視開始
             startItemListener(storeId);
         }
 
         // ==========================================
-        //  4. 商品一覧の表示とステータス切り替え
+        //  3. 商品一覧のリアルタイム監視
         // ==========================================
         function startItemListener(storeId) {
             const q = query(collection(db, "items"), where("storeId", "==", storeId));
+            const container = document.getElementById('itemsContainer');
 
             onSnapshot(q, (snapshot) => {
-                itemsContainer.innerHTML = "";
-                if (snapshot.empty) {
-                    itemsContainer.innerHTML = '<div style="padding:20px; text-align:center;">商品がありません。上のフォームから追加してください。</div>';
+                container.innerHTML = "";
+                itemsCache = {}; // キャッシュリセット
+
+                if(snapshot.empty) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center; color:#999;">商品がまだ登録されていません</div>';
                     return;
                 }
 
-                snapshot.forEach((docSnap) => {
+                snapshot.forEach(docSnap => {
                     const item = docSnap.data();
-                    const itemId = docSnap.id;
-                    const isAvailable = item.isAvailable === true;
+                    const id = docSnap.id;
+                    itemsCache[id] = item; // 編集用に保存
 
-                    // 行コンテナ
-                    const rowDiv = document.createElement('div');
-                    rowDiv.className = 'item-row';
-
-                    // 商品情報
-                    const infoDiv = document.createElement('div');
-                    infoDiv.className = 'item-info';
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
                     
-                    const nameDiv = document.createElement('div');
-                    nameDiv.className = 'item-name';
-                    nameDiv.innerHTML = `${item.name} <span style="font-size:0.9rem;">(¥${item.price})</span>`;
-                    
-                    // おすすめバッジ
-                    if (item.isRecommended) {
-                        const recBadge = document.createElement('span');
-                        recBadge.className = 'badge-recommend';
-                        recBadge.textContent = 'おすすめ';
-                        nameDiv.appendChild(recBadge);
-                    }
-                    
-                    infoDiv.appendChild(nameDiv);
+                    // 画像表示
+                    const imgHtml = item.imageUrl 
+                        ? `<img src="${item.imageUrl}" class="item-img">` 
+                        : `<div class="item-img" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:0.7rem;">NO IMAGE</div>`;
 
                     // トッピング表示
-                    if (item.allowedToppings && item.allowedToppings.length > 0) {
-                        const toppingsDiv = document.createElement('div');
-                        toppingsDiv.className = 'item-toppings';
-                        toppingsDiv.textContent = 'トッピング: ' + item.allowedToppings.join(', ');
-                        infoDiv.appendChild(toppingsDiv);
-                    }
+                    const toppingTxt = (item.allowedToppings && item.allowedToppings.length) 
+                        ? `OP: ${item.allowedToppings.join(', ')}` : "";
 
-                    // コントロール
-                    const controlsDiv = document.createElement('div');
-                    controlsDiv.className = 'status-controls';
-
-                    const badgeSpan = document.createElement('span');
-                    badgeSpan.className = `status-badge ${isAvailable ? 'status-available' : 'status-soldout'}`;
-                    badgeSpan.textContent = isAvailable ? '販売中' : '売切';
-
-                    const toggleBtn = document.createElement('button');
-                    toggleBtn.className = `toggle-btn ${isAvailable ? 'btn-to-soldout' : 'btn-to-available'}`;
-                    toggleBtn.textContent = isAvailable ? '売切にする' : '販売再開';
-                    
-                    toggleBtn.onclick = async () => {
-                        try {
-                            const itemRef = doc(db, "items", itemId);
-                            await updateDoc(itemRef, { isAvailable: !isAvailable });
-                        } catch (err) {
-                            alert("更新失敗: " + err.message);
-                        }
-                    };
-
-                    controlsDiv.appendChild(badgeSpan);
-                    controlsDiv.appendChild(toggleBtn);
-
-                    rowDiv.appendChild(infoDiv);
-                    rowDiv.appendChild(controlsDiv);
-
-                    itemsContainer.appendChild(rowDiv);
+                    div.innerHTML = `
+                        ${imgHtml}
+                        <div class="item-info">
+                            <div class="item-name">
+                                ${item.name} <span style="font-size:0.9rem; color:#666;">(¥${item.price})</span>
+                                ${item.isRecommended ? '<span class="badge-recommend">おすすめ</span>' : ''}
+                            </div>
+                            <div class="item-desc">${item.description || ""}</div>
+                            <div style="font-size:0.8rem; color:#888; margin-top:2px;">${toppingTxt}</div>
+                            <div style="margin-top:6px;">
+                                <span style="background:${item.isAvailable?'#d4edda':'#f8d7da'}; color:${item.isAvailable?'#155724':'#721c24'}; padding:3px 10px; border-radius:12px; font-size:0.8rem; font-weight:bold;">
+                                    ${item.isAvailable ? '● 販売中' : '× 売切'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn ${item.isAvailable ? 'btn-secondary' : 'btn-update'}" onclick="window.toggleStatus('${id}', ${!item.isAvailable})">
+                                ${item.isAvailable ? '売切にする' : '販売再開'}
+                            </button>
+                            <button class="action-btn btn-primary" onclick="window.setupEditModal('${id}')">編集</button>
+                            <button class="action-btn btn-danger" onclick="window.deleteItem('${id}')">削除</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
                 });
             });
         }
 
         // ==========================================
-        //  5. 商品の追加処理 (Add Item)
+        //  4. 商品登録処理
         // ==========================================
-        addItemBtn.addEventListener('click', async () => {
-            const name = newItemName.value.trim();
-            const priceStr = newItemPrice.value.trim();
-            const toppingsStr = newItemToppings.value.trim();
-            const isRecommended = newItemRecommended.checked;
+        document.getElementById('addItemBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('addItemBtn');
+            const name = document.getElementById('addName').value.trim();
+            const price = document.getElementById('addPrice').value;
+            const desc = document.getElementById('addDesc').value.trim();
+            const fileInput = document.getElementById('addImage');
+            const isRec = document.getElementById('addRecommended').checked;
+            
+            if(!name || !price) return alert("商品名と価格は必須です");
 
-            if (!name || !priceStr) {
-                alert("商品名と価格は必須です");
-                return;
-            }
-
-            if (!currentStoreId) {
-                alert("店舗IDが不明です。再ログインしてください。");
-                return;
-            }
-
-            // トッピング文字列を配列に変換 ("A, B, C" -> ["A", "B", "C"])
-            let toppingsArray = [];
-            if (toppingsStr) {
-                toppingsArray = toppingsStr.split(',')
-                    .map(t => t.trim())
-                    .filter(t => t.length > 0);
-            }
-
-            addItemBtn.disabled = true;
-            addItemBtn.textContent = "追加中...";
+            btn.disabled = true;
+            btn.textContent = "登録中...";
 
             try {
-                // itemsコレクションに追加
+                let imageUrl = "";
+                if(fileInput.files[0]) {
+                    imageUrl = await uploadImage(fileInput.files[0]);
+                }
+
                 await addDoc(collection(db, "items"), {
-                    name: name,
-                    price: parseInt(priceStr, 10),
                     storeId: currentStoreId,
-                    isAvailable: true, // デフォルトで販売中
-                    isRecommended: isRecommended,
-                    allowedToppings: toppingsArray
+                    name: name,
+                    price: Number(price),
+                    description: desc,
+                    imageUrl: imageUrl,
+                    allowedToppings: getToppingsFromContainer('addToppingsContainer'),
+                    isRecommended: isRec,
+                    isAvailable: true // 初期値は販売中
                 });
 
-                // フォームをクリア
-                newItemName.value = "";
-                newItemPrice.value = "";
-                newItemToppings.value = "";
-                newItemRecommended.checked = false;
-                alert("商品を追加しました！");
+                // フォームクリア
+                document.getElementById('addName').value = "";
+                document.getElementById('addPrice').value = "";
+                document.getElementById('addDesc').value = "";
+                document.getElementById('addImage').value = "";
+                document.getElementById('addToppingsContainer').innerHTML = "";
+                document.getElementById('addRecommended').checked = false;
+                
+                alert("商品を登録しました！");
 
-            } catch (error) {
-                console.error("Add Item Error:", error);
-                alert("追加に失敗しました: " + error.message);
+            } catch(e) {
+                alert("登録エラー: " + e.message);
+                console.error(e);
             } finally {
-                addItemBtn.disabled = false;
-                addItemBtn.textContent = "商品を追加する";
+                btn.disabled = false;
+                btn.textContent = "商品を登録する";
+            }
+        });
+
+        // ==========================================
+        //  5. 商品更新処理
+        // ==========================================
+        document.getElementById('updateItemBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('updateItemBtn');
+            const id = document.getElementById('editDocId').value;
+            const name = document.getElementById('editName').value.trim();
+            const price = document.getElementById('editPrice').value;
+            const desc = document.getElementById('editDesc').value.trim();
+            const fileInput = document.getElementById('editImage');
+            const isRec = document.getElementById('editRecommended').checked;
+
+            if(!name || !price) return alert("商品名と価格は必須です");
+
+            btn.disabled = true;
+            btn.textContent = "更新中...";
+
+            try {
+                const updateData = {
+                    name: name,
+                    price: Number(price),
+                    description: desc,
+                    allowedToppings: getToppingsFromContainer('editToppingsContainer'),
+                    isRecommended: isRec
+                };
+
+                // 新しい画像が選択された場合のみアップロード
+                if(fileInput.files[0]) {
+                    updateData.imageUrl = await uploadImage(fileInput.files[0]);
+                }
+
+                await updateDoc(doc(db, "items", id), updateData);
+                
+                document.getElementById('editModal').style.display = 'none';
+                
+            } catch(e) {
+                alert("更新エラー: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "更新保存";
             }
         });
 

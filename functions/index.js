@@ -15,6 +15,33 @@ exports.getNextReceiptNumber = functions
     const counterRef = db.collection('counters').doc('receipt');
     const ordersRef = db.collection('orders');
 
+    // 注文タイプごとの設定
+    // POS: 100-999 (デフォルト)
+    // SOK: 2000-2999
+    // Mobile: 7000-7999
+    const orderType = data.orderType || 'POS';
+    
+    let minNum, maxNum, fieldName;
+
+    switch (orderType) {
+      case 'SOK':
+        minNum = 2000;
+        maxNum = 2999;
+        fieldName = 'currentNumber_SOK';
+        break;
+      case 'MOBILE':
+        minNum = 7000;
+        maxNum = 7999;
+        fieldName = 'currentNumber_MOBILE';
+        break;
+      case 'POS':
+      default:
+        minNum = 100;
+        maxNum = 999;
+        fieldName = 'currentNumber'; // 既存互換のため POS は currentNumber を使用
+        break;
+    }
+
     try {
       const newNumber = await db.runTransaction(async (transaction) => {
         const counterDoc = await transaction.get(counterRef);
@@ -22,12 +49,20 @@ exports.getNextReceiptNumber = functions
           throw new Error("カウンタードキュメントが存在しません！");
         }
 
-        let nextNumber = counterDoc.data().currentNumber;
+        let nextNumber = counterDoc.data()[fieldName];
         
-        for (let i = 0; i < 900; i++) { // 安全装置: 900回試行
+        // 初回などでフィールドがない、または範囲外の場合は初期値をセット
+        if (!nextNumber || nextNumber < minNum || nextNumber > maxNum) {
+          nextNumber = minNum - 1; 
+        }
+
+        // 安全装置: 範囲のサイズ分試行 (例: 900回)
+        const rangeSize = maxNum - minNum + 1;
+
+        for (let i = 0; i < rangeSize; i++) {
           nextNumber++;
-          if (nextNumber > 999) {
-            nextNumber = 100;
+          if (nextNumber > maxNum) {
+            nextNumber = minNum;
           }
 
           // 【修正点】完了済みの全ステータスを指定する
@@ -46,12 +81,12 @@ exports.getNextReceiptNumber = functions
           const snapshot = await transaction.get(query);
 
           if (snapshot.empty) {
-            transaction.update(counterRef, { currentNumber: nextNumber });
+            transaction.update(counterRef, { [fieldName]: nextNumber });
             return nextNumber;
           }
         }
 
-        throw new Error("利用可能な受付番号がありません。");
+        throw new Error(`利用可能な受付番号がありません (${orderType})。`);
       });
 
       return { receiptNumber: newNumber };

@@ -1217,7 +1217,7 @@
             functions,
             "getNextReceiptNumber"
           );
-          const result = await getNextReceiptNumber();
+          const result = await getNextReceiptNumber({ orderType: 'POS' });
           const receiptNumber = result.data.receiptNumber;
 
           const orderData = {

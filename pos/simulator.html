@@ -235,7 +235,11 @@
             functions,
             "getNextReceiptNumber"
           );
-          const result = await getNextReceiptNumber({ storeId: storeId });
+          const orderTypeParam = type === "mobile" ? "MOBILE" : "SOK";
+          const result = await getNextReceiptNumber({ 
+            storeId: storeId, 
+            orderType: orderTypeParam 
+          });
           const receiptNumber = result.data.receiptNumber;
 
           const orderData = createOrderData(type, storeId, receiptNumber);

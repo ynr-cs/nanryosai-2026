@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | 南陵祭2026</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #f0f2f5;
+        --card-bg: #ffffff;
+        --text-color: #1f2937;
+        --text-secondary: #6b7280;
+        --accent-color: #10b981; /* Emerald 500 */
+        --accent-hover: #059669;
+        --danger-color: #ef4444;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --header-bg: #111827;
+        
+        /* Status Colors */
+        --status-unpaid: #ef4444; /* Red */
+        --status-preparing: #f59e0b; /* Amber */
+        --status-ready: #10b981; /* Emerald */
+        --status-completed: #6b7280; /* Gray */
+        --status-canceled: #1f2937; /* Dark */
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", "Noto Sans JP", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* --- Top Bar --- */
+      .top-bar {
+        height: 60px;
+        background: var(--header-bg);
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 50;
+      }
+      .brand {
+        font-weight: 800;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: -0.025em;
+      }
+      .store-badge {
+          background: rgba(255,255,255,0.1);
+          padding: 4px 10px;
+          border-radius: 999px;
+          font-size: 0.8em;
+          font-weight: 600;
+      }
+      .user-info {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .logout-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+      }
+      .logout-btn:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: #fff;
+      }
+
+      /* --- App Layout --- */
+      .app-container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      /* Sidebar (Filters) */
+      .sidebar {
+        width: 280px;
+        background: #fff;
+        border-right: 1px solid #e5e7eb;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        z-index: 40;
+      }
+      
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .filter-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .input-wrapper {
+          position: relative;
+      }
+      .search-input {
+          width: 100%;
+          padding: 12px;
+          padding-left: 36px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          transition: border-color 0.2s;
+      }
+      .search-input:focus {
+          outline: none;
+          border-color: var(--accent-color);
+          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+      }
+      .search-icon {
+          position: absolute;
+          left: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #9ca3af;
+      }
+      
+      .date-picker {
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-family: inherit;
+      }
+
+      .btn-primary {
+          background: var(--accent-color);
+          color: white;
+          border: none;
+          padding: 12px;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s;
+      }
+      .btn-primary:active { transform: translateY(1px); }
+      .btn-primary:hover { background: var(--accent-hover); }
+
+      /* Filter Tabs in Sidebar */
+      .filter-tabs {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+      }
+      .filter-tab {
+          padding: 10px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 0.9rem;
+          display: flex;
+          justify-content: space-between;
+          color: #4b5563;
+          border: 1px solid transparent;
+          transition: all 0.2s;
+      }
+      .filter-tab:hover { background: #f3f4f6; }
+      .filter-tab.active {
+          background: #ecfdf5;
+          color: var(--accent-color);
+          border-color: #d1fae5;
+      }
+      .filter-count {
+          background: #e5e7eb;
+          color: #6b7280;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 0.8rem;
+      }
+      .filter-tab.active .filter-count {
+          background: #d1fae5;
+          color: var(--accent-color);
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 24px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Summary Cards */
+      .summary-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        flex: 1;
+        min-width: 220px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s;
+      }
+      
+      .card-title {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .card-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--text-color);
+        letter-spacing: -0.02em;
+      }
+      .card-value.money {
+        color: var(--accent-color);
+      }
+
+      /* Charts & Tables Area */
+      .dashboard-row {
+        display: flex;
+        gap: 24px;
+        min-height: 420px;
+      }
+      .panel-container {
+        flex: 1;
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      
+      .section-header {
+          font-size: 1.1rem;
+          font-weight: 700;
+          margin-bottom: 20px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #f3f4f6;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: var(--text-color);
+      }
+
+      /* Table Styles */
+      .data-table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        position: relative;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      th, td {
+        text-align: left;
+        padding: 14px 16px;
+        border-bottom: 1px solid #f3f4f6;
+      }
+      th {
+        background-color: #f9fafb;
+        font-weight: 600;
+        color: var(--text-secondary);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        white-space: nowrap;
+      }
+      tr.row-clickable {
+          cursor: pointer;
+          transition: background 0.1s;
+      }
+      tr.row-clickable:hover {
+        background-color: #f9fafb;
+      }
+      .text-right { text-align: right; }
+      .text-center { text-align: center; }
+      
+      /* Status Badges */
+      .badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+      }
+      .status-unpaid { background: #fee2e2; color: #991b1b; }
+      .status-preparing { background: #fef3c7; color: #92400e; }
+      .status-ready { background: #d1fae5; color: #065f46; }
+      .status-completed { background: #f3f4f6; color: #4b5563; }
+      .status-canceled { background: #1f2937; color: #fff; text-decoration: line-through; }
+
+      /* --- Login / Auth Overlay (Enhanced) --- */
+      .auth-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f3f4f6;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .auth-card {
+        background: white;
+        padding: 48px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 420px;
+      }
+      .auth-title {
+          font-size: 1.8rem;
+          font-weight: 800;
+          margin-bottom: 8px;
+          color: #111827;
+      }
+      .auth-desc {
+          font-size: 1rem;
+          color: #6b7280;
+          margin-bottom: 32px;
+      }
+      .btn-auth {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn-google {
+        background: white;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        margin-bottom: 24px;
+      }
+      .btn-google:hover { background: #f9fafb; border-color: #9ca3af; }
+      .btn-store {
+          background: #111827;
+          color: white;
+          margin-top: 24px;
+      }
+      .btn-store:hover { background: #000; }
+      
+      .input-field {
+          width: 100%;
+          padding: 14px;
+          margin: 8px 0;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 1rem;
+          background: #f9fafb;
+      }
+      .input-field:focus {
+          background: #fff;
+          outline: none;
+          border-color: #111827;
+      }
+      .error-msg {
+          color: var(--danger-color);
+          margin-top: 16px;
+          font-size: 0.9rem;
+          font-weight: 600;
+      }
+      
+      /* --- Modal for Order Edit --- */
+      .modal-overlay {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: rgba(0,0,0,0.6);
+          display: none;
+          justify-content: center;
+          align-items: center;
+          z-index: 2000;
+          backdrop-filter: blur(4px);
+      }
+      .modal-content {
+          background: white;
+          padding: 32px;
+          border-radius: 16px;
+          width: 90%;
+          max-width: 650px;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+          max-height: 90vh;
+          overflow-y: auto;
+      }
+      .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #e5e7eb;
+          padding-bottom: 16px;
+          margin-bottom: 24px;
+      }
+      .modal-title { font-size: 1.5rem; font-weight: 800; }
+      .modal-close {
+          background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280;
+      }
+      .order-detail-list {
+          margin-bottom: 24px;
+          background: #f9fafb;
+          padding: 16px;
+          border-radius: 8px;
+          max-height: 300px; /* Scroll if huge */
+          overflow-y: auto;
+      }
+      
+      /* Editable Items */
+      .edit-item-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border-bottom: 1px dashed #e5e7eb;
+      }
+      .edit-item-row:last-child { border-bottom: none; }
+      .edit-item-name { flex: 1; font-weight: 600; }
+      .edit-qty-ctrl {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: white;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          padding: 2px 6px;
+      }
+      .qty-btn {
+          background: none; border: none; font-weight: bold; cursor: pointer; font-size: 1.2rem;
+          color: #4b5563;
+          width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+      }
+      .qty-btn:hover { color: var(--accent-color); }
+      .qty-btn.del { color: #ef4444; }
+      .qty-val { font-weight: bold; min-width: 20px; text-align: center; }
+      .edit-item-price { width: 80px; text-align: right; font-weight: 500; font-family: monospace; }
+      
+      .status-select {
+          width: 100%;
+          padding: 12px;
+          border-radius: 8px;
+          border: 2px solid #e5e7eb;
+          font-size: 1rem;
+          font-weight: bold;
+          margin-bottom: 24px;
+      }
+      .modal-actions {
+          display: flex;
+          gap: 12px;
+          justify-content: flex-end;
+      }
+      .save-btn {
+          background: var(--accent-color); color: white; width: auto; padding: 12px 32px;
+      }
+      .save-btn:hover { background: var(--accent-hover); }
+    </style>
+  </head>
+  <body>
+
+    <!-- Auth Overlay -->
+    <div id="auth-overlay" class="auth-overlay">
+        <!-- Google Login Step -->
+        <div id="step-google" class="auth-card">
+            <h1 class="auth-title">Nanryosai Dashboard</h1>
+            <p class="auth-desc">管理者・スタッフ専用アクセス</p>
+            <button id="btn-google-login" class="btn-auth btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="G">
+                Googleでログイン
+            </button>
+            <p id="google-error" class="error-msg"></p>
+        </div>
+
+        <!-- Store Login Step -->
+        <div id="step-store" class="auth-card" style="display:none;">
+            <h1 class="auth-title">店舗認証</h1>
+            <p class="auth-desc">対象の店舗IDを入力してください</p>
+            
+            <input type="text" id="store-id-input" class="input-field" placeholder="店舗ID (例: 101)" value="">
+            <input type="password" id="store-pass-input" class="input-field" placeholder="店舗パスワード">
+            
+            <button id="btn-store-login" class="btn-auth btn-store">ダッシュボードへ移動</button>
+            <button id="btn-back-google" style="margin-top:16px; background:none; border:none; color:#6b7280; cursor:pointer;" class="btn-text">アカウントを切り替える</button>
+            <p id="store-error" class="error-msg"></p>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" style="display:none; flex-direction:column; height:100%;">
+        <div class="top-bar">
+            <div class="brand">
+                <span>⚡ Nanryosai Admin</span>
+                <span id="header-store-id" class="store-badge">---</span>
+            </div>
+            <div class="user-info">
+                <span id="user-email" style="font-weight:500;">---</span>
+                <button class="logout-btn" onclick="logout()">サインアウト</button>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="filter-group">
+                    <label class="filter-label">注文検索</label>
+                    <div class="input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" class="search-input" placeholder="レシート番号 No...">
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">ステータスフィルタ</label>
+                    <div class="filter-tabs" id="filter-container">
+                        <div class="filter-tab active" onclick="setFilter('all')">
+                            <span>すべて</span>
+                            <span class="filter-count" id="count-all">0</span>
+                        </div>
+                        <div class="filter-tab" onclick="setFilter('unpaid')">
+                            <span>未払い (Unpaid)</span>
+                            <span class="filter-count" id="count-unpaid">0</span>
+                        </div>
+                        <div class="filter-tab" onclick="setFilter('active')">
+                            <span>調理/呼出中 (Active)</span>
+                            <span class="filter-count" id="count-active">0</span>
+                        </div>
+                        <div class="filter-tab" onclick="setFilter('completed')">
+                            <span>受取済 (Completed)</span>
+                            <span class="filter-count" id="count-completed">0</span>
+                        </div>
+                        <div class="filter-tab" onclick="setFilter('canceled')">
+                            <span>取消 (Canceled)</span>
+                            <span class="filter-count" id="count-canceled">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group" style="margin-top: auto;">
+                    <label class="filter-label">対象日</label>
+                    <input type="date" id="date-picker" class="date-picker">
+                    <button class="btn-primary" style="margin-top:8px;" onclick="refreshData()">データを更新</button>
+                </div>
+                
+                <div style="font-size:0.8rem; color:#9ca3af; margin-top:20px;">
+                    Real-time connection active<br>
+                    v1.2.0 Dashboard
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="main-content">
+                <!-- Summary Cards -->
+                <div class="summary-row">
+                    <div class="card">
+                        <div class="card-title">本日の売上 (完了ベース)</div>
+                        <div class="card-value money" id="val-total-sales">¥0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">総注文数 (完了ベース)</div>
+                        <div class="card-value" id="val-order-count">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">客単価</div>
+                        <div class="card-value" id="val-avg-sales">¥0</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-row">
+                    <!-- Recent Transactions & Order Management -->
+                    <div class="panel-container" style="flex:2;">
+                        <div class="section-header">
+                            <span>📋 注文リスト</span>
+                            <span style="font-size:0.8rem; color:#6b7280; font-weight:normal;" id="order-list-count">0件表示</span>
+                        </div>
+                        <div class="data-table-wrapper">
+                            <table id="transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:100px;">時刻</th>
+                                        <th style="width:120px;">Receipt #</th>
+                                        <th>商品内容</th>
+                                        <th style="width:120px;">ステータス</th>
+                                        <th class="text-right" style="width:100px;">金額</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Breakdown & Chart -->
+                    <div class="panel-container" style="flex:1; display:flex; flex-direction:column;">
+                        <div class="section-header">📈 商品別売上</div>
+                        <div style="flex:1; position: relative; height:200px; margin-bottom:20px;">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                        <div class="data-table-wrapper" style="max-height: 200px;">
+                             <table id="product-table">
+                                <thead>
+                                    <tr>
+                                        <th>商品名</th>
+                                        <th class="text-right">Qty</th>
+                                        <th class="text-right">¥</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">注文詳細 / 修正</div>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <div style="margin-bottom:10px; font-weight:bold; font-size:1.2rem;">
+                Receipt: <span id="modal-receipt-no">---</span>
+            </div>
+            
+            <label style="display:block; margin-bottom:8px; font-weight:bold; color:#4b5563;">注文商品の編集</label>
+            <div id="modal-item-list" class="order-detail-list">
+                <!-- Editable Items -->
+            </div>
+            
+            <label style="display:block; margin-bottom:8px; font-weight:bold; color:#4b5563;">ステータス変更</label>
+            <select id="modal-status-select" class="status-select">
+                <option value="unpaid_at_pos">🔴 POS未払い (Unpaid / Preparing)</option>
+                <option value="ready_to_serve">🟠 配膳待 (Kitchen Done)</option>
+                <option value="ready_for_pickup">🟢 呼出中 (Ready)</option>
+                <option value="completed_at_store">⚫️ 受取完了 (Completed)</option>
+                <option value="cancelled">🚫 キャンセル (Canceled)</option>
+            </select>
+            
+            <div class="modal-actions">
+                <button class="btn-auth" style="background:#e5e7eb; color:#374151; width:auto; padding:12px 24px;" onclick="closeEditModal()">閉じる</button>
+                <button class="btn-auth save-btn" onclick="saveOrderStatus()">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        onAuthStateChanged,
+        signOut
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        orderBy,
+        onSnapshot,
+        getDoc,
+        doc,
+        updateDoc,
+        Timestamp
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do",
+        authDomain: "nanryosai-2026-a4091.firebaseapp.com",
+        projectId: "nanryosai-2026-a4091",
+        storageBucket: "nanryosai-2026-a4091.appspot.com",
+        messagingSenderId: "93228414556",
+        appId: "1:93228414556:web:f64f90c13849fae9049899",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      // --- State ---
+      let currentStoreId = null;
+      let unsubscribeOrders = null;
+      let ordersData = [];
+      let salesChart = null;
+      
+      let currentFilter = 'all'; // all, unpaid, active, completed, canceled
+      
+      let selectedOrderId = null; // For editing status/reference
+      let editingItems = []; // Templary array for modal editing
+
+      // --- Elements ---
+      const authOverlay = document.getElementById('auth-overlay');
+      const stepGoogle = document.getElementById('step-google');
+      const stepStore = document.getElementById('step-store');
+      const appDiv = document.getElementById('app');
+      
+      const datePicker = document.getElementById('date-picker');
+      const searchInput = document.getElementById('search-input');
+      const editModal = document.getElementById('edit-modal');
+      
+      // Default date to today
+      datePicker.valueAsDate = new Date();
+
+      // --- Auth Logic ---
+      
+      document.getElementById('btn-google-login').onclick = async () => {
+          try {
+              await signInWithPopup(auth, new GoogleAuthProvider());
+          } catch(e) {
+              document.getElementById('google-error').innerText = e.message;
+          }
+      };
+
+      onAuthStateChanged(auth, (user) => {
+          if (user) {
+              stepGoogle.style.display = 'none';
+              stepStore.style.display = 'block';
+              document.getElementById('user-email').innerText = user.email;
+              
+              const urlSearch = new URLSearchParams(window.location.search);
+              const paramStoreId = urlSearch.get('storeId');
+              if (paramStoreId) document.getElementById('store-id-input').value = paramStoreId;
+              
+              const cachedId = localStorage.getItem('nanryosai_store_id');
+              if(cachedId) document.getElementById('store-id-input').value = cachedId;
+              
+          } else {
+              stepGoogle.style.display = 'block';
+              stepStore.style.display = 'none';
+              authOverlay.style.display = 'flex';
+              appDiv.style.display = 'none';
+              if(unsubscribeOrders) unsubscribeOrders();
+          }
+      });
+      
+      window.logout = () => signOut(auth);
+      document.getElementById('btn-back-google').onclick = () => logout();
+
+      document.getElementById('btn-store-login').onclick = async () => {
+          const idInput = document.getElementById('store-id-input');
+          const passInput = document.getElementById('store-pass-input');
+          const errorMsg = document.getElementById('store-error');
+          
+          errorMsg.innerText = "";
+          const storeId = idInput.value.trim();
+          const passport = passInput.value.trim();
+          
+          if (!storeId || !passport) {
+              errorMsg.innerText = "Please enter Store ID and Password.";
+              return;
+          }
+          
+          try {
+              const snap = await getDoc(doc(db, "stores", storeId));
+              if (!snap.exists() || String(snap.data().password) !== String(passport)) {
+                  errorMsg.innerText = "Invalid ID or Password.";
+                  return;
+              }
+              currentStoreId = storeId;
+              localStorage.setItem('nanryosai_store_id', storeId);
+              startDashboard();
+          } catch(e) {
+              console.error(e);
+              errorMsg.innerText = "System Error: " + e.message;
+          }
+      };
+
+      // --- Dashboard Logic ---
+
+      function startDashboard() {
+          authOverlay.style.display = 'none';
+          appDiv.style.display = 'flex';
+          document.getElementById('header-store-id').innerText = `ID: ${currentStoreId}`;
+          refreshData();
+      }
+
+      window.refreshData = () => {
+          if(!currentStoreId) return;
+          
+          const dateVal = datePicker.value;
+          if(!dateVal) return;
+          
+          const startDate = new Date(dateVal); startDate.setHours(0,0,0,0);
+          const endDate = new Date(dateVal); endDate.setHours(23,59,59,999);
+          
+          const q = query(
+              collection(db, "orders"),
+              where("storeId", "==", currentStoreId),
+              where("createdAt", ">=", Timestamp.fromDate(startDate)),
+              where("createdAt", "<=", Timestamp.fromDate(endDate)),
+              orderBy("createdAt", "desc")
+          );
+          
+          if(unsubscribeOrders) unsubscribeOrders();
+          
+          document.getElementById('transaction-table').querySelector('tbody').innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+          
+          unsubscribeOrders = onSnapshot(q, (snapshot) => {
+              ordersData = [];
+              snapshot.forEach(doc => ordersData.push({ id: doc.id, ...doc.data() }));
+              renderAll();
+          });
+      };
+      
+      window.setFilter = (filter) => {
+          currentFilter = filter;
+          // Update tabs UI
+          const tabs = document.querySelectorAll('.filter-tab');
+          tabs.forEach(tab => tab.classList.remove('active'));
+          // Find the tab that called this (approximated by index or attributes, but here manual selection is easier or just query selector by text content implies strictness)
+          // Let's iterate tabs and match the onclick attribute or just add IDs next time.
+          // For now, simpler: re-render all? No, just classes.
+          // Simpler approach:
+          const map = { 'all':0, 'unpaid':1, 'active':2, 'completed':3, 'canceled':4 };
+          if(tabs[map[filter]]) tabs[map[filter]].classList.add('active');
+          
+          renderAll();
+      }
+      
+      searchInput.addEventListener('input', () => {
+          renderAll();
+      });
+
+      function renderAll() {
+          updateCounts();
+          renderSummary();
+          renderTransactionTable();
+          renderProductTableAndChart();
+      }
+      
+      function updateCounts() {
+          const counts = { all: 0, unpaid: 0, active: 0, completed: 0, canceled: 0 };
+          ordersData.forEach(o => {
+              counts.all++;
+              if(o.status === 'unpaid_at_pos') counts.unpaid++;
+              else if(o.status === 'ready_to_serve' || o.status === 'ready_for_pickup' || o.status === 'preparing') counts.active++;
+              else if(o.status === 'completed_at_store' || o.status === 'completed_online' || o.status === 'completed') counts.completed++;
+              else if(o.status === 'cancelled' || o.status === 'canceled') counts.canceled++;
+          });
+          
+          document.getElementById('count-all').innerText = counts.all;
+          document.getElementById('count-unpaid').innerText = counts.unpaid;
+          document.getElementById('count-active').innerText = counts.active;
+          document.getElementById('count-completed').innerText = counts.completed;
+          document.getElementById('count-canceled').innerText = counts.canceled;
+      }
+      
+      function renderSummary() {
+          let total = 0;
+          let count = 0;
+          ordersData.forEach(o => {
+              // Paid = Valid orders (excluding cancelled)
+              if(o.status !== 'cancelled' && o.status !== 'canceled') {
+                  count++;
+                  if(o.items) o.items.forEach(i => total += (i.price * i.quantity));
+              }
+          });
+          
+          document.getElementById('val-total-sales').innerText = '¥' + total.toLocaleString();
+          document.getElementById('val-order-count').innerText = count;
+          document.getElementById('val-avg-sales').innerText = '¥' + (count ? Math.round(total / count) : 0).toLocaleString();
+      }
+      
+      function renderTransactionTable() {
+          const tbody = document.getElementById('transaction-table').querySelector('tbody');
+          tbody.innerHTML = '';
+          
+          const queryText = searchInput.value.trim();
+          
+          // Filter logic
+          let displayData = ordersData.filter(o => {
+              // 1. Search Query
+              let matchesQuery = true;
+              if (queryText) {
+                  const receiptMatch = String(o.receiptNumber).includes(queryText);
+                  const itemMatch = o.items && o.items.some(i => i.name.includes(queryText));
+                  if (!receiptMatch && !itemMatch) matchesQuery = false;
+              }
+              if (!matchesQuery) return false;
+              
+              // 2. Status Filter
+              if (currentFilter === 'all') return true;
+              if (currentFilter === 'unpaid' && o.status === 'unpaid_at_pos') return true;
+              if (currentFilter === 'active' && (o.status === 'ready_to_serve' || o.status === 'ready_for_pickup' || o.status === 'preparing' || o.status === 'cooking')) return true;
+              if (currentFilter === 'completed' && (o.status === 'completed_at_store' || o.status === 'completed_online' || o.status === 'completed')) return true;
+              if (currentFilter === 'canceled' && (o.status === 'cancelled' || o.status === 'canceled')) return true;
+              
+              return false;
+          });
+          
+          document.getElementById('order-list-count').innerText = `${displayData.length} 件`;
+          
+          if(displayData.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#999;">該当する注文はありません</td></tr>';
+              return;
+          }
+          
+          displayData.forEach(order => {
+              const tr = document.createElement('tr');
+              tr.className = "row-clickable";
+              tr.onclick = () => openEditModal(order.id);
+              
+              const date = order.createdAt ? order.createdAt.toDate() : new Date();
+              const timeStr = date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+              
+              let total = 0;
+              let summary = "";
+              if(order.items) {
+                  order.items.forEach(i => total += (i.price * i.quantity));
+                  summary = order.items.map(i => `${i.name}×${i.quantity}`).join(', ');
+              }
+              if(summary.length > 20) summary = summary.substring(0, 20) + "...";
+              
+              tr.innerHTML = `
+                  <td>${timeStr}</td>
+                  <td style="font-weight:bold;">${order.receiptNumber || '---'}</td>
+                  <td style="color:#4b5563; font-size:0.9em;">${summary}</td>
+                  <td>${getStatusBadge(order.status)}</td>
+                  <td class="text-right">¥${total.toLocaleString()}</td>
+              `;
+              tbody.appendChild(tr);
+          });
+      }
+      
+      function getStatusBadge(status) {
+          const map = {
+              'unpaid_at_pos': { label: '未払い/調理中', cls: 'status-preparing' },
+              'ready_to_serve': { label: '配膳待', cls: 'status-preparing' },
+              'ready_for_pickup': { label: '呼出中', cls: 'status-ready' },
+              'completed_at_store': { label: '受取済', cls: 'status-completed' },
+              'completed_online': { label: '受取済(Online)', cls: 'status-completed' },
+              'cancelled': { label: '取消', cls: 'status-canceled' }
+          };
+          const info = map[status] || { label: status, cls: 'status-completed' };
+          return `<span class="badge ${info.cls}">${info.label}</span>`;
+      }
+      
+      function renderProductTableAndChart() {
+          const tbody = document.getElementById('product-table').querySelector('tbody');
+          tbody.innerHTML = '';
+          
+          const salesMap = {};
+          
+          ordersData.forEach(o => {
+              if(o.status === 'cancelled' || o.status === 'unpaid_at_pos' || o.status === 'ready_to_serve') return; // Only count completed/ready as sales?? Or count all valid orders? 
+              // Usually sales report includes all VALID orders unless canceled.
+              // But 'unpaid_at_pos' implies not paid yet? 
+              // Actually 'unpaid_at_pos' usually means "Pay at POS" (Cash), so it IS a valid order.
+              // Let's include everything except 'cancelled'.
+              if(o.status === 'cancelled') return;
+
+              if(o.items) {
+                  o.items.forEach(i => {
+                      if(!salesMap[i.name]) salesMap[i.name] = { count: 0, revenue: 0 };
+                      salesMap[i.name].count += i.quantity;
+                      salesMap[i.name].revenue += (i.price * i.quantity);
+                  });
+              }
+          });
+          
+          const sorted = Object.keys(salesMap).map(k => ({ name: k, ...salesMap[k] }))
+                         .sort((a,b) => b.revenue - a.revenue);
+          
+          sorted.forEach(p => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                  <td>${p.name}</td>
+                  <td class="text-right">${p.count}</td>
+                  <td class="text-right">¥${p.revenue.toLocaleString()}</td>
+              `;
+              tbody.appendChild(tr);
+          });
+          
+          // Chart
+          const ctx = document.getElementById('salesChart').getContext('2d');
+          const labels = sorted.slice(0, 5).map(p => p.name);
+          const data = sorted.slice(0, 5).map(p => p.revenue);
+          
+          if(salesChart) salesChart.destroy();
+          salesChart = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      data: data,
+                      backgroundColor: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5']
+                  }]
+              },
+              options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+          });
+      }
+
+      // --- Edit Modal Logic ---
+      window.openEditModal = (orderId) => {
+          selectedOrderId = orderId;
+          const order = ordersData.find(o => o.id === orderId);
+          if(!order) return;
+          
+          document.getElementById('modal-receipt-no').innerText = `#${order.receiptNumber}`;
+          document.getElementById('modal-status-select').value = order.status || 'unpaid_at_pos';
+          
+          // Clone items for editing
+          editingItems = order.items ? JSON.parse(JSON.stringify(order.items)) : [];
+          
+          renderEditItems();
+          editModal.style.display = 'flex';
+      };
+      
+      window.closeEditModal = () => {
+          editModal.style.display = 'none';
+          selectedOrderId = null;
+          editingItems = [];
+      };
+      
+      window.renderEditItems = () => {
+          const listDiv = document.getElementById('modal-item-list');
+          listDiv.innerHTML = "";
+          
+          let total = 0;
+          
+          editingItems.forEach((item, index) => {
+              const itemTotal = item.price * item.quantity;
+              total += itemTotal;
+              
+              const div = document.createElement('div');
+              div.className = "edit-item-row";
+              
+              div.innerHTML = `
+                  <div class="edit-item-name">${item.name}</div>
+                  <div class="edit-qty-ctrl">
+                      <button class="qty-btn ${item.quantity === 0 ? 'del':''}" onclick="changeItemQty(${index}, -1)">
+                          ${item.quantity <= 1 ? '🗑' : '-'}
+                      </button>
+                      <span class="qty-val">${item.quantity}</span>
+                      <button class="qty-btn" onclick="changeItemQty(${index}, 1)">+</button>
+                  </div>
+                  <div class="edit-item-price">¥${itemTotal.toLocaleString()}</div>
+              `;
+              listDiv.appendChild(div);
+          });
+          
+          // Total
+          const totalDiv = document.createElement('div');
+          totalDiv.style.borderTop = "2px solid #e5e7eb";
+          totalDiv.style.marginTop = "12px";
+          totalDiv.style.paddingTop = "12px";
+          totalDiv.style.fontWeight = "800";
+          totalDiv.style.fontSize = "1.2rem";
+          totalDiv.style.textAlign = "right";
+          
+          totalDiv.innerText = `合計: ¥${total.toLocaleString()}`;
+          listDiv.appendChild(totalDiv);
+      };
+      
+      window.changeItemQty = (index, delta) => {
+          const item = editingItems[index];
+          if(!item) return;
+          
+          const newQty = item.quantity + delta;
+          if (newQty < 0) return; // Min 0
+          
+          item.quantity = newQty;
+          renderEditItems();
+      };
+      
+      window.saveOrderStatus = async () => {
+          if(!selectedOrderId) return;
+          const newStatus = document.getElementById('modal-status-select').value;
+          
+          // Filter out 0 quantity items
+          const validItems = editingItems.filter(i => i.quantity > 0);
+          
+          if(validItems.length === 0 && newStatus !== 'cancelled') {
+              if(!confirm("全ての商品が削除されています。注文を「取消 (Canceled)」にしますか？")) return;
+          }
+          
+          try {
+              const updates = {
+                  status: newStatus,
+                  items: validItems
+              };
+              
+              // If empty, force cancel
+              if (validItems.length === 0) updates.status = 'cancelled';
+              
+              await updateDoc(doc(db, "orders", selectedOrderId), updates);
+              
+              closeEditModal();
+              // UI auto-updates
+          } catch(e) {
+              console.error(e);
+              alert("更新エラー: " + e.message);
+          }
+      };
+
+    </script>
+  </body>
+</html>

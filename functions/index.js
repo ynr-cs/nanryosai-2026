@@ -1,6 +1,8 @@
 // Last updated: 2025-12-10 22:08
 const functions = require("firebase-functions/v1");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
+const { getMessaging } = require("firebase-admin/messaging");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -329,6 +331,36 @@ exports.createOnlineOrder = functions
     }
   });
 
+// 1. cryptoモジュールの読み込み
+const crypto = require("crypto");
+
+/**
+ * パスワードをハッシュ化するユーティリティ関数
+ * @param {string} password - 平文のパスワード
+ * @returns {object} { derivedKey, salt } - ハッシュ化されたパスワードとソルト (ともにHex文字列)
+ */
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const derivedKey = crypto
+    .pbkdf2Sync(password, salt, 10000, 64, "sha512")
+    .toString("hex");
+  return { derivedKey, salt };
+}
+
+/**
+ * パスワードを検証するユーティリティ関数
+ * @param {string} password - 入力された平文パスワード
+ * @param {string} originalHash - 保存されているハッシュ (Hex)
+ * @param {string} salt - 保存されているソルト (Hex)
+ * @returns {boolean} 一致すれば true
+ */
+function verifyPassword(password, originalHash, salt) {
+  const derivedKey = crypto
+    .pbkdf2Sync(password, salt, 10000, 64, "sha512")
+    .toString("hex");
+  return derivedKey === originalHash;
+}
+
 /**
  * @name loginStore
  * @description 店舗ログイン処理 (サーバーサイド)
@@ -358,29 +390,39 @@ exports.loginStore = functions
     }
 
     try {
-      // A. まず安全な store_secrets を確認
-      let storedPassword = null;
+      // 2. store_secrets から認証情報を取得
+      // 【セキュリティ強化】stores コレクションへのフォールバックは廃止しました
       const secretDoc = await db.collection("store_secrets").doc(storeId).get();
 
-      if (secretDoc.exists) {
-        storedPassword = secretDoc.data().password;
-      } else {
-        // B. なければ従来の stores を確認 (移行期間用)
-        const storeDoc = await db.collection("stores").doc(storeId).get();
-        if (storeDoc.exists) {
-          storedPassword = storeDoc.data().password;
-        }
-      }
-
-      if (!storedPassword) {
+      if (!secretDoc.exists) {
         throw new functions.https.HttpsError(
           "not-found",
-          "店舗が見つかりません、またはパスワードが設定されていません。"
+          "店舗が見つかりません、または認証情報が設定されていません。"
         );
       }
 
+      const secretData = secretDoc.data();
+
       // 3. パスワード検証
-      if (String(storedPassword) !== String(password)) {
+      let isValid = false;
+
+      // 新方式: ハッシュ化されたパスワードがある場合
+      if (secretData.hash && secretData.salt) {
+        isValid = verifyPassword(password, secretData.hash, secretData.salt);
+      }
+      // 旧方式: 平文パスワードがまだ残っている場合 (移行過渡期用)
+      // ※ データ移行が完了したらこの分岐も削除推奨
+      else if (secretData.password) {
+        isValid = String(secretData.password) === String(password);
+      } else {
+        // パスワード情報が何もない
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "パスワードが設定されていません。"
+        );
+      }
+
+      if (!isValid) {
         throw new functions.https.HttpsError(
           "permission-denied",
           "パスワードが間違っています。"
@@ -598,3 +640,68 @@ exports.createPOSOrder = functions
       throw new functions.https.HttpsError("internal", error.message);
     }
   });
+
+exports.sendOrderUpdateNotification = onDocumentUpdated({
+    document: "orders/{orderId}",
+    region: "asia-northeast1"
+}, async (event) => {
+    const newData = event.data.after.data();
+    const previousData = event.data.before.data();
+    const orderId = event.params.orderId;
+
+    // ステータスが変わっていなければ何もしない
+    if (newData.status === previousData.status) return;
+
+    // ユーザーIDを取得
+    const userId = newData.userId;
+    
+    // ユーザーのFCMトークンをFirestoreから取得
+    const userSnapshot = await db.collection("users").doc(userId).get();
+    const userData = userSnapshot.data();
+    const fcmToken = userData?.fcmToken;
+
+    if (!fcmToken) {
+        console.log(`User ${userId} has no FCM token.`);
+        return;
+    }
+
+    // ステータスに応じたメッセージ内容
+    let title = "";
+    let body = "";
+
+    switch (newData.status) {
+        case "ready_for_pickup":
+            title = "🍳 商品の準備ができました！";
+            body = `ご注文（受付番号: ${newData.receiptNumber}）の準備ができました。提供口までお越しください。`;
+            break;
+            
+        case "cancelled":
+            title = "⚠️ ご注文キャンセルのお知らせ";
+            body = "申し訳ありません。店舗の都合によりご注文がキャンセルされました。";
+            break;
+            
+        default:
+            return; // その他のステータス変更では通知しない
+    }
+
+    // 通知メッセージの構築
+    const message = {
+        notification: {
+            title: title,
+            body: body,
+        },
+        data: {
+            orderId: orderId,
+            url: `/status.html?orderId=${orderId}` 
+        },
+        token: fcmToken
+    };
+
+    // 送信
+    try {
+        await getMessaging().send(message);
+        console.log(`Notification sent to ${userId} for order ${orderId}`);
+    } catch (error) {
+        console.error("Error sending notification:", error);
+    }
+});

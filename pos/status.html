@@ -196,6 +196,14 @@
         getDoc,
       } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
       import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-functions.js";
+      import {
+        getMessaging,
+        onMessage,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging.js";
+      import {
         getAuth,
         onAuthStateChanged,
         signInWithPopup,
@@ -222,6 +230,16 @@
 
       const db = getFirestore(app);
       const auth = getAuth(app);
+      const functions = getFunctions(app, "asia-northeast1"); // Explicit execution region
+      const messaging = getMessaging(app);
+
+      // Start Message Listener (Foreground)
+      onMessage(messaging, (payload) => {
+        console.log("Foreground notification:", payload);
+        const title = payload.notification?.title || "通知";
+        const body = payload.notification?.body || "";
+        alert(`${title}\n${body}`);
+      });
 
       // --- Logic ---
       const params = new URLSearchParams(window.location.search);
@@ -264,14 +282,20 @@
               return;
             }
             const data = docSnap.data();
+            console.log("Order Data Update:", data); // Debug log
             updateUI(data);
             fetchStoreName(data.storeId);
           },
           (error) => {
             console.error(error);
-            document.getElementById("status-text").textContent = "Error";
-            document.getElementById("status-message").textContent =
-              error.message;
+            // Ignore permission error if it's transient, but show if persistent
+            if (error.code === 'permission-denied') {
+                 document.getElementById("status-text").textContent = "Access Denied";
+                 document.getElementById("status-message").textContent = "注文情報を閲覧する権限がありません。";
+            } else {
+                document.getElementById("status-text").textContent = "Error";
+                document.getElementById("status-message").textContent = error.message;
+            }
           }
         );
       }
@@ -280,7 +304,7 @@
         // Receipt Number
         document.getElementById(
           "receipt-number"
-        ).textContent = `No. ${data.receiptNumber}`;
+        ).textContent = `No. ${data.receiptNumber}`; // Check this value! 
         document.getElementById("store-id-display").textContent = data.storeId;
 
         // Items
@@ -290,9 +314,9 @@
           data.items.forEach((item) => {
             const row = document.createElement("div");
             row.className = "item-row";
-            row.innerHTML = `<span>${item.name} x${
-              item.quantity
-            }</span><span>¥${item.price * item.quantity}</span>`;
+            const itemPrice = item.price || 0; // fallback
+            const itemQty = item.quantity || 0;
+            row.innerHTML = `<span>${item.name} x${itemQty}</span><span>¥${itemPrice * itemQty}</span>`;
             list.appendChild(row);
           });
         }

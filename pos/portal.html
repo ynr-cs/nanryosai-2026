@@ -566,6 +566,7 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('step-google').style.display = 'none';
+                document.getElementById('user-email').innerText = user.email; // FIX: Always show email
                 
                 // Check Cached Login
                 const cachedId = localStorage.getItem('nanryosai_store_id');
@@ -583,7 +584,6 @@
                 // Show Store Login only if no cache
                 document.getElementById('step-store').style.display = 'block';
                 loadStoreOptions();
-                document.getElementById('user-email').innerText = user.email;
             } else {
                 document.getElementById('auth-overlay').style.display = 'flex';
                 document.getElementById('step-google').style.display = 'block';

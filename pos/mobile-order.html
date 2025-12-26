@@ -22,307 +22,262 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      /* --- 1. Design System --- */
       :root {
-        /* Colors */
-        --primary-color: #d32f2f; /* McDonald's Red */
-        --accent-color: #ffc107; /* M Yellow */
-        --bg-color: #f8f9fa; /* Off-white background */
+        --primary-color: #333;
+        --accent-color: #d32f2f; /* Warning Red */
+        --bg-color: #f8f9fa;
         --card-bg: #ffffff;
         --text-main: #212529;
         --text-sub: #6c757d;
-        --border-color: #e9ecef;
-
-        /* Spacing */
-        --spacing-xs: 4px;
-        --spacing-sm: 8px;
-        --spacing-md: 16px;
-        --spacing-lg: 24px;
-        
-        /* Radius */
-        --radius-sm: 8px;
-        --radius-md: 12px;
         --radius-lg: 16px;
-        
-        /* Typography */
-        --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --font-main: "Noto Sans JP", sans-serif;
       }
 
       body {
         background-color: var(--bg-color);
         color: var(--text-main);
         font-family: var(--font-main);
-        padding-bottom: 80px;
-        user-select: none;
+        margin: 0;
+        min-height: 100vh;
         -webkit-tap-highlight-color: transparent;
       }
 
-      /* Transitions */
-      .screen, .center-screen {
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-        /* They are now inside flex column, so they might not need hide/show by display? 
-           Wait, previous logic used display:none/block. 
-           We need to make sure they are hidden when not active. 
-        */
-        display: none; 
-      }
-      .screen.active, .center-screen.active {
-        opacity: 1;
-        display: flex; /* or block depending on content. .center-screen uses flex. */
+      /* --- Layout Container --- */
+      #app-container {
+        max-width: 480px;
+        margin: 0 auto;
+        background: #fff;
+        min-height: 100vh;
+        position: relative;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        display: flex;
         flex-direction: column;
       }
-      .screen.active {
-          display: block;
+
+      /* --- Screen Management --- */
+      .screen {
+        display: none;
+        flex: 1;
+        flex-direction: column;
+        padding: 20px;
+        animation: fadeIn 0.3s ease-out;
       }
-      .center-screen.active {
-          display: flex;
-          justify-content: center;
-          align-items: center;
+      .screen.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
-      /* Buttons & Interactive */
-      .btn:active {
+      /* --- Common UI Components --- */
+      .btn-primary-custom {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 50px;
+        font-weight: bold;
+        width: 100%;
+        font-size: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.1s;
+      }
+      .btn-primary-custom:active:not(:disabled) {
         transform: scale(0.98);
       }
-      
-      /* --- 2. Component: Hybrid Store Card --- */
-      .check-store-header {
-        text-align: center;
-        margin: 40px 0 20px 0;
+      .btn-primary-custom:disabled {
+        background: #ccc;
+        box-shadow: none;
       }
-      
+
+      /* --- Step 1: Login --- */
+      #step-login {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .login-hero {
+        margin-bottom: 40px;
+      }
+      .login-logo {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      /* --- Step 2: Terms (Warning) --- */
+      .terms-warning-box {
+        background: #ffebee;
+        border: 2px solid var(--accent-color);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .warning-title {
+        color: var(--accent-color);
+        font-weight: 900;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .warning-list {
+        text-align: left;
+        margin-bottom: 0;
+        padding-left: 20px;
+        font-weight: 700;
+        color: #b71c1c;
+      }
+      .warning-list li {
+        margin-bottom: 10px;
+      }
+      .ban-warning {
+        font-size: 1.1em;
+        background: #b71c1c;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-weight: 900;
+      }
+
+      /* --- Step 3: Stores --- */
       .store-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-lg);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        margin-bottom: 20px;
-        overflow: hidden;
-        border: 1px solid transparent;
-        transition: transform 0.2s, box-shadow 0.2s;
+        background: white;
+        border-radius: var(--radius-md);
+        border: 1px solid #eee;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         cursor: pointer;
-        position: relative;
+        transition: background 0.2s;
       }
       .store-card:active {
-        transform: scale(0.98);
-        background-color: #fafafa;
+        background: #f8f9fa;
       }
-      
-      .store-card-header {
-        display: flex;
-        padding: 15px;
-        gap: 15px;
-        align-items: center;
-        border-bottom: 1px solid var(--border-color);
-      }
-      
-      .store-img-circle {
+      .store-img {
         width: 60px;
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
         background: #eee;
-        border: 2px solid white;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        flex-shrink: 0;
       }
-      
-      .store-info-box {
-        flex: 1;
-        min-width: 0;
-      }
-      
-      .store-name-lg {
-        font-weight: 800;
+      .store-info h3 {
         font-size: 1.1rem;
-        color: var(--text-main);
-        margin-bottom: 2px;
-        line-height: 1.3;
-      }
-      
-      .store-team-sm {
-        font-size: 0.85rem;
-        color: var(--text-sub);
-        font-weight: 500;
-      }
-      
-      /* Product Mini-Grid inside Store Card */
-      .store-products-preview {
-        padding: 12px 15px;
-        background: #fff;
-      }
-      .preview-label {
-        font-size: 0.7rem;
-        color: #999;
         font-weight: bold;
-        margin-bottom: 6px;
-        display: block;
-      }
-      .preview-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .preview-tag {
-        background: #f1f3f5;
-        color: #495057;
-        font-size: 0.8rem;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-weight: 600;
-      }
-      .preview-tag.highlight {
-         background: #e3f2fd;
-         color: #0d47a1;
-      }
-
-      /* --- 3. Component: Onboarding (Full Screen) --- */
-      #step-onboarding {
-        background: white; /* Clean look */
-      }
-      .onboard-container {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 20px;
-        overflow: hidden; /* No Scroll */
-      }
-      .onboard-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-      }
-      .onboard-icon {
-        font-size: 5rem;
-        margin-bottom: 20px;
-        color: var(--primary-color);
-      }
-      .onboard-title {
-        font-weight: 900;
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-      }
-      .onboard-message {
-        color: var(--text-sub);
-        font-size: 1rem;
-        line-height: 1.6;
-        max-width: 320px;
-      }
-      .warning-box {
-        background: #ffebee;
-        color: #c62828;
-        padding: 15px;
-        border-radius: 12px;
-        margin-top: 20px;
-        text-align: left;
-        width: 100%;
-      }
-      .warning-item {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-        font-weight: bold;
-      }
-      .warning-item:last-child { margin-bottom: 0; }
-      
-      .onboard-footer {
-        width: 100%;
-        padding-top: 20px;
-      }
-
-      /* --- 4. Component: Menu (Grid) --- */
-      .menu-header-simple {
-        background: white;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        padding: 15px 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .store-avatar-sm {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: #eee;
-        object-fit: cover;
-      }
-      .menu-title {
-        font-weight: 800;
-        font-size: 1.1rem;
         margin: 0;
       }
 
-      .menu-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* 2 columns like McD */
-        gap: 15px;
-        padding: 20px;
+      /* --- Footer/Bottom Bar (Redesigned) --- */
+      .bottom-cart-bar {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 480px; /* Constrain to app width */
+        background: #212529; /* Dark background */
+        color: white;
+        z-index: 1050;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        display: none; /* Hidden by default */
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom); /* Safe area support */
       }
-      
-      .menu-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #f0f0f0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+
+      .cart-info-area {
+        flex: 1;
+        padding: 15px;
+        cursor: pointer;
         display: flex;
         flex-direction: column;
-        height: 100%;
+        justify-content: center;
+      }
+
+      .cart-info-area:active {
+        background: #343a40;
+      }
+
+      .checkout-btn-area {
+        padding: 10px 15px 10px 0;
+      }
+
+      .btn-checkout-action {
+        background: #ffc107; /* Warning color for distinction */
+        color: #000;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px; /* Slightly rounded button inside */
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .btn-checkout-action:active {
+        background: #e0a800;
+      }
+
+      /* --- Menu Grid --- */
+      .menu-card {
+        background: white;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
         transition: transform 0.1s;
       }
       .menu-card:active {
-        transform: scale(0.97);
+        transform: scale(0.96);
       }
-      
       .menu-img-box {
-        width: 100%;
-        padding-top: 75%; /* 4:3 */
         position: relative;
-        background: #fff; /* White background for food */
+        padding-top: 75%; /* 4:3 */
+        background: #f8f9fa;
       }
       .menu-img {
         position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        object-fit: cover; /* or contain depending on image */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
       .menu-info {
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
+        padding: 10px;
       }
-      .menu-name {
-        font-weight: 700;
-        font-size: 0.95rem;
-        line-height: 1.3;
-        margin-bottom: 6px;
-        color: var(--text-main);
-      }
-      .menu-price {
-        font-weight: 900;
-        color: var(--text-main);
-        font-size: 1rem;
-        margin-top: auto;
-      }
-      
       .sold-out-badge {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(255,255,255,0.7);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 2;
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 5;
       }
       .sold-out-text {
         background: #333;
@@ -330,256 +285,521 @@
         padding: 5px 15px;
         font-weight: 900;
         transform: rotate(-10deg);
-        font-size: 1.2rem;
       }
 
-      /* Modal Customization */
-      .bottom-sheet .modal-dialog {
-        margin: 0;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        max-width: 100%;
-      }
-      .bottom-sheet .modal-content {
-        border-radius: 20px 20px 0 0;
-        border: none;
-        padding-bottom: env(safe-area-inset-bottom);
-      }
-      
-      /* --- 5. Responsive / PC Support (Refined) --- */
-      body {
-        background-color: #f0f2f5; /* PC Background */
+      /* Customization UI */
+      .mode-toggle {
         display: flex;
-        justify-content: center;
-        min-height: 100vh;
-        margin: 0;
+        gap: 10px;
+        margin-bottom: 15px;
       }
-      
-      #app-container {
-        width: 100%;
-        max-width: 480px; /* Mobile App Width */
-        background-color: var(--bg-color);
-        min-height: 100vh;
-        position: relative;
-        box-shadow: 0 0 40px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
+      .mode-btn {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background: white;
+        font-weight: bold;
+        color: #aaa;
       }
-
-      /* Screens behave normally inside the container */
-      .screen, .center-screen {
-        width: 100%;
-        flex: 1; /* Fill height */
-      }
-      
-      /* Fix Fixed Elements to Container Width */
-      .fixed-width-constraint {
-         width: 100%;
-         max-width: 480px;
-         left: 50%;
-         transform: translateX(-50%);
-      }
-
-      #loader {
-        position: fixed;
-        top: 0;
-        z-index: 9999;
-        height: 100%;
-      }
-      
-      .bottom-bar {
-        position: fixed;
-        bottom: 20px;
-        z-index: 2000;
-        /* Center Horizontally relative to viewport, but constrained max width */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 440px; /* Slightly smaller than container (480-40) */
-        /* Style override */
-        background: #212529; 
+      .mode-btn.active[data-mode="NO"] {
+        border-color: #d32f2f;
+        background: #d32f2f;
         color: white;
-        border-radius: 50px;
-        padding: 15px 25px;
+      }
+      .mode-btn.active[data-mode="ADD"] {
+        border-color: #2e7d32;
+        background: #2e7d32;
+        color: white;
+      }
+
+      .topping-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .topping-btn {
+        padding: 8px 15px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+      .topping-btn:active {
+        background: #eee;
+      }
+      .topping-btn.btn-disabled {
+        opacity: 0.4;
+        background: #f0f0f0;
+        color: #ccc;
+        border-color: #eee;
+        cursor: not-allowed;
+      }
+      .topping-btn.mod-selected-no {
+        background: #ffebee;
+        border-color: #d32f2f;
+        color: #d32f2f;
+        font-weight: bold;
+      }
+      .topping-btn.mod-selected-add {
+        background: #e8f5e9;
+        border-color: #2e7d32;
+        color: #2e7d32;
+        font-weight: bold;
+      }
+
+      .active-mods-display {
+        min-height: 40px;
+        background: #fce4ec; /* Light pink for mods */
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+      .mod-tag {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: white;
+      }
+      .mod-tag.no {
+        background: #d32f2f;
+      }
+      .mod-tag.add {
+        background: #2e7d32;
+      }
+
+      /* Cart List */
+      .cart-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        cursor: pointer;
-        transition: transform 0.2s;
+      }
+      .cart-item-details h5 {
+        font-size: 1rem;
+        margin: 0;
+        font-weight: bold;
+      }
+      .cart-item-mods {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 4px;
       }
 
-      .menu-header-simple {
-        /* Sticky needs to be relative to container? 
-           Sticky works within flow. */
-        position: sticky;
-        top: 0;
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(5px);
-      }
-
-      /* Modals: Centered on PC/Mobile */
-      .modal-dialog {
-         max-width: 450px;
-         margin: 1.75rem auto; 
-      }
-      /* Bottom sheet style only on mobile? 
-         Let's keep bottom sheet style for consistency if user likes it, 
-         but ensure it doesn't break. 
-         Bootstrap 'modal-dialog-centered' handles centering.
-         If we want bottom sheet, we do:
-      */
+      /* --- Modals (Sheet Style) --- */
       .modal.bottom-sheet .modal-dialog {
-         margin: 0;
-         position: fixed;
-         bottom: 0;
-         left: 50%;
-         transform: translateX(-50%);
-         width: 100%;
-         max-width: 480px;
+        margin: 0;
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 480px;
       }
-      .modal.bottom-sheet .modal-content {
-         border-bottom-left-radius: 0;
-         border-bottom-right-radius: 0;
-         border: none;
+      /* --- Custom Fullscreen Modal for Mobile Width --- */
+      .mobile-fullscreen-modal .modal-dialog {
+        width: 100%;
+        max-width: 480px; /* Match app-container */
+        margin: 0 auto;
+        height: 100%;
+        padding: 0;
+      }
+      .mobile-fullscreen-modal .modal-content {
+        height: 100%;
+        border-radius: 0;
+        border: none;
       }
 
+      /* Adjust backdrop to be less intrusive for "page transition" feel */
+      .modal-backdrop.show {
+        opacity: 0.2;
+      }
     </style>
   </head>
   <body>
     <div id="app-container">
-    
-        <!-- Loading Overlay -->
+      <!-- Loading Overlay -->
+      <div
+        id="global-loader"
+        style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.9);
+          z-index: 9999;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+
+      <!-- 1. Login Screen -->
+      <!-- 1. Login Screen -->
+      <div id="step-login" class="screen">
+        <div class="login-hero">
+          <div class="login-logo">🍔</div>
+          <h1 class="fw-bold">Mobile Order</h1>
+          <p class="text-muted">南陵祭2026</p>
+        </div>
+        <button id="btn-login" class="btn-primary-custom">
+          <i class="bi bi-google me-2"></i> Googleでログイン
+        </button>
+      </div>
+
+      <!-- 1.5 Notification Screen (New) -->
+      <div id="step-notification" class="screen text-center">
+        <div class="mt-5 mb-4">
+          <div class="mb-3">
+            <i class="bi bi-bell-fill text-warning" style="font-size: 4rem"></i>
+          </div>
+          <h2 class="fw-bold">通知の設定</h2>
+          <p class="text-muted mt-3">
+            商品の準備ができたら<br />
+            プッシュ通知でお知らせします。
+          </p>
+          <p class="text-muted small">
+            次の画面で表示されるポップアップで<br />
+            <strong>「許可」</strong>を選択してください。
+          </p>
+        </div>
+        <div class="mt-auto pb-4">
+          <button id="btn-req-notification" class="btn-primary-custom mb-3">
+            通知を受け取る
+          </button>
+          <button
+            class="btn btn-link text-secondary text-decoration-none"
+            onclick="skipNotification()"
+          >
+            通知を受け取らない
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Terms Screen -->
+      <div id="step-terms" class="screen">
+        <div class="text-center mt-4">
+          <i
+            class="bi bi-shield-exclamation text-danger"
+            style="font-size: 3rem"
+          ></i>
+          <h2 class="fw-bold mt-2">利用規約の確認</h2>
+          <p class="text-muted small">ご注文の前に必ずご確認ください</p>
+        </div>
+
+        <div class="terms-warning-box">
+          <div class="warning-title">
+            <i class="bi bi-exclamation-triangle-fill"></i> 注意事項
+          </div>
+          <ul class="warning-list">
+            <li>注文確定後のキャンセルはできません</li>
+            <li>受け取りは「呼出」から15分以内です（経過後は即廃棄）</li>
+            <li>お金は返ってきません</li>
+          </ul>
+          <div class="ban-warning text-center">
+            違反時は全額徴収の上<br />今後コンピュータ科学部が制作する<br />全サービスから永久BANします
+          </div>
+        </div>
+
+        <div class="mt-auto pb-4">
+          <div
+            class="form-check mb-3 d-flex justify-content-center gap-2 align-items-center"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="check-terms"
+              style="transform: scale(1.3)"
+            />
+            <label class="form-check-label fw-bold" for="check-terms"
+              >上記内容を理解し、同意します</label
+            >
+          </div>
+          <button id="btn-agree-terms" class="btn-primary-custom" disabled>
+            同意して次へ
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Store Select Screen -->
+      <div id="step-stores" class="screen">
+        <h2 class="fw-bold mb-4">店舗を選択</h2>
+        <div id="store-list">
+          <!-- JS Injected -->
+        </div>
+      </div>
+
+      <!-- 4. Menu Screen (Grid) -->
+      <div id="step-menu" class="screen" style="padding: 0">
         <div
-          id="loader"
-          class="center-screen active fixed-width-constraint"
-          style="background: white;"
+          id="menu-header"
+          class="p-3 bg-white sticky-top shadow-sm d-flex align-items-center justify-content-between"
         >
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-          <p class="mt-3 fw-bold text-muted">Loading...</p>
+          <h5 class="m-0 fw-bold" id="menu-store-name">Store Name</h5>
+          <button
+            class="btn btn-sm btn-outline-secondary rounded-circle"
+            onclick="backToStores()"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
-    
-        <!-- Step 0: Store Selection -->
-        <div id="step-stores" class="screen">
-          <div class="check-store-header">
-             <h2 class="fw-bold">店舗を選択</h2>
-             <p class="text-muted">お店またはメニューから選んでください</p>
-          </div>
-          <div id="store-list-container" class="container" style="max-width: 100%;">
-            <!-- JS Injected -->
-          </div>
+        <div
+          id="menu-grid"
+          class="p-3"
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding-bottom: 100px;
+          "
+        >
+          <!-- JS Injected -->
         </div>
-    
-        <!-- Step 1: Login -->
-        <div id="step-login" class="center-screen">
-          <div class="card p-4 shadow-sm border-0" style="width: 90%; max-width: 350px;">
-            <h2 class="fw-bold mb-3">Login</h2>
-            <p class="text-muted mb-4">注文するにはログインが必要です</p>
-            <button
-              id="btn-google-login"
-              class="btn btn-primary w-100 py-2 fw-bold"
-            >
-              <i class="bi bi-google me-2"></i> Googleでログイン
-            </button>
-          </div>
-        </div>
-    
-        <!-- Step 2: Onboarding (Single Screen) -->
-        <div id="step-onboarding" class="screen" style="padding:0;">
-           <div class="onboard-container">
-               <div class="onboard-content">
-                   <div class="onboard-icon"><i class="bi bi-shield-check"></i></div>
-                   <h2 class="onboard-title">ご利用前の確認</h2>
-                   <p class="onboard-message">
-                      快適にご利用いただくために、<br>
-                      通知の許可と利用規約への同意をお願いします。
-                   </p>
-                   
-                   <div class="warning-box">
-                      <div class="text-danger fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>必ず厳守してください</div>
-                      <div class="warning-item"><span class="badge bg-danger">重要</span> 呼出後 15分経過で即廃棄</div>
-                      <div class="warning-item"><span class="badge bg-danger">重要</span> 返金不可・全額請求</div>
-                      <div class="warning-item"><span class="badge bg-danger">警告</span> 違反時はアカウント停止</div>
-                   </div>
-               </div>
-               
-               <div class="onboard-footer">
-                   <div class="form-check mb-3 d-flex align-items-center justify-content-center gap-2">
-                       <input class="form-check-input" type="checkbox" id="chk-agree" style="transform: scale(1.3);">
-                       <label class="form-check-label fw-bold" for="chk-agree">注意事項を理解し、同意します</label>
-                   </div>
-                   <button id="btn-onboard-finish" class="btn btn-dark w-100 py-3 rounded-pill fw-bold mb-2" onclick="handleOnboarding()">
-                       同意して注文を始める
-                   </button>
-                   <p class="text-center text-muted" style="font-size:0.8rem">
-                       ※通知の許可ポップアップが表示された場合は「許可」を選択してください。
-                   </p>
-               </div>
-           </div>
-        </div>
-    
-        <!-- Step 3: Main Menu -->
-        <div id="step-menu" class="screen" style="padding-top:0;">
-          <!-- Sticky Header -->
-          <div id="menu-header-content" class="menu-header-simple">
-             <!-- Injected by JS -->
-          </div>
-          
-          <div class="container pb-5">
-             <div id="product-grid" class="menu-grid">
-                 <!-- Injected by JS -->
-             </div>
-          </div>
-        </div>
-    
-        <!-- Floating Cart Bar -->
-        <div id="bottom-bar" class="bottom-bar" style="display: none" onclick="openCartModal()">
-             <div class="bar-info">
-                 <span class="bar-qty" id="cart-badge-count">0点</span>
-                 <span class="bar-total" id="cart-total-display-bar">¥0</span>
-             </div>
-             <div class="bar-action">
-                 カートを見る
-             </div>
-        </div>
-        
-    </div><!-- End App Container -->
+      </div>
 
-    <!-- Item Detail Modal -->
-    <div class="modal fade bottom-sheet" id="itemModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title fw-bold" id="detail-name">商品名</h5>
+      <!-- 5. Checkout Screen -->
+      <div id="step-checkout" class="screen">
+        <h2 class="fw-bold mb-4">注文内容の確認</h2>
+
+        <div class="card mb-3 shadow-sm border-0">
+          <div class="card-body">
+            <h6 class="text-muted small">受け取り店舗</h6>
+            <h4 class="fw-bold" id="checkout-store-name">Store Name</h4>
+          </div>
+        </div>
+
+        <div class="card mb-3 shadow-sm border-0">
+          <div class="card-header bg-white border-bottom-0 fw-bold">
+            注文商品
+          </div>
+          <div class="card-body p-0">
+            <div id="checkout-items-list" class="list-group list-group-flush">
+              <!-- Injected -->
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="d-flex justify-content-between align-items-center mb-4 px-2"
+        >
+          <span class="fw-bold fs-5">合計金額</span>
+          <span class="fw-bold fs-2 text-danger" id="checkout-total">¥0</span>
+        </div>
+
+        <div class="alert alert-danger small" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          <strong>確定後のキャンセル・返金はできません。</strong><br />
+          調理完了通知が届いてから15分以内に受け取りに来てください。
+        </div>
+
+        <button class="btn-primary-custom mb-3" onclick="finalizeOrder()">
+          注文を確定する
+        </button>
+        <button
+          class="btn btn-link text-secondary w-100"
+          onclick="backToMenu()"
+        >
+          メニューに戻る
+        </button>
+      </div>
+
+      <!-- Bottom Cart Bar (Redesigned) -->
+      <div id="bottom-bar" class="bottom-cart-bar d-flex">
+        <!-- Left: Cart Info (Open Cart Modal) -->
+        <div class="cart-info-area" onclick="openCart()">
+          <div class="small text-white-50">合計金額</div>
+          <div class="fw-bold fs-4">
+            <span id="bar-total">¥0</span>
+            <span class="fs-6 fw-normal text-white-50 ms-2" id="bar-count-text"
+              >0点</span
+            >
+          </div>
+          <div class="small text-warning">
+            <i class="bi bi-chevron-up me-1"></i>詳細を見る
+          </div>
+        </div>
+
+        <!-- Right: Checkout Button (Go to Checkout) -->
+        <div class="checkout-btn-area">
+          <button class="btn-checkout-action" onclick="checkout()">
+            レジへ進む <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End App Container -->
+
+    <!-- Placeholder for Modals (Implemented Later) -->
+    <!-- Customization Modal (Full Screen) -->
+    <div
+      class="modal fade mobile-fullscreen-modal"
+      id="itemModal"
+      tabindex="-1"
+      style="z-index: 1060"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content border-0">
+          <!-- Header -->
+          <div class="modal-header border-0 shadow-sm" style="background: #fff">
             <button
               type="button"
-              class="btn-close"
+              class="btn btn-link text-dark p-0 me-3"
               data-bs-dismiss="modal"
-            ></button>
+              style="font-size: 1.5rem"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <h5
+              class="modal-title fw-bold flex-grow-1 text-center pe-4"
+              id="modal-item-name"
+            >
+              商品名
+            </h5>
           </div>
-          <div class="modal-body p-4">
-            <div class="text-center mb-4">
-                 <h2 class="display-4 fw-bold text-danger" id="detail-price">¥0</h2>
-            </div>
-            
-            <label class="form-label fw-bold text-muted small">数量を選択</label>
-            <div class="qty-control justify-content-between p-2 mb-4" style="height:60px; background:#f8f9fa;">
-                <button class="qty-btn" onclick="adjustDetailQty(-1)" style="flex:1; height:100%; font-size:1.5rem;">-</button>
-                <span id="detail-qty" class="mx-3 fs-2 fw-bold">1</span>
-                <button class="qty-btn" onclick="adjustDetailQty(1)" style="flex:1; height:100%; font-size:1.5rem;">+</button>
+
+          <!-- Body -->
+          <div
+            class="modal-body p-0"
+            style="background: #f8f9fa; padding-bottom: 120px"
+          >
+            <!-- Product Image Area -->
+            <div class="bg-white text-center py-4 mb-3 shadow-sm">
+              <img
+                id="modal-item-img"
+                src=""
+                style="max-width: 60%; max-height: 250px; object-fit: contain"
+              />
             </div>
 
-            <button
-              type="button"
-              class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow"
-              onclick="commitAddToCart()"
-            >
-              カートに追加する
-            </button>
+            <!-- Description Area (Simple) -->
+            <div class="px-3 mb-4">
+              <p class="text-muted small" id="modal-item-desc">
+                注文後の調理となります。<br />
+                ※画像はイメージです。
+              </p>
+            </div>
+
+            <!-- Customization Section -->
+            <div class="px-3">
+              <div
+                id="customization-area"
+                class="bg-white p-3 rounded-3 shadow-sm mb-3"
+              >
+                <!-- Header (Collapsible Trigger) -->
+                <div
+                  class="d-flex align-items-center justify-content-between"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#customization-collapse"
+                  aria-expanded="false"
+                  aria-controls="customization-collapse"
+                  style="cursor: pointer"
+                >
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-gear-fill me-2 text-primary"></i>
+                    <span class="fw-bold">カスタマイズ</span>
+                  </div>
+                  <i class="bi bi-chevron-down text-muted"></i>
+                </div>
+
+                <!-- Collapsible Content -->
+                <div class="collapse mt-3" id="customization-collapse">
+                  <div class="mode-toggle mb-3">
+                    <button
+                      class="mode-btn w-100 py-2"
+                      data-mode="NO"
+                      onclick="setMode('NO')"
+                    >
+                      <i class="bi bi-dash-circle me-1"></i> 抜き
+                    </button>
+                    <button
+                      class="mode-btn w-100 py-2"
+                      data-mode="ADD"
+                      onclick="setMode('ADD')"
+                    >
+                      <i class="bi bi-plus-circle me-1"></i> 追加
+                    </button>
+                  </div>
+
+                  <p class="text-muted small mb-2 ms-1">
+                    <i class="bi bi-info-circle me-1"></i
+                    >先に「抜き」か「追加」を選んでください
+                  </p>
+
+                  <div class="topping-list" id="topping-list">
+                    <!-- Injected Buttons -->
+                  </div>
+
+                  <div
+                    class="active-mods-display mt-3"
+                    id="active-mods-display"
+                    style="display: none"
+                  >
+                    <small class="text-muted d-block mb-1">選択中の変更:</small>
+                    <div id="active-mods-list"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Spacer for Fixed Footer -->
+            <div style="height: 100px"></div>
+          </div>
+
+          <!-- Footer (Fixed Bottom Actions) -->
+          <div
+            class="modal-footer border-top bg-white d-block p-3 fixed-bottom"
+            style="
+              position: sticky;
+              bottom: 0;
+              padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            "
+          >
+            <div class="d-flex justify-content-between align-items-end mb-2">
+              <div>
+                <span class="fs-2 fw-bold" id="modal-item-price">¥0</span>
+              </div>
+
+              <!-- Quantity Selector -->
+              <div
+                class="d-flex align-items-center bg-light rounded-pill px-2 py-1 border"
+              >
+                <button
+                  class="btn btn-sm text-secondary"
+                  onclick="adjustQty(-1)"
+                  style="font-size: 1.2rem; width: 30px"
+                >
+                  -
+                </button>
+                <span class="mx-3 fw-bold fs-5" id="modal-item-qty">1</span>
+                <button
+                  class="btn btn-sm text-primary"
+                  onclick="adjustQty(1)"
+                  style="font-size: 1.2rem; width: 30px"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+              <!-- Back Button (Optional, maybe not needed if header has back) -> Let's match image style with mainly Cart Button -->
+              <button
+                class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-dark shadow-sm"
+                onclick="commitAddToCart()"
+              >
+                カートに追加
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -587,7 +807,7 @@
 
     <!-- Cart Modal -->
     <div class="modal fade bottom-sheet" id="cartModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title fw-bold">カート</h5>
@@ -598,64 +818,28 @@
             ></button>
           </div>
           <div class="modal-body p-0">
-             <div class="p-3 bg-light border-bottom">
-                 <div class="d-flex justify-content-between align-items-baseline">
-                     <span class="text-muted fw-bold">合計</span>
-                     <span class="display-6 fw-bold text-danger" id="cart-total-display">¥0</span>
-                 </div>
-             </div>
-             
-             <div id="cart-items-container" class="p-3">
-                 <!-- Items -->
-             </div>
+            <div id="cart-list">
+              <!-- Cart Items -->
+            </div>
+            <div
+              class="p-3 bg-light d-flex justify-content-between align-items-center"
+            >
+              <span class="fw-bold">合計</span>
+              <span class="display-6 fw-bold text-danger" id="cart-total-modal"
+                >¥0</span
+              >
+            </div>
           </div>
-          <div class="modal-footer d-flex gap-3 p-3">
+          <div class="modal-footer d-flex gap-2">
             <button
-              type="button"
-              class="btn btn-outline-secondary rounded-pill py-3 flex-fill fw-bold"
+              class="btn btn-outline-secondary flex-fill py-3 rounded-pill fw-bold"
               onclick="clearCart()"
             >
-              削除
+              全削除
             </button>
             <button
-              type="button"
-              class="btn btn-primary rounded-pill py-3 flex-fill fw-bold shadow"
-              data-bs-dismiss="modal"
-              onclick="openCheckoutModal()"
-            >
-              購入手続きへ
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Checkout Modal -->
-    <div class="modal fade" id="checkoutModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-success text-white">
-            <h5 class="modal-title fw-bold">注文の確定</h5>
-            <button
-              type="button"
-              class="btn-close btn-close-white"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body text-center p-4">
-            <p class="mb-2">以下の内容で注文を確定します。</p>
-            <h1 class="fw-bold my-4" id="checkout-total">¥0</h1>
-            <p class="text-muted small">
-              ※これはデモです。実際の決済は発生しませんが、<br />
-              注文データはサーバーに送信されます。
-            </p>
-          </div>
-          <div class="modal-footer justify-content-center">
-            <button
-              type="button"
-              class="btn btn-lg btn-success w-100 fw-bold py-3"
-              onclick="processOrder()"
-              id="btn-final-order"
+              class="btn btn-primary flex-fill py-3 rounded-pill fw-bold shadow"
+              onclick="checkout()"
             >
               注文を確定する
             </button>
@@ -664,15 +848,10 @@
       </div>
     </div>
 
-    <!-- Firebase & Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-      import {
-        initializeAppCheck,
-        ReCaptchaV3Provider,
-      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-check.js";
       import {
         getAuth,
         GoogleAuthProvider,
@@ -682,620 +861,713 @@
       import {
         getFirestore,
         collection,
-        query,
-        where,
         getDocs,
-        addDoc,
-        serverTimestamp,
         doc,
         getDoc,
-        updateDoc,
         setDoc,
-        writeBatch,
+        serverTimestamp,
       } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-      import {
-        getFunctions,
-        httpsCallable,
-      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-functions.js";
       import {
         getMessaging,
         getToken,
-        onMessage,
       } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging.js";
       import {
         getStorage,
         ref as sRef,
-        getDownloadURL
+        getDownloadURL,
       } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
-      // --- Firebase Configuration ---
+      // Firebase Config
       const firebaseConfig = {
         apiKey: "AIzaSyA-Ijkbo-9rgrNKbDlRJ-rQVYdSXR_a9Do",
         authDomain: "nanryosai-2026-a4091.firebaseapp.com",
         projectId: "nanryosai-2026-a4091",
-        storageBucket: "nanryosai-2026-a4091.firebasestorage.app", // Corrected
+        storageBucket: "nanryosai-2026-a4091.firebasestorage.app",
         messagingSenderId: "93228414556",
         appId: "1:93228414556:web:f64f90c13849fae9049899",
       };
-
-      // Enable App Check Debug Token for Localhost
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-      }
+      const VAPID_KEY =
+        "BI-HfOk34KQVIoJK_8KnKplz3l31I9VLWOJKF7mHBARF-XmgVjpRSyVoSfSnoVZDS7orz-OO8yq-S32STZU30Po";
 
       const app = initializeApp(firebaseConfig);
 
+      // Initialize App Check
+      import {
+        initializeAppCheck,
+        ReCaptchaEnterpriseProvider,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-check.js";
+
+      // Allow App Check debug token for localhost
+      if (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+      ) {
+        self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+      }
+
       const appCheck = initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(
-          "6LeHxzIsAAAAAOIf0lXePHNpUkvYRdFtQw9osmIS"
+        provider: new ReCaptchaEnterpriseProvider(
+          "6LdVI4sqAAAAABsFgjK80A2MAiCg7X9K7uJ-gYQ6"
         ),
         isTokenAutoRefreshEnabled: true,
       });
 
       const auth = getAuth(app);
       const db = getFirestore(app);
-      const functions = getFunctions(app, "asia-northeast1");
       const messaging = getMessaging(app);
-      const storage = getStorage(app); // Storage Init
-
-      // VAPID Key
-      const VAPID_KEY =
-        "BI-HfOk34KQVIoJK_8KnKplz3l31I9VLWOJKF7mHBARF-XmgVjpRSyVoSfSnoVZDS7orz-OO8yq-S32STZU30Po";
-
-      // --- Helper: Async Image Resolver ---
-      async function setElementImage(imgElement, storeId, fileName) {
-           if(!fileName || fileName === "noimage.png") {
-               imgElement.src = "../images/noimage.png";
-               imgElement.style.opacity = "1";
-               return;
-           }
-           
-           // Try Firebase Storage: products/{storeId}/{fileName}
-           // Note: The rule says /products/{storeId}/{fileName}
-           // Let's assume user uploads there.
-           const path = `products/${storeId}/${fileName}`;
-           try {
-               const url = await getDownloadURL(sRef(storage, path));
-               imgElement.src = url;
-           } catch(e) {
-               // Fallback: Try local image with same name
-               console.log("Storage image not found, using local fallback:", fileName);
-               imgElement.src = `../images/${fileName}`;
-               // If this also fails, the img.onerror in HTML will catch it and show noimage.png
-           }
-      }
+      const storage = getStorage(app);
+      import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-functions.js";
+      import {
+        writeBatch,
+        query,
+        where,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+      const functions = getFunctions(app, "asia-northeast1");
 
       // --- State ---
-      let currentStoreId = null;
       let currentUser = null;
+      let currentStoreId = null;
       let products = [];
-      let cart = []; // { product, quantity, id }
-      let itemModalInstance = null;
-      let cartModalInstance = null;
-      let checkoutModalInstance = null;
+      let cart = [];
+
+      // Editing State
       let selectingProduct = null;
       let selectingQty = 1;
+      let currentMode = null;
+      let currentMods = [];
 
-      // --- Navigation Helper ---
-      window.deselectStore = () => {
-         // Clear URL param
-         const newUrl = new URL(window.location);
-         newUrl.searchParams.delete("storeId");
-         window.history.pushState({}, "", newUrl);
-         currentStoreId = null;
-         showScreen("step-stores");
-         renderStoreSelector(); // Reload Selector
-      };
+      // --- Modals --- (Bootstrap)
+      let itemModal, cartModal;
+
+      // --- DOM Elements ---
+      const loader = document.getElementById("global-loader");
 
       // --- Initialization ---
-      async function init() {
-        // Parse Store ID
-        const params = new URLSearchParams(window.location.search);
-        currentStoreId = params.get("storeId");
-
-        // UI instances
-        itemModalInstance = new bootstrap.Modal(
-          document.getElementById("itemModal")
-        );
-        cartModalInstance = new bootstrap.Modal(
-          document.getElementById("cartModal")
-        );
-        checkoutModalInstance = new bootstrap.Modal(
-          document.getElementById("checkoutModal")
-        );
-
-        if (!currentStoreId) {
-          await renderStoreSelector();
-          showScreen("step-stores");
-          hideLoader();
-        } else {
-          // Already have store ID, check existance (optional) and move to login
-          checkLoginStatus();
-        }
-      }
-
-      function hideLoader() {
-        document.getElementById("loader").classList.remove("active");
-      }
-      function showScreen(id) {
-        document
-          .querySelectorAll(".screen, .center-screen")
-          .forEach((el) => el.classList.remove("active"));
-        document.getElementById(id).classList.add("active");
-
-        // Show/Hide Bottom Bar
-        if (id === "step-menu") {
-          document.getElementById("bottom-bar").style.display = "flex";
-        } else {
-          document.getElementById("bottom-bar").style.display = "none";
-        }
-      }
-
-      // --- Step 0: Stores ---
-      async function renderStoreSelector() {
-        const list = document.getElementById("store-list-container");
-        list.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
-
-        try {
-          // 1. Fetch Stores and Items
-          const [storesSnap, itemsSnap] = await Promise.all([
-             getDocs(collection(db, "stores")),
-             getDocs(collection(db, "items"))
-          ]);
-
-          // 2. Map items to stores
-          const itemsByStore = {};
-          itemsSnap.forEach(doc => {
-              const d = doc.data();
-              if(!d.isAvailable) return; // Skip sold out for preview? Maybe show but dim? Let's show available only for "Menu Preview"
-              if(!d.storeId) return;
-              
-              if(!itemsByStore[d.storeId]) itemsByStore[d.storeId] = [];
-              itemsByStore[d.storeId].push(d);
-          });
-
-          list.innerHTML = "";
-          
-          if(storesSnap.empty) {
-             list.innerHTML = "<p>店舗が見つかりません</p>";
-             return;
-          }
-
-          storesSnap.forEach((doc) => {
-            const data = doc.data();
-            const storeId = doc.id;
-            const items = itemsByStore[storeId] || [];
-
-            // User requirement: Image filename = storeId + ".png" in ../images/
-            const imgSrc = `../images/${storeId}.png`;
-
-            // Create Card
-            const card = document.createElement("div");
-            card.className = "store-card animate__animated animate__fadeIn";
-            card.onclick = () => {
-              currentStoreId = doc.id;
-              const newUrl = new URL(window.location);
-              newUrl.searchParams.set("storeId", currentStoreId);
-              window.history.pushState({}, "", newUrl);
-              checkLoginStatus();
-            };
-            
-            // Build Preview Tags (Top 3 items)
-            // ... (keep existing tag logic) ...
-            // const items = itemsByStore[storeId] || []; // Already declared above
-            const topItems = items.slice(0, 4);
-            let tagsHtml = "";
-            topItems.forEach(i => {
-                tagsHtml += `<span class="preview-tag">${i.name}</span>`;
-            });
-            if(items.length > 4) {
-                tagsHtml += `<span class="preview-tag">+${items.length - 4}</span>`;
-            }
-            if(items.length === 0) {
-                tagsHtml += `<span class="preview-tag" style="background:#fff0f0; color:#c00;">準備中</span>`;
-            }
-
-            // Render Card Structure
-            card.innerHTML = `
-                <div class="store-card-header">
-                    <img 
-                       id="store-img-${storeId}"
-                       src="${imgSrc}"
-                       class="store-img-circle" 
-                       onerror="this.onerror=null; this.src='../images/noimage.png';" 
-                    >
-                    <div class="store-info-box">
-                        <div class="store-name-lg">${data.name || "名称未設定"}</div>
-                        <div class="store-team-sm">${data.teamName || ""}</div>
-                    </div>
-                </div>
-                <div class="store-products-preview">
-                    <span class="preview-label">取り扱いメニュー</span>
-                    <div class="preview-tags">
-                        ${tagsHtml}
-                    </div>
-                </div>
-            `;
-            list.appendChild(card);
-            
-            // Removed async loader call here
-            
-          });
-        } catch (e) {
-          console.error(e);
-          list.innerHTML = `<p class="text-danger">読み込みエラー<br>${e.message}</p>`;
-        }
-      }
-
-      // --- Step 1: Auth & Onboarding Logic ---
-      function checkLoginStatus() {
-        onAuthStateChanged(auth, async (user) => {
+      function init() {
+        onAuthStateChanged(auth, (user) => {
           currentUser = user;
-          hideLoader();
           if (user) {
-             // 1. Check persistence
-             try {
-                // Check if user has completed onboarding
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists() && userDoc.data().onboardingCompleted) {
-                    // Skip to menu
-                    showScreen("step-menu");
-                    loadMenu();
-                    return;
-                }
-             } catch(e) {
-                console.error("User doc check failed", e);
-             }
-             
-             // If not completed, show onboarding
-             showScreen("step-onboarding");
-             
+            // Logged in
+            checkFlow();
           } else {
+            // Not logged in
             showScreen("step-login");
+            loader.style.display = "none";
           }
         });
       }
 
-      document.getElementById("btn-google-login").onclick = async () => {
+      // --- Flow Control ---
+      async function checkFlow() {
+        // Notification Check
+        if (Notification.permission === "default") {
+          showScreen("step-notification");
+        } else {
+          // Already granted or denied, proceed to Terms
+          if (Notification.permission === "granted") {
+            saveToken(); // Ensure token is up to date
+          }
+          showScreen("step-terms");
+        }
+        loader.style.display = "none";
+      }
+
+      window.skipNotification = () => {
+        showScreen("step-terms");
+      };
+
+      // --- Action Handlers ---
+      document.getElementById("btn-login").onclick = async () => {
         try {
           await signInWithPopup(auth, new GoogleAuthProvider());
         } catch (e) {
-          alert("ログイン失敗: " + e.message);
+          alert("ログインエラー: " + e.message);
         }
       };
 
-      // --- Step 2: Onboarding (New One-Screen Flow) ---
-      window.handleOnboarding = async () => {
-         const btn = document.getElementById("btn-onboard-finish");
-         const chk = document.getElementById("chk-agree");
-         
-         if(!chk.checked) {
-             alert("利用規約への同意が必要です。");
-             return;
-         }
-         
-         btn.disabled = true;
-         btn.innerText = "設定中...";
-         
-         // 1. Notification (Optional but requested)
-         let token = null;
-         try {
-             const permission = await Notification.requestPermission();
-             if(permission === 'granted') {
-                 token = await getToken(messaging, {
-                    vapidKey: VAPID_KEY,
-                    serviceWorkerRegistration: await navigator.serviceWorker.register("./firebase-messaging-sw.js")
-                 });
-             }
-         } catch(e) {
-             console.warn("Notification setup failed", e);
-         }
-         
-         // 2. Save User Data (Persistence)
-         try {
-             const updateData = {
-                 onboardingCompleted: true,
-                 completedAt: serverTimestamp(),
-                 email: currentUser.email,
-                 displayName: currentUser.displayName
-             };
-             if(token) {
-                 updateData.fcmToken = token;
-                 updateData.notificationEnabled = true;
-             }
-             
-             await setDoc(doc(db, "users", currentUser.uid), updateData, { merge: true });
-             
-             // 3. Go to Menu
-             showScreen("step-menu");
-             loadMenu();
-             
-         } catch(e) {
-             console.error(e);
-             alert("設定の保存に失敗しました。もう一度お試しください。");
-             btn.disabled = false;
-             btn.innerText = "同意して注文を始める";
-         }
-      }
-      
-      // --- Step 3: Menu ---
-      async function loadMenu() {
-        // Set Store Name Header
+      document.getElementById("btn-req-notification").onclick = async () => {
         try {
-          const storeDoc = await getDoc(doc(db, "stores", currentStoreId));
-          if (storeDoc.exists()) {
-             const d = storeDoc.data();
-             const headerHtml = `
-                <div class="d-flex align-items-center gap-2">
-                    <img src="../images/${storeDoc.id}.png" 
-                         class="store-avatar-sm" onerror="this.onerror=null;this.src='../images/noimage.png'">
-                    <h5 class="menu-title">${d.name}</h5>
-                </div>
-                <button class="btn btn-sm btn-light rounded-pill" onclick="deselectStore()">
-                   <i class="bi bi-x-lg"></i>
-                </button>
-             `;
-             document.getElementById("menu-header-content").innerHTML = headerHtml;
+          const p = await Notification.requestPermission();
+          if (p === "granted") {
+            await saveToken();
           }
         } catch (e) {
+          console.warn(e);
+        }
+        showScreen("step-terms");
+      };
+
+      document.getElementById("check-terms").onchange = (e) => {
+        document.getElementById("btn-agree-terms").disabled = !e.target.checked;
+      };
+
+      document.getElementById("btn-agree-terms").onclick = async () => {
+        loader.style.display = "flex";
+        // Proceed to Store Select
+        await loadStores();
+        showScreen("step-stores");
+        loader.style.display = "none";
+      };
+
+      async function saveToken() {
+        try {
+          // 明示的にService Workerを登録 (ローカル/本番の両パスに対応できるよう相対パス指定)
+          // pos/mobile-order.html から見て同じ階層にある sw を指す
+          const swReg = await navigator.serviceWorker.register(
+            "./firebase-messaging-sw.js"
+          );
+
+          const token = await getToken(messaging, {
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: swReg,
+          });
+
+          if (token && currentUser) {
+            await setDoc(
+              doc(db, "users", currentUser.uid),
+              {
+                fcmToken: token,
+                notificationEnabled: true,
+                lastLogin: serverTimestamp(),
+              },
+              { merge: true }
+            );
+          }
+        } catch (e) {
+          console.warn("Token save failed", e);
+        }
+      }
+
+      async function loadStores() {
+        const list = document.getElementById("store-list");
+        list.innerHTML = "";
+        try {
+          const snap = await getDocs(collection(db, "stores"));
+
+          if (snap.empty) {
+            list.innerHTML = "<p>店舗が見つかりません</p>";
+            return;
+          }
+
+          snap.forEach((d) => {
+            const data = d.data();
+            // 画像取得 (Storage優先)
+            // 今回は簡易的に ../images/{id}.png を使用
+            const imgSrc = `../images/${d.id}.png`;
+
+            const el = document.createElement("div");
+            el.className = "store-card animate__animated animate__fadeInUp";
+            el.innerHTML = `
+                    <img src="${imgSrc}" class="str-img" onerror="this.onerror=null;this.src='../images/noimage.png'">
+                    <div class="store-info">
+                       <h3>${data.name}</h3>
+                       <small class="text-muted">${data.teamName || ""}</small>
+                    </div>
+                 `;
+            el.onclick = () => selectStore(d.id, data.name);
+            list.appendChild(el);
+          });
+        } catch (e) {
+          list.innerHTML = `<p class="text-danger">読み込み失敗: ${e.message}</p>`;
           console.error(e);
         }
+      }
 
-        // Fetch Items
-        const q = query(
-          collection(db, "items"),
-          where("storeId", "==", currentStoreId)
-        );
-        const snap = await getDocs(q);
-        products = [];
-        const grid = document.getElementById("product-grid");
-        grid.innerHTML = "";
-        
-        snap.forEach((d) => {
-             const data = d.data();
-             if(!data.isAvailable) return; // Optional: Show sold out? User said "sold out badge". 
-             // Let's include "isAvailable" logic in rendering
-             
-             products.push({ id: d.id, ...data });
-        });
-        
-        // Render All (No Filter)
-        if(products.length === 0) {
-            grid.innerHTML = "<p class='p-4 text-center text-muted'>商品がありません</p>";
-            return;
+      window.selectStore = (storeId, storeName) => {
+        currentStoreId = storeId;
+        document.getElementById("menu-store-name").textContent = storeName;
+        showScreen("step-menu");
+        loadMenu(storeId);
+      };
+
+      window.backToStores = () => {
+        currentStoreId = null;
+        showScreen("step-stores");
+        document.getElementById("bottom-bar").style.display = "none";
+      };
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+
+        // Force hide bottom bar if not menu (Safety check)
+        const bar = document.getElementById("bottom-bar");
+        if (id !== "step-menu") {
+          bar.style.display = "none";
         }
-        
-        products.forEach(p => {
-            const isSoldOut = p.isAvailable === false; // Explicit check if false
-            // Note: firestore rules or previous logic might filter available. 
-            // The previous code had "if (!p.isAvailable)" in render. 
-            // My query above fetches ALL.
-            
-            // Layout: Grid with big image
-            const card = document.createElement("div");
-            card.className = "menu-card animate__animated animate__fadeInUp"; // Added animation
-            if(isSoldOut) card.style.opacity = "0.7";
-            
-            card.onclick = () => {
-                if(isSoldOut) return;
-                openItemModal(p.id);
+
+        window.scrollTo(0, 0);
+      }
+
+      // --- Image Helper ---
+      async function setProductImage(imgEl, product) {
+        // Reset to placeholder or clear
+        imgEl.src = "../images/noimage.png";
+
+        // Priority: imageURL (Firestore field) -> Fallback to noimage
+        // Note: User specified "imageURL" but we check "imageUrl" too just in case
+        const pathOrUrl = product.imageURL || product.imageUrl;
+
+        if (!pathOrUrl) {
+          // No image defined, keep placeholder
+          return;
+        }
+
+        if (pathOrUrl.startsWith("http") || pathOrUrl.startsWith("data:")) {
+          imgEl.src = pathOrUrl;
+        } else {
+          // Assume Firebase Storage path
+          try {
+            const url = await getDownloadURL(sRef(storage, pathOrUrl));
+            imgEl.src = url;
+          } catch (e) {
+            console.warn("Storage image load failed:", pathOrUrl, e);
+            imgEl.src = "../images/noimage.png";
+          }
+        }
+
+        imgEl.onerror = () => {
+          imgEl.src = "../images/noimage.png";
+        };
+      }
+
+      // --- Menu Logic ---
+      window.loadMenu = async (storeId) => {
+        const grid = document.getElementById("menu-grid");
+        grid.innerHTML = '<div class="spinner-border text-primary"></div>';
+        products = [];
+
+        try {
+          const q = query(
+            collection(db, "items"),
+            where("storeId", "==", storeId)
+          );
+          const snap = await getDocs(q);
+          grid.innerHTML = "";
+
+          snap.forEach((d) => {
+            const p = d.data();
+            p.id = d.id;
+            products.push(p);
+
+            const isSoldOut = p.isAvailable === false;
+            const el = document.createElement("div");
+            el.className = "menu-card animate__animated animate__fadeIn";
+            if (isSoldOut) el.style.opacity = "0.7";
+
+            el.innerHTML = `
+                  <div class="menu-img-box">
+                     ${
+                       isSoldOut
+                         ? '<div class="sold-out-badge"><span class="sold-out-text">SOLD OUT</span></div>'
+                         : ""
+                     }
+                     <img class="menu-img" id="img-${p.id}">
+                  </div>
+                  <div class="menu-info">
+                     <div class="fw-bold text-truncate">${p.name}</div>
+                     <div class="fw-bold mt-1">¥${p.price}</div>
+                  </div>
+               `;
+
+            // Set Image Async
+            const imgEl = el.querySelector(".menu-img");
+            setProductImage(imgEl, p);
+
+            el.onclick = () => {
+              if (!isSoldOut) openItemModal(p);
             };
-            
-            // Image Logic
-            // 1. Use 'imageUrl' from Firestore if available (Best)
-            // 2. Fallback to local image based on name
-            let imgSrc = "../images/noimage.png";
-            if (p.imageUrl) {
-                imgSrc = p.imageUrl;
-            } else if (p.image) {
-                 // Legacy/Manual path support if strictly needed, but let's rely on imageUrl or noimage for now as per user hint.
-                 imgSrc = `../images/${p.image}`;
-            } else {
-                 // Try local check
-                 imgSrc = `../images/${p.name}.png`;
-            }
+            grid.appendChild(el);
+          });
 
-            const soldOutHtml = isSoldOut ? 
-               `<div class="sold-out-badge"><span class="sold-out-text">SOLD OUT</span></div>` : "";
+          if (products.length === 0) grid.innerHTML = "<p>商品がありません</p>";
 
-            card.innerHTML = `
-                <div class="menu-img-box" style="position:relative; overflow:hidden;">
-                    ${soldOutHtml}
-                    <!-- Actual Image -->
-                    <img 
-                      id="menu-img-${p.id}"
-                      alt="${p.name}" 
-                      src="${imgSrc}"
-                      onerror="this.onerror=null; this.src='../images/noimage.png';"
-                      style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"
-                    >
-                </div>
-                <div class="menu-info">
-                    <div class="menu-name">${p.name}</div>
-                    <div class="menu-price">¥${p.price}</div>
-                </div>
-            `;
-            grid.appendChild(card);
+          // Show bottom bar if cart has items
+          updateBottomBar();
+        } catch (e) {
+          console.error(e);
+          grid.innerHTML = "<p>読み込み失敗</p>";
+        }
+      };
+
+      // --- Item Detail & Customization ---
+      window.openItemModal = (product) => {
+        selectingProduct = product;
+        selectingQty = 1;
+        currentMode = null;
+        currentMods = [];
+
+        document.getElementById("modal-item-name").textContent = product.name;
+        document.getElementById(
+          "modal-item-price"
+        ).textContent = `¥${product.price}`;
+        document.getElementById("modal-item-qty").textContent = selectingQty;
+
+        // Set Image
+        const imgEl = document.getElementById("modal-item-img");
+        setProductImage(imgEl, product);
+
+        // Setup Customization
+        renderCustomizationUI();
+
+        // Reset Collapse state
+        const collapseEl = document.getElementById("customization-collapse");
+        if (collapseEl) {
+          collapseEl.classList.remove("show");
+        }
+
+        if (!itemModal)
+          itemModal = new bootstrap.Modal(document.getElementById("itemModal"));
+        itemModal.show();
+      };
+
+      function renderCustomizationUI() {
+        const area = document.getElementById("customization-area");
+        const list = document.getElementById("topping-list");
+        // Show area if allowedToppings exist
+        const allowed = selectingProduct.allowedToppings || [];
+
+        if (allowed.length === 0) {
+          area.style.display = "none";
+        } else {
+          area.style.display = "block";
+          // Buttons
+          list.innerHTML = "";
+          allowed.forEach((t) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "topping-btn";
+            btn.dataset.target = t; // Add dataset for easier selection
+            btn.textContent = t;
+            btn.onclick = () => toggleMod(t);
+            list.appendChild(btn);
+          });
+          updateModeBtns();
+          renderActiveMods();
+          updateToppingBtnStyles(); // Initialize styles
+        }
+
+        // Clear previous selection display
+        document.getElementById("active-mods-display").style.display = "none";
+      }
+
+      window.setMode = (mode) => {
+        currentMode = currentMode === mode ? null : mode;
+        updateModeBtns();
+      };
+
+      function updateToppingBtnStyles() {
+        const toppingBtns = document.querySelectorAll(
+          "#topping-list .topping-btn"
+        );
+        toppingBtns.forEach((btn) => {
+          const target = btn.dataset.target;
+          const mod = currentMods.find((m) => m.target === target);
+
+          btn.classList.remove("mod-selected-no", "mod-selected-add");
+          if (mod) {
+            if (mod.mode === "NO") btn.classList.add("mod-selected-no");
+            if (mod.mode === "ADD") btn.classList.add("mod-selected-add");
+          }
         });
       }
 
-      // No more filtering logic needed
+      function updateModeBtns() {
+        document.querySelectorAll(".mode-btn").forEach((btn) => {
+          if (btn.dataset.mode === currentMode) btn.classList.add("active");
+          else btn.classList.remove("active");
+        });
 
-
-      // --- Cart Logic ---
-      function openItemModal(prodId) {
-        const p = products.find((x) => x.id === prodId);
-        if (!p) return;
-
-        selectingProduct = p;
-        selectingQty = 1;
-
-        document.getElementById("detail-name").textContent = p.name;
-        document.getElementById("detail-price").textContent = `¥${p.price}`;
-        document.getElementById("detail-qty").textContent = selectingQty;
-
-        itemModalInstance.show();
+        // Ensure buttons are enabled (removed btn-disabled styling to avoid confusion)
+        const toppingBtns = document.querySelectorAll(
+          "#topping-list .topping-btn"
+        );
+        toppingBtns.forEach((btn) => {
+          btn.disabled = false;
+          btn.classList.remove("btn-disabled");
+        });
       }
 
-      window.adjustDetailQty = (delta) => {
+      function toggleMod(target) {
+        if (!currentMode) {
+          // Provide visual feedback instead of alert
+          const modeContainer = document.querySelector(".mode-toggle");
+          modeContainer.classList.remove(
+            "animate__animated",
+            "animate__headShake"
+          );
+          void modeContainer.offsetWidth; // Force reflow
+          modeContainer.classList.add(
+            "animate__animated",
+            "animate__headShake"
+          );
+          return;
+        }
+
+        const existingIdx = currentMods.findIndex((m) => m.target === target);
+
+        if (existingIdx >= 0) {
+          const existing = currentMods[existingIdx];
+          // If same mode, toggle OFF (remove)
+          if (existing.mode === currentMode) {
+            currentMods.splice(existingIdx, 1);
+          } else {
+            // If different mode, Overwrite
+            existing.mode = currentMode;
+          }
+        } else {
+          // New
+          currentMods.push({ mode: currentMode, target: target });
+        }
+        renderActiveMods();
+        updateToppingBtnStyles();
+      }
+
+      function renderActiveMods() {
+        const div = document.getElementById("active-mods-list");
+        div.innerHTML = "";
+        currentMods.forEach((m) => {
+          const span = document.createElement("span");
+          span.className = `mod-tag ${m.mode.toLowerCase()}`;
+          span.textContent = `${m.mode} ${m.target}`;
+          div.appendChild(span);
+        });
+      }
+
+      window.adjustQty = (delta) => {
         selectingQty += delta;
         if (selectingQty < 1) selectingQty = 1;
-        document.getElementById("detail-qty").textContent = selectingQty;
+        document.getElementById("modal-item-qty").textContent = selectingQty;
       };
 
       window.commitAddToCart = () => {
-        // Check if exists
-        const existing = cart.find((c) => c.product.id === selectingProduct.id);
+        // Add to Cart
+        const sortedNewMods = [...currentMods].sort((a, b) =>
+          (a.mode + a.target).localeCompare(b.mode + b.target)
+        );
+        const newModsStr = JSON.stringify(sortedNewMods);
+
+        const existing = cart.find((c) => {
+          if (c.productId !== selectingProduct.id) return false;
+          const cMods = [...c.customizations].sort((a, b) =>
+            (a.mode + a.target).localeCompare(b.mode + b.target)
+          );
+          return JSON.stringify(cMods) === newModsStr;
+        });
+
         if (existing) {
           existing.quantity += selectingQty;
         } else {
           cart.push({
-            product: selectingProduct,
+            uniqueId: Date.now() + Math.random(),
+            productId: selectingProduct.id,
+            name: selectingProduct.name,
+            price: selectingProduct.price,
             quantity: selectingQty,
-            itemTotal: selectingProduct.price * selectingQty,
+            customizations: sortedNewMods,
+            allowedToppings: selectingProduct.allowedToppings || [],
           });
         }
-        updateCartUI();
-        itemModalInstance.hide();
+
+        updateBottomBar();
+        itemModal.hide();
       };
 
-      function updateCartUI() {
-        const totalQty = cart.reduce((acc, c) => acc + c.quantity, 0);
-        const totalPrice = cart.reduce(
-          (acc, c) => acc + c.product.price * c.quantity,
-          0
-        );
+      // --- Cart Logic ---
+      window.openCart = () => {
+        renderCartList();
+        if (!cartModal)
+          cartModal = new bootstrap.Modal(document.getElementById("cartModal"));
+        cartModal.show();
+      };
 
-        // Update Bottom Bar
-        const bar = document.getElementById("bottom-bar");
-        if(cart.length > 0) {
-            bar.style.display = "flex";
-            document.getElementById("cart-badge-count").textContent = `${totalQty}点`;
-            document.getElementById("cart-total-display-bar").textContent = `¥${totalPrice}`;
-        } else {
-            bar.style.display = "none";
-        }
+      function renderCartList() {
+        const list = document.getElementById("cart-list");
+        list.innerHTML = "";
+        let total = 0;
 
-        // Update Modal
-        const cartList = document.getElementById("cart-items-container");
-        cartList.innerHTML = "";
         cart.forEach((c, idx) => {
-          const row = document.createElement("div");
-          row.className = "cart-item";
-          row.innerHTML = `
-             <div class="cart-item-info">
-               <h6>${c.product.name}</h6>
-               <span class="cart-item-price">¥${c.product.price}</span>
-             </div>
-             <div class="qty-control">
-               <button class="qty-btn" onclick="updateCartItem(${idx}, -1)">-</button>
-               <span class="mx-2 fw-bold">${c.quantity}</span>
-               <button class="qty-btn" onclick="updateCartItem(${idx}, 1)">+</button>
-             </div>
-           `;
-          cartList.appendChild(row);
+          total += c.price * c.quantity;
+          const el = document.createElement("div");
+          el.className = "cart-item";
+
+          let modsHtml = "";
+          c.customizations.forEach((m) => {
+            modsHtml += `<span class="badge bg-secondary me-1" style="font-size:0.7rem">${m.mode} ${m.target}</span>`;
+          });
+
+          el.innerHTML = `
+               <div class="cart-item-details">
+                  <h5>${c.name}</h5>
+                  <div class="text-muted">¥${c.price} x ${c.quantity}</div>
+                  <div class="cart-item-mods">${modsHtml}</div>
+               </div>
+               <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${idx})">削除</button>
+            `;
+          list.appendChild(el);
         });
 
-        document.getElementById(
-          "cart-total-display"
-        ).textContent = `¥${totalPrice}`;
-        // checkout-total might be in checkout modal, keeping it updated is fine
-        const coTotal = document.getElementById("checkout-total");
-        if(coTotal) coTotal.textContent = `¥${totalPrice}`;
+        document.getElementById("cart-total-modal").textContent = `¥${total}`;
+        if (cart.length === 0)
+          list.innerHTML = "<p class='p-3 text-center'>カートは空です</p>";
       }
 
-      window.openCartModal = () => {
-        updateCartUI();
-        cartModalInstance.show();
-      };
-
-      window.updateCartItem = (idx, delta) => {
-        cart[idx].quantity += delta;
-        if (cart[idx].quantity <= 0) {
-          cart.splice(idx, 1);
-        }
-        updateCartUI();
+      window.removeFromCart = (idx) => {
+        cart.splice(idx, 1);
+        renderCartList();
+        updateBottomBar();
+        if (cart.length === 0) cartModal.hide();
       };
 
       window.clearCart = () => {
-        if (confirm("カートを空にしますか？")) {
+        if (confirm("本当に削除しますか？")) {
           cart = [];
-          updateCartUI();
-          cartModalInstance.hide();
+          renderCartList();
+          updateBottomBar();
+          cartModal.hide();
         }
       };
 
-      window.openCheckoutModal = () => {
-        updateCartUI();
-        if (cart.length === 0) return;
-        cartModalInstance.hide();
-        checkoutModalInstance.show();
-      };
+      function updateBottomBar() {
+        const bar = document.getElementById("bottom-bar");
+        // Strictly check if we are on the menu screen
+        const menuScreen = document.getElementById("step-menu");
+        // Note: checking classList.contains("active") might be flaky if called during transition
+        // So we also check if the active screen is indeed step-menu
+        const activeScreen = document.querySelector(".screen.active");
+
+        if (!activeScreen || activeScreen.id !== "step-menu") {
+          bar.style.display = "none";
+          return;
+        }
+
+        if (cart.length === 0) {
+          bar.style.display = "none";
+        } else {
+          bar.style.display = "flex";
+          let total = 0;
+          let count = 0;
+          cart.forEach((c) => {
+            total += c.price * c.quantity;
+            count += c.quantity;
+          });
+          document.getElementById("bar-total").textContent = `¥${total}`;
+          const countEl = document.getElementById("bar-count-text");
+          if (countEl) countEl.textContent = `${count}点`;
+        }
+      }
 
       // --- Checkout ---
-      window.processOrder = async () => {
-        const btn = document.getElementById("btn-final-order");
-        btn.disabled = true;
-        btn.textContent = "処理中...";
+      window.backToMenu = () => {
+        showScreen("step-menu");
+        // Restore bottom bar
+        updateBottomBar();
+      };
 
+      window.checkout = () => {
+        // Close Cart Modal
+        if (cartModal) cartModal.hide();
+
+        // Populate Checkout Screen
+        const storeName =
+          document.getElementById("menu-store-name").textContent;
+        document.getElementById("checkout-store-name").textContent = storeName;
+
+        const list = document.getElementById("checkout-items-list");
+        list.innerHTML = "";
+        let total = 0;
+
+        cart.forEach((c) => {
+          total += c.price * c.quantity;
+          let modsHtml = "";
+          c.customizations.forEach((m) => {
+            // Color code the customization tags
+            const colorClass =
+              m.mode === "NO"
+                ? "text-danger border-danger"
+                : "text-success border-success";
+            modsHtml += `<span class="badge bg-white border ${colorClass} me-1 mb-1" style="font-size:0.8rem">${m.mode} ${m.target}</span>`;
+          });
+
+          const div = document.createElement("div");
+          div.className =
+            "list-group-item p-3 border-0 border-bottom d-flex justify-content-between align-items-start";
+          div.innerHTML = `
+                <div class="me-3" style="flex: 1;">
+                  <div class="fw-bold mb-2" style="font-size: 1.15rem;">${
+                    c.name
+                  }</div>
+                  <div class="mb-2 d-flex flex-wrap">${
+                    modsHtml || '<span class="text-muted small">変更なし</span>'
+                  }</div>
+                  <div class="text-muted small d-flex align-items-center">
+                    <span class="me-2">単価 ¥${c.price}</span>
+                    <span class="badge bg-light text-dark border">x${
+                      c.quantity
+                    }</span>
+                  </div>
+                </div>
+                <div class="fw-bold fs-5 text-nowrap mt-1">¥${
+                  c.price * c.quantity
+                }</div>
+             `;
+          list.appendChild(div);
+        });
+
+        document.getElementById("checkout-total").textContent = `¥${total}`;
+
+        // Hide bottom bar for this screen
+        document.getElementById("bottom-bar").style.display = "none";
+        showScreen("step-checkout");
+      };
+
+      window.finalizeOrder = async () => {
+        // Double Check (Browser Alert)
+        if (!confirm("本当に注文を確定してよろしいですか？")) return;
+
+        loader.style.display = "flex";
         try {
-          // Use server-side function to create order securely
-          const createOnlineOrder = httpsCallable(
-            functions,
-            "createOnlineOrder"
-          );
-
-          // Note: We only send storeId. The server will fetch cart items from 'users/{uid}/cart'.
-          // However, our current logic uses a local 'cart' variable, not Firestore-based cart.
-          // We need to implement syncing cart to Firestore or modify the function.
-          // Given the existing function code (lines 145-167 of index.js), it expects a Firestore-based cart at `users/${uid}/cart`.
-
-          // STEP 0: Sync local cart to Firestore 'users/{uid}/cart'
-          // This is necessary because the secure function expects data there.
-          const userCartCollection = collection(
-            db,
-            `users/${currentUser.uid}/cart`
-          );
-
-          // clear existing server cart first (optional but safer)
-          // Ideally we would sync continuously, but for now we sync before checkout.
-          const existingCartSnap = await getDocs(userCartCollection);
+          // 1. Sync Cart again just to be sure
+          const cartRef = collection(db, `users/${currentUser.uid}/cart`);
           const batch = writeBatch(db);
-          existingCartSnap.forEach((doc) => batch.delete(doc.ref));
+
+          const oldSnap = await getDocs(cartRef);
+          oldSnap.forEach((d) => batch.delete(d.ref));
 
           cart.forEach((c) => {
-            const docRef = doc(userCartCollection, c.product.id);
-            batch.set(docRef, {
+            const ref = doc(cartRef);
+            batch.set(ref, {
+              productId: c.productId,
               quantity: c.quantity,
-              // サーバー関数修正に合わせて、customizations (options) も保存
-              customizations: c.customizations || [],
+              customizations: c.customizations,
               updatedAt: serverTimestamp(),
             });
           });
           await batch.commit();
 
-          // STEP 1: Call Secure Function
-          const result = await createOnlineOrder({
-            storeId: currentStoreId,
-          });
+          // 2. Call Function
+          const createOnlineOrder = httpsCallable(
+            functions,
+            "createOnlineOrder"
+          );
+          const result = await createOnlineOrder({ storeId: currentStoreId });
+          if (!result.data.success)
+            throw new Error(result.data.error || "Order Failed");
 
-          if (!result.data.success) {
-            throw new Error(result.data.error || "注文作成に失敗しました");
-          }
-
-          const orderId = result.data.orderId;
-
-          // 4. Redirect
-          window.location.href = `status.html?orderId=${orderId}`;
+          // 3. Redirect
+          window.location.href = `status.html?orderId=${result.data.orderId}`;
         } catch (e) {
           console.error(e);
-          alert(`注文エラー: ${e.message}`);
-          btn.disabled = false;
-          btn.textContent = "注文を確定する";
+          alert("注文処理に失敗しました: " + e.message);
+          loader.style.display = "none";
         }
       };
 
-      // Start
       init();
     </script>
   </body>

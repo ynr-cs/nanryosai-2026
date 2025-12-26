@@ -160,47 +160,52 @@ exports.createOnlineOrder = functions
       const orderItems = [];
       let totalPrice = 0;
 
-      // 商品詳細を取得（Parallel Fetch）
-      const itemRefs = [];
-      const cartItemsMap = {}; // itemId -> quantity
+      // カート内容をパースして必要な商品IDを収集
+      const cartItems = [];
+      const productIds = new Set();
 
       cartSnapshot.forEach((doc) => {
         const d = doc.data();
-        if (d.quantity > 0) {
-          itemRefs.push(db.collection("items").doc(doc.id));
-          // fix: Store customizations as well
-          cartItemsMap[doc.id] = {
+        // 数量とproductIdがあるものだけ対象
+        if (d.quantity > 0 && d.productId) {
+          cartItems.push({
+            productId: d.productId,
             quantity: d.quantity,
             customizations: d.customizations || [],
-          };
+          });
+          productIds.add(d.productId);
         }
       });
 
-      if (itemRefs.length === 0) {
+      if (cartItems.length === 0) {
         throw new functions.https.HttpsError(
           "failed-precondition",
           "有効な商品がありません。"
         );
       }
 
+      // 商品マスタを一括取得
+      const itemRefs = Array.from(productIds).map((id) =>
+        db.collection("items").doc(id)
+      );
       const productDocs = await db.getAll(...itemRefs);
+      const productMap = new Map();
 
-      productDocs.forEach((pDoc) => {
-        if (!pDoc.exists) return; // 商品削除済みなど
-        const pData = pDoc.data();
-
-        // バリデーション: 店舗一致チェックなど
-        if (pData.storeId !== storeId) return;
-
-        const cartInfo = cartItemsMap[pDoc.id];
-        const qty = cartInfo.quantity;
-
-        // [Critical] 数量バリデーション
-        if (!Number.isInteger(qty) || qty <= 0) {
-          // Skip invalid quantity items or throw error. Here we skip.
-          console.warn(`Invalid quantity for item ${pDoc.id}: ${qty}`);
-          return;
+      productDocs.forEach((doc) => {
+        if (doc.exists) {
+          productMap.set(doc.id, doc.data());
         }
+      });
+
+      // 注文明細の構築
+      for (const item of cartItems) {
+        const pData = productMap.get(item.productId);
+
+        if (!pData) continue; // 商品マスタが存在しない（削除済みなど）
+
+        // バリデーション: 店舗一致チェック
+        // ※String/Numberの型不一致を防ぐため == で比較、あるいは String()変換
+        if (String(pData.storeId) !== String(storeId)) continue;
 
         // [Medium] 売り切れチェック
         if (!pData.isAvailable) {
@@ -210,24 +215,24 @@ exports.createOnlineOrder = functions
           );
         }
 
-        const subTotal = pData.price * qty;
+        const subTotal = pData.price * item.quantity;
+        totalPrice += subTotal;
 
         orderItems.push({
-          itemId: pDoc.id,
+          itemId: item.productId, // 注文履歴上の互換性のため itemId とする
+          productId: item.productId,
           name: pData.name,
           price: pData.price,
-          quantity: qty,
-          options: pData.options || [], // 商品マスタのオプション定義（もしあれば）
-          customizations: cartInfo.customizations,
+          quantity: item.quantity,
+          options: pData.options || [],
+          customizations: item.customizations,
         });
-
-        totalPrice += subTotal;
-      });
+      }
 
       if (orderItems.length === 0) {
         throw new functions.https.HttpsError(
           "failed-precondition",
-          "注文可能な商品がありません。"
+          "注文可能な商品がありません（店舗ID不一致または商品削除）。"
         );
       }
 
@@ -641,10 +646,12 @@ exports.createPOSOrder = functions
     }
   });
 
-exports.sendOrderUpdateNotification = onDocumentUpdated({
+exports.sendOrderUpdateNotification = onDocumentUpdated(
+  {
     document: "orders/{orderId}",
-    region: "asia-northeast1"
-}, async (event) => {
+    region: "asia-northeast1",
+  },
+  async (event) => {
     const newData = event.data.after.data();
     const previousData = event.data.before.data();
     const orderId = event.params.orderId;
@@ -654,15 +661,15 @@ exports.sendOrderUpdateNotification = onDocumentUpdated({
 
     // ユーザーIDを取得
     const userId = newData.userId;
-    
+
     // ユーザーのFCMトークンをFirestoreから取得
     const userSnapshot = await db.collection("users").doc(userId).get();
     const userData = userSnapshot.data();
     const fcmToken = userData?.fcmToken;
 
     if (!fcmToken) {
-        console.log(`User ${userId} has no FCM token.`);
-        return;
+      console.log(`User ${userId} has no FCM token.`);
+      return;
     }
 
     // ステータスに応じたメッセージ内容
@@ -670,38 +677,40 @@ exports.sendOrderUpdateNotification = onDocumentUpdated({
     let body = "";
 
     switch (newData.status) {
-        case "ready_for_pickup":
-            title = "🍳 商品の準備ができました！";
-            body = `ご注文（受付番号: ${newData.receiptNumber}）の準備ができました。提供口までお越しください。`;
-            break;
-            
-        case "cancelled":
-            title = "⚠️ ご注文キャンセルのお知らせ";
-            body = "申し訳ありません。店舗の都合によりご注文がキャンセルされました。";
-            break;
-            
-        default:
-            return; // その他のステータス変更では通知しない
+      case "ready_for_pickup":
+        title = "🍳 商品の準備ができました！";
+        body = `ご注文（受付番号: ${newData.receiptNumber}）の準備ができました。提供口までお越しください。`;
+        break;
+
+      case "cancelled":
+        title = "⚠️ ご注文キャンセルのお知らせ";
+        body =
+          "申し訳ありません。店舗の都合によりご注文がキャンセルされました。";
+        break;
+
+      default:
+        return; // その他のステータス変更では通知しない
     }
 
     // 通知メッセージの構築
     const message = {
-        notification: {
-            title: title,
-            body: body,
-        },
-        data: {
-            orderId: orderId,
-            url: `/status.html?orderId=${orderId}` 
-        },
-        token: fcmToken
+      notification: {
+        title: title,
+        body: body,
+      },
+      data: {
+        orderId: orderId,
+        url: `/status.html?orderId=${orderId}`,
+      },
+      token: fcmToken,
     };
 
     // 送信
     try {
-        await getMessaging().send(message);
-        console.log(`Notification sent to ${userId} for order ${orderId}`);
+      await getMessaging().send(message);
+      console.log(`Notification sent to ${userId} for order ${orderId}`);
     } catch (error) {
-        console.error("Error sending notification:", error);
+      console.error("Error sending notification:", error);
     }
-});
+  }
+);

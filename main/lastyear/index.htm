@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>メインページ|南陵祭'25</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NV5VBBQNY7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NV5VBBQNY7');
+</script>
+    <style>
+        /* CSSは変更なし (省略) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root { --header-height: 80px; --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --sidenav-width: 320px; --shadow-medium: 0 15px 50px rgba(0, 0, 0, 0.15); --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; } 
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-gradient); min-height: 100vh; display: flex; flex-direction: column; padding-top: var(--header-height); overflow-x: hidden; position: relative; } body.sidenav-open { overflow: hidden; } 
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; } 
+        main { flex-grow: 1; position: relative; z-index: 2; } 
+        .site-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); padding: 0 80px 0 30px; display: flex; align-items: center; } .site-header.hidden { transform: translateY(-100%); opacity: 0; } .site-title a { font-size: 1.8em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; transition: all 0.3s ease; animation: float 6s ease-in-out infinite; } .desktop-nav { margin-left: auto; } .desktop-nav ul { display: flex; list-style: none; gap: 30px; } .desktop-nav a { text-decoration: none; color: rgba(255, 255, 255, 0.9); font-weight: 500; padding: 10px 20px; border-radius: 25px; position: relative; transition: all 0.3s ease; } .desktop-nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 25px; opacity: 0; transition: opacity 0.3s ease; } .desktop-nav a:hover::before { opacity: 1; } .desktop-nav a:hover { color: white; transform: translateY(-2px); } 
+        .hamburger-menu { position: fixed; top: 20px; right: 30px; width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; cursor: pointer; z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .hamburger-menu:hover { transform: scale(1.1) rotate(5deg); box-shadow: var(--shadow-strong); } .hamburger-menu .bar { width: 22px; height: 2px; background-color: white; border-radius: 2px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .hamburger-menu { background: white; backdrop-filter: blur(10px); } body.sidenav-open .hamburger-menu .bar { background-color: #2c3e50; } body.sidenav-open .hamburger-menu .bar1 { transform: translateY(6px) rotate(45deg); } body.sidenav-open .hamburger-menu .bar2 { opacity: 0; transform: scaleX(0); } body.sidenav-open .hamburger-menu .bar3 { transform: translateY(-6px) rotate(-45deg); } 
+        .sidenav { position: fixed; top: 0; right: 0; width: var(--sidenav-width); max-width: 90vw; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(30px); border-left: 1px solid rgba(255, 255, 255, 0.2); z-index: 200; padding: 100px 30px 30px; transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .sidenav { transform: translateX(0); } .sidenav ul { list-style: none; } .sidenav li { margin-bottom: 8px; opacity: 0; transform: translateX(30px); transition: opacity 0.4s ease, transform 0.4s ease; } body.sidenav-open .sidenav li { opacity: 1; transform: translateX(0); } body.sidenav-open .sidenav li:nth-child(1) { transition-delay: 0.1s; } body.sidenav-open .sidenav li:nth-child(2) { transition-delay: 0.15s; } body.sidenav-open .sidenav li:nth-child(3) { transition-delay: 0.2s; } body.sidenav-open .sidenav li:nth-child(4) { transition-delay: 0.25s; } body.sidenav-open .sidenav li:nth-child(5) { transition-delay: 0.3s; } body.sidenav-open .sidenav li:nth-child(6) { transition-delay: 0.35s; } body.sidenav-open .sidenav li:nth-child(7) { transition-delay: 0.4s; } .sidenav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; display: block; font-size: 1.1em; font-weight: 500; padding: 18px 25px; border-radius: 15px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); } .sidenav a:hover { color: white; background: rgba(255, 255, 255, 0.1); transform: translateX(10px); } .sidenav .about-us { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); } .sidenav .about-us a { font-size: 1em; color: rgba(255, 255, 255, 0.6); } 
+        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0); z-index: 150; pointer-events: none; transition: background-color 0.5s; } body.sidenav-open .page-overlay { background-color: rgba(0, 0, 0, 0.6); pointer-events: auto; } 
+        .site-footer { background: rgba(0, 0, 0, 0.2); text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; } 
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } } @media (max-width: 900px) { .desktop-nav { display: none; } .site-header { padding: 0 80px 0 20px; } .hamburger-menu { right: 20px; width: 45px; height: 45px; } }
+        .content-wrapper { max-width: 960px; margin: 0 auto; padding: 40px 20px; } 
+        .hero-section { text-align: center; padding: 60px 20px; margin-bottom: 40px; } .slogan-text { font-size: 4em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; text-shadow: 0 5px 20px rgba(0,0,0,0.2); animation: fadeInDown 1s ease-out; } .slogan-subtext { color: rgba(255,255,255,0.8); margin-top: 10px; font-size: 1.1em; animation: fadeInDown 1s ease-out 0.2s; animation-fill-mode: backwards; } 
+        .countdown-section { background: transparent; padding: 20px 0; margin-bottom: 40px; text-align: center; animation: fadeInUp 1s ease-out; } .countdown-title { color: rgba(255,255,255,0.8); font-size: 1.2em; font-weight: 500; margin-bottom: 25px; } #countdown-timer { display: flex; justify-content: center; align-items: flex-end; gap: 20px; } .timer-unit { text-align: center; } .timer-unit span { font-family: 'Inter', sans-serif; display: block; font-size: 4em; font-weight: 700; color: white; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.2); } .timer-unit small { display: block; color: rgba(255,255,255,0.7); font-size: 1em; margin-top: 5px; }
+        .info-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 30px; margin-bottom: 40px; color: rgba(255,255,255,0.9); } .info-card h3 { font-size: 1.8em; font-weight: 700; margin-bottom: 20px; color: white; padding-bottom: 10px; border-bottom: 2px solid rgba(255,255,255,0.3); } .news-list { list-style: none; padding-left: 0; max-width: 600px; margin: 0 auto; text-align: left; } .news-list li { display: flex; gap: 20px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.2); } .news-list li:last-child { border-bottom: none; } .news-list .date { background: var(--accent-gradient); color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: 700; white-space: nowrap; } .news-list .title { flex-grow: 1; }
+        .scroller-wrapper { text-align: center; } .projects-scroller { max-width: 100%; overflow-x: scroll; cursor: grab; -webkit-mask: linear-gradient(to right, transparent, white 10%, white 90%, transparent); mask: linear-gradient(to right, transparent, white 10%, white 90%, transparent); -ms-overflow-style: none; scrollbar-width: none; } .projects-scroller::-webkit-scrollbar { display: none; } .projects-scroller.scrolling { cursor: grabbing; scroll-behavior: auto; }
+        .scroller-inner { display: flex; gap: 20px; width: max-content; animation: scroll 40s linear infinite; } .projects-scroller:hover .scroller-inner { animation-play-state: paused; } 
+        .project-card-small { background: rgba(0,0,0, 0.25); padding: 20px; border-radius: 15px; width: 250px; flex-shrink: 0; display: flex; flex-direction: column; text-align: left; } .project-card-small h4 { color: white; font-size: 1.2em; margin: 0 0 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .project-card-small p { color: rgba(255,255,255,0.7); font-size: 0.9em; margin-bottom: auto; }
+        .cta-button { display: inline-block; background: var(--secondary-gradient); color: white; padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1em; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .cta-button:hover { transform: translateY(-5px); box-shadow: var(--shadow-strong); } .card-button { margin-top: 15px; padding: 8px 16px; font-size: 0.8em; font-weight: 600; text-decoration: none; background: rgba(255, 255, 255, 0.1); color: white; border-radius: 20px; transition: all 0.2s ease; align-self: flex-start; } .card-button:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); } .text-center { text-align: center; } .scroller-inner.reverse { animation-direction: reverse; } @keyframes scroll { to { transform: translateX(calc(-50% - 10px)); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } @media (max-width: 600px) { .slogan-text { font-size: 2.5em; } #countdown-timer { gap: 10px;} .timer-unit span { font-size: 2.5em; }}
+        .realtime-display { color: white; padding: 10px 0; } .realtime-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; } .venue-card { background: rgba(0,0,0, 0.2); border-radius: 15px; padding: 20px; text-align: left; display: flex; flex-direction: column; } .venue-card h4 { font-size: 1.4em; font-weight: 700; margin: 0 0 15px 0; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; }
+        .rt-status { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 15px; } .status-indicator { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 12px, 0 0 3px white inset; animation: flashing 1.5s infinite; flex-shrink: 0; } .status-indicator.live { background-color: #ff4757; } .status-indicator.soon { background-color: #ffa502; } .status-indicator.preparing { background-color: #576574; animation: none; opacity: 0.6; } .status-indicator.finished { background-color: #2f3640; animation: none; opacity: 0.4; } .status-indicator.error { background-color: #833471; animation: none; opacity: 0.8; }
+        .status-text { font-size: 1.1em; font-weight: 700; } .rt-event-container { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); flex-grow: 1; } .rt-main-event-name { font-size: 1.5em; font-weight: 700; line-height: 1.3; text-shadow: 0 3px 15px rgba(0,0,0,0.2); margin-bottom: 8px; } .rt-main-event-time { font-size: 0.9em; opacity: 0.8; margin-bottom: 15px; } .rt-button { display: block; text-align: center; background: var(--secondary-gradient); color: white; padding: 12px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.9em; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .rt-button:hover { transform: translateY(-5px); box-shadow: var(--shadow-strong); }
+        .rt-next-event { text-align: left; } .next-label { font-size: 0.8em; font-weight: 700; text-transform: uppercase; color: var(--accent-gradient); margin-bottom: 5px; display: block; } .next-event-name { font-size: 1.1em; font-weight: 500; opacity: 0.9; } .loading-text, .error-text { text-align: center; padding: 40px 0; opacity: 0.8; }
+        @keyframes flashing { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <header class="site-header"><div class="site-title"><a href="index.htm">南陵祭'25</a></div><nav class="desktop-nav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li></ul></nav></header>
+    <div class="hamburger-menu"> <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span> </div> <div class="page-overlay"></div>
+    <nav class="sidenav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li><li class="about-us"><a href="about-us.htm">About Us</a></li></ul></nav>
+    
+<main>
+    <div class="content-wrapper">
+        <section class="hero-section"> <h1 class="slogan-text">南陵万博2025<br>"きっと歴史には残らない"</h1>  </section>
+        <section class="countdown-section"> <h2 class="countdown-title">南陵祭'25 開催まで</h2> <div id="countdown-timer"> <div class="timer-unit"><span id="days">00</span><small>日</small></div> <div class="timer-unit"><span id="hours">00</span><small>時間</small></div> <div class="timer-unit"><span id="minutes">00</span><small>分</small></div> <div class="timer-unit"><span id="seconds">00</span><small>秒</small></div> </div> </section>
+        
+        <div class="info-card">
+            <h3 class="text-center">リアルタイム情報</h3>
+            <div id="realtime-info" class="realtime-display">
+                <div class="realtime-grid">
+                    <div class="venue-card"><h4>体育館</h4><div id="realtime-gym"><p class="loading-text">情報を取得中...</p></div></div>
+                    <div class="venue-card"><h4>音楽室</h4><div id="realtime-musicroom"><p class="loading-text">情報を取得中...</p></div></div>
+                    <div class="venue-card"><h4>視聴覚室</h4><div id="realtime-sityoukakusitu"><p class="loading-text">情報を取得中...</p></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-card scroller-wrapper">
+            <h3>企画紹介ハイライト</h3>
+            <div class="projects-scroller"><ul id="project-scroller-inner" class="scroller-inner"></ul></div>
+            <a href="projects-list.htm" class="cta-button">全ての企画をチェックする</a>
+        </div>
+
+        <div class="info-card scroller-wrapper">
+            <h3>ステージ・体育館発表</h3>
+            <div class="projects-scroller"><ul id="stage-scroller-inner" class="scroller-inner reverse"></ul></div>
+            <a href="stage-list.htm" class="cta-button">全ての発表をチェックする</a>
+        </div>
+
+        <!-- ▼▼▼ アンケートのセクション ▼▼▼ -->
+        <div class="info-card text-center">
+            <h3>アンケートにご協力ください</h3>
+            <p style="margin-bottom: 25px;">今後の活動の参考にさせていただきます。ぜひご回答ください！</p>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeeDEz0FurehkW_Jaia7m_ZIiigB16id12wDWzsrh4uNlEaLQ/viewform" class="cta-button" target="_blank" rel="noopener noreferrer">PC部のアンケート</a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSelWidLUuvkblOne71WVTaHeZ9iceC9pSXnO23ObwD3lS0HoQ/viewform" class="cta-button" target="_blank" rel="noopener noreferrer">生徒会のアンケート</a>
+            </div>
+        </div>
+        <!-- ▲▲▲ ここまで ▲▲▲ -->
+
+        <div class="info-card text-center"><h3>お知らせ</h3><ul class="news-list"><li><span class="date">2025.08.01</span><span class="title">Webサイト(仮)を公開しました！</span></li></ul></div>
+        <div class="info-card text-center"><h3>コンピューター科学部より</h3><p style="margin-bottom: 25px;">このウェブサイトはコンピューター科学部によって作成・運営されています。</p><a href="about-us.htm" class="cta-button">About Us（詳しく見る）</a></div>
+    </div>
+</main>
+
+    <footer class="site-footer">
+    <p>&copy; 2025 横浜南陵高校 コンピューター科学部</p>
+    <p>記載されている情報は古い可能性があります。</p>
+</footer>
+
+    <script defer src="data.js"></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // === 1. テンプレート共通の処理 (変更なし) ===
+    const body = document.body; const hamburger = document.querySelector('.hamburger-menu'); const overlay = document.querySelector('.page-overlay'); function toggleSidenav() { body.classList.toggle('sidenav-open'); } hamburger.addEventListener('click', toggleSidenav); overlay.addEventListener('click', toggleSidenav); let lastScrollTop = 0; const header = document.querySelector('.site-header'); if (header) { const headerHeight = header.offsetHeight; window.addEventListener('scroll', function() { let scrollTop = window.pageYOffset || document.documentElement.scrollTop; if (scrollTop > lastScrollTop && scrollTop > headerHeight) { header.classList.add('hidden'); } else { header.classList.remove('hidden'); } lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; }); }
+    
+    // === 2. カウントダウンタイマーの処理 (変更なし) ===
+    const countdownContainer = document.getElementById('countdown-timer'); if(countdownContainer) { const countdownTimer = () => { const targetDate = new Date('2025-09-05T09:00:00').getTime(); const now = new Date().getTime(); const remainingTime = targetDate - now; if (remainingTime < 0) { countdownContainer.innerHTML = `<h3 style='color:white;width:100%;text-align:center;'>南陵祭、開催中！</h3>`; if(window.countdownInterval) clearInterval(window.countdownInterval); } else { document.getElementById('days').innerText = String(Math.floor(remainingTime / (1000 * 60 * 60 * 24))).padStart(2, '0'); document.getElementById('hours').innerText = String(Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0'); document.getElementById('minutes').innerText = String(Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0'); document.getElementById('seconds').innerText = String(Math.floor((remainingTime % (1000 * 60)) / 1000)).padStart(2, '0'); } }; window.countdownInterval = setInterval(countdownTimer, 1000); countdownTimer(); }
+
+    // ▼▼▼ 3. リアルタイム情報取得の処理 (GAS API版) ▼▼▼
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwmHWJjWtC1GixH4lk4JXFMBp2OvOUs2v2FLND-IOGYWh3IXB8gXcVLSuSF9k941tATlw/exec';
+    const venues = [ { id: 'gym', elementId: 'realtime-gym' }, { id: 'MusicRoom', elementId: 'realtime-musicroom' }, { id: 'sityoukakusitu', elementId: 'realtime-sityoukakusitu' } ];
+    const getStatusInfo = (statusText) => { switch (statusText) { case '開催中': case 'ライブ中': return { text: 'ライブ中！', className: 'live' }; case 'まもなく開始': return { text: 'まもなく開始', className: 'soon' }; case '準備中': return { text: '準備中', className: 'preparing' }; case '終了': return { text: '終了', className: 'finished' }; default: return { text: statusText || '情報なし', className: 'preparing' }; } };
+
+    const renderVenueData = (element, data) => {
+        if (data.error) { element.innerHTML = `<p class="error-text">エラー: ${data.error}</p>`; return; }
+        const current = data.current_event;
+        const next = data.next_event;
+        const status = getStatusInfo(current.status);
+        const currentEventDetails = (typeof stageData !== 'undefined' && stageData.find(item => item.id === current.id)) || { name: current.name, groupName: current.name, id: current.id };
+        const nextEventDetails = (typeof stageData !== 'undefined' && next && next.id && stageData.find(item => item.id === next.id)) || (next ? { name: next.name, groupName: next.name, time: next.time, id: next.id } : null);
+        
+        // ▼▼▼ 修正点: groupName を優先して表示 ▼▼▼
+        const currentEventName = currentEventDetails.groupName || currentEventDetails.name;
+        const detailLink = (currentEventDetails.groupId) ? `stage-group-detail.htm?group=${currentEventDetails.groupId}` : `stage-detail.htm?id=${currentEventDetails.id}`;
+
+        let html = `
+            <div class="rt-status"><div class="status-indicator ${status.className}"></div><div class="status-text">${status.text}</div></div>
+            <div class="rt-event-container">
+                <div class="rt-main-event-name">${currentEventName}</div>
+                <div class="rt-main-event-time">予定時間: ${current.time}</div>
+                <a href="${detailLink}" class="rt-button">詳しく見る</a>
+            </div>`;
+        
+        if (nextEventDetails) {
+            const nextEventName = nextEventDetails.groupName || nextEventDetails.name;
+            html += `<div class="rt-next-event"><div class="next-label">NEXT</div><div class="next-event-name">${nextEventName} (${nextEventDetails.time})</div></div>`;
+        } else {
+            html += `<div class="rt-next-event"><div class="next-label">NEXT</div><div class="next-event-name">次の予定はありません</div></div>`;
+        }
+        element.innerHTML = html;
+    };
+
+    const fetchAllVenues = () => {
+        venues.forEach(venue => {
+            const element = document.getElementById(venue.elementId);
+            if (!element) return;
+            fetch(`${GAS_API_URL}?place=${venue.id}`).then(response => { if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); } return response.json(); }).then(data => { renderVenueData(element, data); }).catch(error => { console.error('Fetch error for', venue.id, ':', error); element.innerHTML = `<p class="error-text">情報の取得に失敗しました。<br>時間をおいてお試しください。</p>`; });
+        });
+    };
+    fetchAllVenues();
+    setInterval(fetchAllVenues, 30000); 
+
+    // ▼▼▼ 4. 横スクロールの中身を生成する処理 (全面的に修正) ▼▼▼
+    
+    // --- 企画紹介用のスクローラーを生成する関数 ---
+    const populateProjectScroller = (containerId, dataArray) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        let itemsHTML = '';
+        dataArray.forEach(item => {
+            itemsHTML += `
+                <li class="project-card-small">
+                    <h4>${item.name}</h4>
+                    <p>${item.catchphrase || item.place}</p>
+                    <a href="project-detail.htm?id=${item.id}" class="card-button">詳細を見る</a>
+                </li>`;
+        });
+        container.innerHTML = itemsHTML + itemsHTML; // 無限スクロール用に2倍にする
+    };
+
+    // --- ステージ発表用のスクローラーを生成する関数 (新設) ---
+    const populateStageScroller = (containerId, dataArray) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        // groupIdをキーにして、重複のない団体のリストを作成する
+        const uniqueGroups = Array.from(new Map(
+            dataArray
+                .filter(p => p.groupId) // groupIdがないデータ(場所情報など)を除外
+                .map(p => [p.groupId, p])
+        ).values());
+
+        let itemsHTML = '';
+        uniqueGroups.forEach(item => {
+            // 団体の全ての公演場所をリストアップして説明文を作成
+            const places = [...new Set(dataArray.filter(p => p.groupId === item.groupId).map(p => p.place))].join(', ');
+            itemsHTML += `
+                <li class="project-card-small">
+                    <h4>${item.groupName}</h4>
+                    <p>${places}</p>
+                    <a href="stage-group-detail.htm?group=${item.groupId}" class="card-button">詳細を見る</a>
+                </li>`;
+        });
+        container.innerHTML = itemsHTML + itemsHTML; // 無限スクロール用に2倍にする
+    };
+
+    // --- data.jsが読み込まれたら、各スクローラーを生成する ---
+    if (typeof projectData !== 'undefined' && typeof stageData !== 'undefined') {
+        populateProjectScroller('project-scroller-inner', projectData);
+        populateStageScroller('stage-scroller-inner', stageData);
+    } else {
+        console.error("data.jsの読み込みエラーのため、スクローラーは生成されません。");
+    }
+
+
+    // === 5. 横スクロールに動きをつける処理 (変更なし) ===
+    const scrollers = document.querySelectorAll('.projects-scroller');
+    scrollers.forEach(scroller => {
+        let isDown = false; let startX; let scrollLeft;
+        scroller.addEventListener('mousedown', (e) => { isDown = true; scroller.classList.add('scrolling'); startX = e.pageX - scroller.offsetLeft; scrollLeft = scroller.scrollLeft; scroller.style.animationPlayState = 'paused'; });
+        scroller.addEventListener('mouseleave', () => { if (!isDown) return; isDown = false; scroller.classList.remove('scrolling'); scroller.style.animationPlayState = 'running'; });
+        scroller.addEventListener('mouseup', () => { if (!isDown) return; isDown = false; scroller.classList.remove('scrolling'); scroller.style.animationPlayState = 'running'; });
+        scroller.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - scroller.offsetLeft; const walk = (x - startX) * 2; scroller.scrollLeft = scrollLeft - walk; });
+        scroller.addEventListener('touchstart', (e) => { isDown = true; startX = e.touches[0].pageX - scroller.offsetLeft; scrollLeft = scroller.scrollLeft; scroller.style.animationPlayState = 'paused'; });
+        scroller.addEventListener('touchend', () => { isDown = false; scroller.style.animationPlayState = 'running'; });
+        scroller.addEventListener('touchmove', (e) => { if (!isDown) return; const x = e.touches[0].pageX - scroller.offsetLeft; const walk = (x - startX) * 2; scroller.scrollLeft = scrollLeft - walk; });
+    });
+});
+</script>
+</body>
+</html>

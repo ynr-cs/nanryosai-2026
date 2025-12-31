@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校内マップ | 南陵祭'25</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NV5VBBQNY7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NV5VBBQNY7');
+</script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root { --header-height: 80px; --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --sidenav-width: 320px; --shadow-medium: 0 15px 50px rgba(0, 0, 0, 0.15); --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2); }
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-gradient); min-height: 100vh; display: flex; flex-direction: column; padding-top: var(--header-height); overflow-x: hidden; position: relative; color: white; }
+        body.sidenav-open, body.panel-open { overflow: hidden; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
+        main { flex-grow: 1; position: relative; z-index: 2; }
+        .site-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); padding: 0 80px 0 30px; display: flex; align-items: center; } .site-header.hidden { transform: translateY(-100%); opacity: 0; }
+        .site-title a { font-size: 1.8em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; transition: all 0.3s ease; animation: float 6s ease-in-out infinite; }
+        .desktop-nav { margin-left: auto; } .desktop-nav ul { display: flex; list-style: none; gap: 30px; } .desktop-nav a { text-decoration: none; color: rgba(255, 255, 255, 0.9); font-weight: 500; padding: 10px 20px; border-radius: 25px; position: relative; transition: all 0.3s ease; } .desktop-nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 25px; opacity: 0; transition: opacity 0.3s ease; } .desktop-nav a:hover::before { opacity: 1; } .desktop-nav a:hover { color: white; transform: translateY(-2px); }
+        .hamburger-menu { position: fixed; top: 20px; right: 30px; width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; cursor: pointer; z-index: 1100; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .hamburger-menu:hover { transform: scale(1.1) rotate(5deg); box-shadow: var(--shadow-strong); } .hamburger-menu .bar { width: 22px; height: 2px; background-color: white; border-radius: 2px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .hamburger-menu { background: white; backdrop-filter: blur(10px); } body.sidenav-open .hamburger-menu .bar { background-color: #2c3e50; } body.sidenav-open .hamburger-menu .bar1 { transform: translateY(6px) rotate(45deg); } body.sidenav-open .hamburger-menu .bar2 { opacity: 0; transform: scaleX(0); } body.sidenav-open .hamburger-menu .bar3 { transform: translateY(-6px) rotate(-45deg); }
+        .sidenav { position: fixed; top: 0; right: 0; width: var(--sidenav-width); max-width: 90vw; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(30px); border-left: 1px solid rgba(255, 255, 255, 0.2); z-index: 1050; padding: 100px 30px 30px; transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .sidenav { transform: translateX(0); } .sidenav ul { list-style: none; } .sidenav li { margin-bottom: 8px; opacity: 0; transform: translateX(30px); transition: opacity 0.4s ease, transform 0.4s ease; } body.sidenav-open .sidenav li { opacity: 1; transform: translateX(0); } body.sidenav-open .sidenav li:nth-child(1) { transition-delay: 0.1s; } body.sidenav-open .sidenav li:nth-child(2) { transition-delay: 0.15s; } body.sidenav-open .sidenav li:nth-child(3) { transition-delay: 0.2s; } body.sidenav-open .sidenav li:nth-child(4) { transition-delay: 0.25s; } body.sidenav-open .sidenav li:nth-child(5) { transition-delay: 0.3s; } body.sidenav-open .sidenav li:nth-child(6) { transition-delay: 0.35s; } body.sidenav-open .sidenav li:nth-child(7) { transition-delay: 0.4s; } .sidenav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; display: block; font-size: 1.1em; font-weight: 500; padding: 18px 25px; border-radius: 15px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); } .sidenav a:hover { color: white; background: rgba(255, 255, 255, 0.1); transform: translateX(10px); } .sidenav .about-us { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); } .sidenav .about-us a { font-size: 1em; color: rgba(255, 255, 255, 0.6); }
+        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0); z-index: 150; pointer-events: none; transition: background-color 0.5s; } body.sidenav-open .page-overlay, body.panel-open .page-overlay { background-color: rgba(0, 0, 0, 0.6); pointer-events: auto; }
+        .site-footer { background: rgba(0, 0, 0, 0.2); text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @media (max-width: 900px) { .desktop-nav { display: none; } .site-header { padding: 0 80px 0 20px; } .hamburger-menu { right: 20px; width: 45px; height: 45px; } }
+        .page-title { text-align: center; font-size: 2.5em; font-weight: 700; color: white; margin-bottom: 30px; text-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        #map-container { position: relative; height: 70vh; max-height: 800px; overflow: hidden; background: rgba(0, 0, 0, 0.2); border-radius: 20px; box-shadow: var(--shadow-strong); margin-bottom: 40px; }
+        #map { width: 100%; height: 100%; background-color: transparent; border-radius: 20px; }
+        .leaflet-control-zoom-in, .leaflet-control-zoom-out { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; color: white !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 50% !important; width: 40px !important; height: 40px !important; line-height: 40px !important; transition: all 0.3s ease !important; }
+        .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover { background: rgba(255, 255, 255, 0.2) !important; transform: scale(1.1); }
+        .leaflet-control-zoom a { font-size: 1.5em; }
+        .project-marker { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px 12px; box-shadow: var(--shadow-medium); text-align: center; color: white; cursor: pointer; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); transform: translate(-50%, -50%); }
+        .project-marker:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: var(--shadow-strong); background: rgba(255, 255, 255, 0.2); }
+        .project-marker.is-group { border-color: #00f2fe; }
+        .project-marker.is-hub { border-color: #ff7eb9; animation: pulse 2s infinite; } @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 126, 185, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 126, 185, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 126, 185, 0); } }
+        .project-marker .marker-name { font-size: 14px; font-weight: 700; white-space: nowrap; }
+        .project-marker .marker-id { font-size: 11px; font-weight: 400; opacity: 0.8; white-space: nowrap; margin-top: 2px; }
+        .leaflet-popup-content-wrapper { background: rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(20px) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 16px !important; box-shadow: var(--shadow-strong) !important; }
+        .leaflet-popup-content { color: white !important; margin: 15px 20px !important; font-size: 16px !important; line-height: 1.6 !important; }
+        .leaflet-popup-tip { background: rgba(255, 255, 255, 0.15) !important; }
+        .leaflet-popup-close-button { color: white !important; padding: 8px 8px 0 0 !important; }
+        .popup-content h3 { font-size: 1.2em; margin-bottom: 5px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .popup-content p { font-size: 0.9em; opacity: 0.9; margin-bottom: 15px; }
+        .popup-content .detail-button { display: inline-block; text-decoration: none; color: white; font-weight: 500; padding: 10px 20px; border-radius: 25px; background: var(--accent-gradient); transition: all 0.3s ease; }
+        .popup-content .detail-button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3); }
+        .list-popup-content { width: 280px; }
+        .list-popup-content h3 { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .list-popup-content .popup-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .list-popup-content .popup-tabs button { font-family: 'Inter', sans-serif; font-size: 0.9em; font-weight: 500; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); border: 1px solid transparent; border-radius: 20px; padding: 5px 15px; cursor: pointer; transition: all 0.3s ease; }
+        .list-popup-content .popup-tabs button:hover { background: rgba(255,255,255,0.2); color: white; }
+        .list-popup-content .popup-tabs button.active { color: white; font-weight: 700; background: var(--accent-gradient); }
+        .list-popup-content ul { list-style: none; padding-left: 0; max-height: 200px; overflow-y: auto; }
+        .list-popup-content li { margin-bottom: 10px; }
+        .list-popup-content li a { display: flex; gap: 10px; align-items: baseline; text-decoration: none; color: white; background: rgba(255,255,255,0.1); padding: 12px 15px; border-radius: 10px; transition: all 0.3s ease; }
+        .list-popup-content li a:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); }
+        .list-popup-content .time { font-size: 0.8em; font-weight: 700; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 5px; flex-shrink: 0; }
+        .list-popup-content .name { font-size: 0.9em; white-space: normal; }
+        .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1), transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .fade-up.is-visible { opacity: 1; transform: translateY(0); }
+        .floor-switcher { position: absolute; top: 20px; left: 20px; z-index: 800; display: flex; flex-direction: column; gap: 10px; }
+        .floor-switcher button { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: white; width: 50px; height: 50px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        .floor-switcher button:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); box-shadow: var(--shadow-medium); }
+        .floor-switcher button.active { background: var(--accent-gradient); box-shadow: 0 5px 20px rgba(0, 242, 254, 0.3); border-color: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
+        .special-panel { position: fixed; bottom: 0; left: 0; width: 100%; max-height: 70vh; background: rgba(0,0,0,0.2); backdrop-filter: blur(30px); border-top: 1px solid rgba(255,255,255,0.2); z-index: 1000; transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); display: flex; flex-direction: column; }
+        .special-panel.is-open { transform: translateY(0); }
+        .panel-header { padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .panel-header h2 { font-size: 1.8em; color: white; }
+        .panel-tabs { display: flex; padding: 0 30px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .panel-tabs button { font-family: 'Inter', sans-serif; font-size: 1em; font-weight: 500; color: rgba(255,255,255,0.6); background: none; border: none; padding: 15px 25px; cursor: pointer; transition: all 0.3s ease; position: relative; }
+        .panel-tabs button:hover { color: white; }
+        .panel-tabs button.active { color: white; font-weight: 700; }
+        .panel-tabs button.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--accent-gradient); }
+        .panel-content { overflow-y: auto; padding: 30px; }
+        .panel-content .timetable-item { display: flex; gap: 20px; margin-bottom: 25px; opacity: 0; transform: translateY(20px); animation: item-fade-in 0.5s forwards; }
+        @keyframes item-fade-in { to { opacity: 1; transform: translateY(0); } }
+        .timetable-item .time { font-size: 0.9em; font-weight: 700; color: white; flex-shrink: 0; width: 120px; }
+        .timetable-item .details { border-left: 2px solid rgba(255,255,255,0.3); padding-left: 20px; }
+        .timetable-item h3 { font-size: 1.2em; color: white; margin-bottom: 5px; }
+        .timetable-item p { font-size: 0.9em; color: rgba(255,255,255,0.8); margin-bottom: 10px; }
+        .timetable-item a { font-size: 0.9em; font-weight: 500; color: #4facfe; text-decoration: none; }
+        .marker-cluster { background-clip: padding-box; border-radius: 50%; }
+        .marker-cluster div { width: 30px; height: 30px; margin-left: 5px; margin-top: 5px; text-align: center; border-radius: 50%; font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif; color: white; }
+        .marker-cluster span { line-height: 30px; }
+        .marker-cluster-small { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .marker-cluster-medium { background-color: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .marker-cluster-large { background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .filter-section { background: rgba(0,0,0,0.2); padding: 30px; border-radius: 15px; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .filter-group { display: flex; align-items: center; gap: 15px; }
+        .filter-group:not(:last-child) { margin-bottom: 15px; }
+        .filter-label { color: rgba(255,255,255,0.8); font-weight: 500; white-space: nowrap; }
+        .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+        .filter-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s ease-in-out; }
+        .filter-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .filter-btn.active { background: var(--secondary-gradient); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-color: transparent; }
+        .search-box-wrapper { width: 100%; max-width: 600px; }
+        .search-input { width: 100%; padding: 15px 25px; font-size: 1.1em; color: white; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; transition: all 0.3s ease; }
+        .search-input::placeholder { color: rgba(255,255,255,0.5); }
+        .search-input:focus { outline: none; border-color: rgba(255,255,255,0.7); box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
+        .project-list-item { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; padding: 20px 25px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; transition: all 0.3s ease; }
+        .project-list-item:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+        .item-content { flex-grow: 1; }
+        .item-content .group-name { color: rgba(255,255,255,0.7); font-size: 0.9em; font-weight: 500; }
+        .item-content .project-title { font-size: 1.3em; font-weight: 700; margin-top: 2px; }
+        .item-actions { display: flex; gap: 10px; flex-shrink: 0; }
+        .item-actions .list-button { display: inline-block; text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-size: 0.9em; font-weight: 600; transition: all 0.3s ease; border: 1px solid transparent; }
+        .item-actions .list-button:hover:not(:disabled) { transform: scale(1.05); }
+        .item-actions .list-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .item-actions .detail-btn { background: var(--secondary-gradient); }
+        .item-actions .map-btn { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+        .no-results { color: white; font-size: 1.5em; font-weight: 500; text-align: center; padding: 80px 20px; background: rgba(0,0,0,0.2); border-radius: 15px; display: none; }
+    </style>
+</head>
+<body>
+    <header class="site-header"> <div class="site-title"><a href="index.htm">南陵祭'25</a></div> <nav class="desktop-nav"> <ul> <li><a href="about.htm">概要</a></li> <li><a href="projects-list.htm">企画一覧</a></li> <li><a href="stage-list.htm">ステージ発表</a></li> <li><a href="map.htm">校内マップ</a></li> <li><a href="access.htm">アクセス</a></li> </ul> </nav> </header>
+    <div class="hamburger-menu"> <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span> </div>
+    <div class="page-overlay"></div>
+    <nav class="sidenav"> <ul> <li><a href="about.htm">概要</a></li> <li><a href="projects-list.htm">企画一覧</a></li> <li><a href="stage-list.htm">ステージ発表</a></li>  <li><a href="map.htm">校内マップ</a></li> <li><a href="access.htm">アクセス</a></li> <li class="about-us"><a href="about-us.htm">About Us</a></li> </ul> </nav>
+    <main>
+        <div class="content-wrapper">
+            <h1 class="page-title fade-up">校内マップ</h1>
+            <div id="map-container" class="fade-up" style="animation-delay: 0.15s;">
+                <div id="map"></div>
+                <div class="floor-switcher">
+                    <button data-floor="5">5F</button>
+                    <button data-floor="4">4F</button>
+                    <button data-floor="3">3F</button>
+                    <button data-floor="2">2F</button>
+                    <button data-floor="1" class="active">1F</button>
+                </div>
+            </div>
+            <div class="filter-section fade-up" style="animation-delay: 0.3s;">
+                <div class="search-box-wrapper"> <input type="search" id="search-input" class="search-input" placeholder="企画名で検索..."> </div>
+                <div class="filter-group"> <strong class="filter-label">団体</strong> <div id="filter-by-grade" class="filter-buttons"> <button class="filter-btn active" data-filter="すべて">すべて</button> <button class="filter-btn" data-filter="1年生">1年生</button> <button class="filter-btn" data-filter="2年生">2年生</button> <button class="filter-btn" data-filter="3年生">3年生</button> <button class="filter-btn" data-filter="部活動・同好会">部活動・同好会</button> <button class="filter-btn" data-filter="委員会">委員会</button> <button class="filter-btn" data-filter="その他">その他</button> </div> </div>
+                <div class="filter-group"> <strong class="filter-label">ジャンル</strong> <div id="filter-by-type" class="filter-buttons">
+                    <button class="filter-btn active" data-filter="すべて">すべて</button>
+                    <button class="filter-btn" data-filter="体験・ゲーム">体験・ゲーム</button>
+                    <button class="filter-btn" data-filter="お化け屋敷">お化け屋敷</button>
+                    <button class="filter-btn" data-filter="カフェ">カフェ</button>
+                    <button class="filter-btn" data-filter="展示">展示</button>
+                    <button class="filter-btn" data-filter="販売">販売</button>
+                    <button class="filter-btn" data-filter="ステージ">ステージ</button>
+                    <button class="filter-btn" data-filter="その他">その他</button>
+                </div> </div>
+            </div>
+            <div id="project-list-container"></div>
+            <div id="no-results-message" class="no-results"></div>
+        </div>
+    </main>
+    <footer class="site-footer">
+    <p>&copy; 2025 横浜南陵高校 コンピューター科学部</p>
+    <p>記載されている情報は古い可能性があります。</p>
+</footer>
+    <div id="special-panel" class="special-panel">
+        <div class="panel-header"> <h2 id="panel-title"></h2> </div>
+        <div class="panel-tabs"> <button id="panel-tab-day1" data-day="DAY1">DAY 1</button> <button id="panel-tab-day2" data-day="DAY2">DAY 2</button> </div>
+        <div id="panel-content" class="panel-content"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="data.js"></script> 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body; const hamburger = document.querySelector('.hamburger-menu'); const overlay = document.querySelector('.page-overlay'); function closeAllOverlays() { body.classList.remove('sidenav-open'); body.classList.remove('panel-open'); document.getElementById('special-panel').classList.remove('is-open'); } function toggleSidenav() { body.classList.toggle('sidenav-open'); } hamburger.addEventListener('click', toggleSidenav); overlay.addEventListener('click', closeAllOverlays); let lastScrollTop = 0; const header = document.querySelector('.site-header'); if (header) { const headerHeight = header.offsetHeight; window.addEventListener('scroll', function() { let scrollTop = window.pageYOffset || document.documentElement.scrollTop; if (scrollTop > lastScrollTop && scrollTop > headerHeight) { header.classList.add('hidden'); } else { header.classList.remove('hidden'); } lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; }, false); }
+            const fadeUpElements = document.querySelectorAll('.fade-up'); fadeUpElements.forEach((el, index) => { setTimeout(() => { el.classList.add('is-visible'); }, index * 150); });
+
+            let map;
+            let imageOverlay;
+            let markerClusterGroup;
+            let imageBounds;
+            const floorImageUrls = { 1: 'images/map-1f.png', 2: 'images/map-2f.png', 3: 'images/map-3f.png', 4: 'images/map-4f.png', 5: 'images/map-5f.png' };
+            const listContainer = document.getElementById('project-list-container');
+            const noResultsMessage = document.getElementById('no-results-message');
+            const gradeFilterContainer = document.getElementById('filter-by-grade');
+            const typeFilterContainer = document.getElementById('filter-by-type');
+            const searchInput = document.getElementById('search-input');
+            let activeFilters = { grade: 'すべて', type: 'すべて', search: '' };
+            
+            function initializeMap() {
+                if (typeof projectData === 'undefined' || typeof stageData === 'undefined') { console.error('data.jsが正しく読み込まれていません。'); return; }
+                const initialImage = new Image();
+                initialImage.onload = function() {
+                    const imgWidth = this.width; const imgHeight = this.height; 
+                    imageBounds = [[0, 0], [imgHeight, imgWidth]];
+                    map = L.map('map', { crs: L.CRS.Simple, minZoom: -3, maxZoom: 4, center: [imgHeight / 2, imgWidth / 2], zoom: -1, zoomControl: false });
+                    imageOverlay = L.imageOverlay(floorImageUrls[1], imageBounds).addTo(map);
+                    markerClusterGroup = L.markerClusterGroup({ zoomToBoundsOnClick: true, maxClusterRadius: 40, disableClusteringAtZoom: 2 });
+                    map.addLayer(markerClusterGroup);
+                    L.control.zoom({ position: 'bottomright' }).addTo(map);
+                    map.fitBounds(imageBounds);
+                    setupFloorSwitcher();
+                    updateMapForFloor(1);
+                    setupSpecialPanel();
+                    markerClusterGroup.on('clusterclick', function (a) { a.layer.zoomToBounds({padding: [20, 20]}); });
+                    markerClusterGroup.on('click', handleMarkerClick);
+                };
+                initialImage.onerror = function() { console.error('マップ画像(1F)の読み込みに失敗しました。'); }
+                initialImage.src = floorImageUrls[1];
+            }
+
+            function applyAllFilters() {
+                let allProjectAndStage = [...projectData, ...stageData];
+                let filtered = allProjectAndStage.filter(p => !p.id.startsWith('place-'));
+                if (activeFilters.grade !== 'すべて') { filtered = filtered.filter(p => p.tags && p.tags.includes(activeFilters.grade)); }
+                if (activeFilters.type !== 'すべて') { filtered = filtered.filter(p => p.tags && p.tags.includes(activeFilters.type)); }
+                if (activeFilters.search) { filtered = filtered.filter(p => p.name.toLowerCase().includes(activeFilters.search.toLowerCase()) || (p.groupName && p.groupName.toLowerCase().includes(activeFilters.search.toLowerCase()))); }
+                renderList(filtered);
+            }
+
+            function renderList(projectsToRender) {
+                if (!listContainer || !noResultsMessage) return;
+                if (projectsToRender.length === 0) { listContainer.innerHTML = ''; noResultsMessage.innerText = '該当する企画はありませんでした。'; noResultsMessage.style.display = 'block'; return; }
+                noResultsMessage.style.display = 'none';
+                listContainer.innerHTML = '';
+                let itemsHTML = '';
+                projectsToRender.forEach(project => {
+                    const groupName = project.groupName || project.name.match(/^(.+?組|.+?部|.+?科|.+?委員)/)?.[1] || '';
+                    const projectName = project.groupName ? project.name : project.name.replace(groupName, '').trim().replace(/「|」/g, '');
+                    const hasLocation = project.mapX != null || project.locationId;
+                    const mapButtonData = hasLocation ? `data-project-id="${project.id}"` : '';
+                    itemsHTML += `
+                        <div class="project-list-item">
+                            <div class="item-content">
+                                <span class="group-name">${groupName}</span>
+                                <h3 class="project-title">${projectName}</h3>
+                            </div>
+                            <div class="item-actions">
+                                <a href="project-detail.htm?id=${project.id}" class="list-button detail-btn">詳しく見る</a>
+                                <button class="list-button map-btn" ${mapButtonData} ${!hasLocation ? 'disabled' : ''}>地図</button>
+                            </div>
+                        </div>`;
+                });
+                listContainer.innerHTML = itemsHTML;
+            }
+            
+            function flyToMarker(projectId) {
+                document.getElementById('map-container').scrollIntoView({ behavior: 'smooth' });
+                const allProjects = [...projectData, ...stageData];
+                const targetProject = allProjects.find(p => p.id === projectId);
+                if (!targetProject) return;
+                let locationData = targetProject;
+                if (targetProject.locationId) { const representative = allProjects.find(p => p.locationId === targetProject.locationId && p.mapX != null); if (representative) { locationData = representative; } }
+                if (locationData.floor == null || locationData.mapX == null || locationData.mapY == null) { alert('この企画の場所は現在マップに登録されていません。'); return; }
+                const flyToTarget = () => { map.flyTo([locationData.mapY, locationData.mapX], 1, { animate: true, duration: 1.0 }); };
+                const floorSwitcher = document.querySelector('.floor-switcher');
+                const currentFloor = parseInt(floorSwitcher.querySelector('.active').dataset.floor, 10);
+                if (currentFloor !== locationData.floor) { map.once('moveend', flyToTarget); updateMapForFloor(locationData.floor); } 
+                else { flyToTarget(); }
+            }
+
+            function setupEventListeners() {
+                searchInput.addEventListener('input', () => { activeFilters.search = searchInput.value; applyAllFilters(); });
+                gradeFilterContainer.addEventListener('click', (e) => { if (!e.target.matches('.filter-btn')) return; gradeFilterContainer.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); activeFilters.grade = e.target.dataset.filter; applyAllFilters(); });
+                typeFilterContainer.addEventListener('click', (e) => { if (!e.target.matches('.filter-btn')) return; typeFilterContainer.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); activeFilters.type = e.target.dataset.filter; applyAllFilters(); });
+                listContainer.addEventListener('click', (e) => { const mapButton = e.target.closest('.map-btn'); if (mapButton && mapButton.dataset.projectId) { flyToMarker(mapButton.dataset.projectId); } });
+            }
+
+            function setupFloorSwitcher() { const buttons = document.querySelectorAll('.floor-switcher button'); buttons.forEach(button => { button.addEventListener('click', () => { const floor = parseInt(button.dataset.floor, 10); updateMapForFloor(floor); }); }); }
+            function updateMapForFloor(floor) { document.querySelectorAll('.floor-switcher button').forEach(btn => { btn.classList.toggle('active', parseInt(btn.dataset.floor, 10) === floor); }); imageOverlay.setUrl(floorImageUrls[floor]); renderMarkers(floor); if (map && imageBounds) { map.fitBounds(imageBounds); } }
+            
+            function renderMarkers(floor) {
+                markerClusterGroup.clearLayers();
+                const allProjects = [...projectData, ...stageData];
+                const locations = {};
+                allProjects.forEach(project => { const key = project.locationId || project.id; if (!locations[key]) { locations[key] = []; } locations[key].push(project); });
+                const markersToAdd = [];
+                for (const locationKey in locations) {
+                    const group = locations[locationKey];
+                    const representative = group.find(p => p.mapX != null) || group[0];
+                    if (representative.floor !== floor) continue;
+                    if (representative.mapX == null || representative.mapY == null) continue;
+                    const isGroup = group.length > 1;
+                    const isPrimaryHub = representative.hubType === 'primary';
+                    const isHub = representative.hubType != null;
+                    let markerName = '';
+                    if (isHub) { markerName = representative.name; } 
+                    else if (isGroup) { markerName = `${group.length}件の企画`; } 
+                    else { const proj = group[0]; markerName = proj.groupName || proj.name.split('「')[0]; }
+                    const markerSubText = (representative.tags && representative.tags.length > 1) ? representative.tags[1] : (representative.place || '');
+                    const markerClass = `project-marker ${isGroup ? 'is-group' : ''} ${isHub ? 'is-hub' : ''}`;
+                    const markerHtml = `<div class="${markerClass}"><div class="marker-name">${markerName}</div><div class="marker-id">${markerSubText}</div></div>`;
+                    const customIcon = L.divIcon({ className: '', html: markerHtml, iconSize: [null, null] });
+                    const marker = L.marker([representative.mapY, representative.mapX], { icon: customIcon });
+                    marker.options.customData = { group: group, representative: representative };
+                    markersToAdd.push(marker);
+                }
+                markerClusterGroup.addLayers(markersToAdd);
+            }
+
+            function handleMarkerClick(e) {
+                const marker = e.layer;
+                const { group, representative } = marker.options.customData;
+                const isPrimaryHub = representative.hubType === 'primary';
+                if (isPrimaryHub) { openSpecialPanel(group, representative); } 
+                else { const popup = L.popup({ minWidth: 310 }).setContent(createStandardPopup(group, representative)); marker.bindPopup(popup).openPopup(); }
+            }
+            
+            function createStandardPopup(group, representative) {
+                const container = L.DomUtil.create('div', 'popup-content list-popup-content');
+                const isGroup = group.length > 1;
+                const isSecondaryHub = representative.hubType === 'secondary';
+                const title = (isGroup || isSecondaryHub) ? (representative.place || representative.name) : group[0].name;
+                let html = `<h3>${title}</h3>`;
+                const displayGroup = group.filter(p => !p.id.startsWith('place-'));
+                if (isSecondaryHub) {
+                    const tabsHtml = `<div class="popup-tabs"><button data-day="DAY1" class="active">DAY 1</button><button data-day="DAY2">DAY 2</button></div>`;
+                    const listContainerHtml = `<ul class="list-container"></ul>`;
+                    container.innerHTML = html + tabsHtml + listContainerHtml;
+                    const listContainer = container.querySelector('.list-container');
+                    const updateList = (day) => {
+                        const eventsForDay = displayGroup.filter(p => p.tags && p.tags.includes(day)).sort((a,b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+                        let listHtml = '';
+                        if(eventsForDay.length > 0) {
+                            listHtml = eventsForDay.map(event => `<li><a href="stage-group-detail.htm?group=${event.groupId}"><span class="time">${event.time || ''}</span><span class="name">${event.groupName}「${event.name}」</span></a></li>`).join('');
+                        } else {
+                            listHtml = `<p style="font-size:0.9em; opacity:0.8; padding-left: 5px;">この日の発表はありません。</p>`;
+                        }
+                        listContainer.innerHTML = listHtml;
+                    };
+                    L.DomEvent.on(container, 'click', (e) => {
+                        if (e.target.tagName === 'BUTTON') { const day = e.target.dataset.day; container.querySelector('.popup-tabs .active').classList.remove('active'); e.target.classList.add('active'); updateList(day); }
+                    });
+                    updateList('DAY1');
+                } else if (isGroup) {
+                    const listItems = displayGroup.map(p => `<li><a href="project-detail.htm?id=${p.id}"><span class="name">${p.name}</span></a></li>`).join('');
+                    html += `<ul>${listItems}</ul>`;
+                    container.innerHTML = html;
+                } else {
+                    const project = group[0];
+                    const descriptionText = project.catchphrase || '';
+                    html += `<p>${descriptionText}</p> <a href="project-detail.htm?id=${project.id}" class="detail-button">詳細を見る</a>`;
+                    container.innerHTML = html;
+                }
+                return container;
+            }
+
+            function setupSpecialPanel() { const panel = document.getElementById('special-panel'); const tabs = panel.querySelectorAll('.panel-tabs button'); tabs.forEach(tab => { tab.addEventListener('click', (e) => { const day = e.target.dataset.day; const currentHubId = panel.dataset.hubId; const hubEvents = [...stageData].filter(p => p.locationId === currentHubId); updatePanelContent(day, hubEvents); }); }); }
+            function openSpecialPanel(group, representative) { const panel = document.getElementById('special-panel'); panel.dataset.hubId = representative.locationId; document.getElementById('panel-title').textContent = representative.name; const hubEvents = group.filter(p => p.tags); updatePanelContent('DAY1', hubEvents); body.classList.add('panel-open'); panel.classList.add('is-open'); }
+            function updatePanelContent(day, allEvents) {
+                const contentArea = document.getElementById('panel-content');
+                const tabs = document.querySelectorAll('.panel-tabs button');
+                tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.day === day));
+                const displayGroup = allEvents.filter(p => !p.id.startsWith('place-'));
+                const eventsForDay = displayGroup.filter(p => p.tags && p.tags.includes(day)).sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+                let contentHtml = '';
+                if (eventsForDay.length > 0) {
+                    eventsForDay.forEach((event, index) => {
+                        contentHtml += `<div class="timetable-item" style="animation-delay: ${index * 0.05}s">
+                            <div class="time">${event.time || '時間未定'}</div>
+                            <div class="details">
+                                <h3>${event.groupName}「${event.name}」</h3>
+                                <a href="stage-group-detail.htm?group=${event.groupId}">詳細を見る →</a>
+                            </div>
+                        </div>`;
+                    });
+                } else {
+                    contentHtml = `<p style="color:white; opacity:0.8;">この日のステージ発表はありません。</p>`;
+                }
+                contentArea.innerHTML = contentHtml;
+            }
+
+            initializeMap();
+            setupEventListeners();
+            applyAllFilters();
+        });
+    </script>
+</body>
+</html>
+

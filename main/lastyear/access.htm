@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アクセス | 南陵祭'25</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NV5VBBQNY7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NV5VBBQNY7');
+</script>
+    <!-- 全てのCSSをここに統合 -->
+    
+    <style>
+        /* --- テンプレートの基本CSS (省略) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root { --header-height: 80px; --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --sidenav-width: 320px; --shadow-medium: 0 15px 50px rgba(0, 0, 0, 0.15); --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-gradient); min-height: 100vh; display: flex; flex-direction: column; padding-top: var(--header-height); overflow-x: hidden; position: relative; color: white;} body.sidenav-open { overflow: hidden; } body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; } main { flex-grow: 1; position: relative; z-index: 2; }
+        .content-wrapper { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        /* --- テンプレートのナビゲーションCSS (省略) --- */
+        .site-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); padding: 0 80px 0 30px; display: flex; align-items: center; } .site-header.hidden { transform: translateY(-100%); opacity: 0; } .site-title a { font-size: 1.8em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; transition: all 0.3s ease; animation: float 6s ease-in-out infinite; } .desktop-nav { margin-left: auto; } .desktop-nav ul { display: flex; list-style: none; gap: 30px; } .desktop-nav a { text-decoration: none; color: rgba(255, 255, 255, 0.9); font-weight: 500; padding: 10px 20px; border-radius: 25px; position: relative; transition: all 0.3s ease; } .desktop-nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 25px; opacity: 0; transition: opacity 0.3s ease; } .desktop-nav a:hover::before { opacity: 1; } .desktop-nav a:hover { color: white; transform: translateY(-2px); } .hamburger-menu { position: fixed; top: 20px; right: 30px; width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; cursor: pointer; z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .hamburger-menu:hover { transform: scale(1.1) rotate(5deg); box-shadow: var(--shadow-strong); } .hamburger-menu .bar { width: 22px; height: 2px; background-color: white; border-radius: 2px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .hamburger-menu { background: white; backdrop-filter: blur(10px); } body.sidenav-open .hamburger-menu .bar { background-color: #2c3e50; } body.sidenav-open .hamburger-menu .bar1 { transform: translateY(6px) rotate(45deg); } body.sidenav-open .hamburger-menu .bar2 { opacity: 0; transform: scaleX(0); } body.sidenav-open .hamburger-menu .bar3 { transform: translateY(-6px) rotate(-45deg); } .sidenav { position: fixed; top: 0; right: 0; width: var(--sidenav-width); max-width: 90vw; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(30px); border-left: 1px solid rgba(255, 255, 255, 0.2); z-index: 200; padding: 100px 30px 30px; transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .sidenav { transform: translateX(0); } .sidenav ul { list-style: none; } .sidenav li { margin-bottom: 8px; opacity: 0; transform: translateX(30px); transition: opacity 0.4s ease, transform 0.4s ease; } body.sidenav-open .sidenav li { opacity: 1; transform: translateX(0); } body.sidenav-open .sidenav li:nth-child(1) { transition-delay: 0.1s; } body.sidenav-open .sidenav li:nth-child(2) { transition-delay: 0.15s; } body.sidenav-open .sidenav li:nth-child(3) { transition-delay: 0.2s; } body.sidenav-open .sidenav li:nth-child(4) { transition-delay: 0.25s; } body.sidenav-open .sidenav li:nth-child(5) { transition-delay: 0.3s; } body.sidenav-open .sidenav li:nth-child(6) { transition-delay: 0.35s; } body.sidenav-open .sidenav li:nth-child(7) { transition-delay: 0.4s; } .sidenav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; display: block; font-size: 1.1em; font-weight: 500; padding: 18px 25px; border-radius: 15px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); } .sidenav a:hover { color: white; background: rgba(255, 255, 255, 0.1); transform: translateX(10px); } .sidenav .about-us { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); } .sidenav .about-us a { font-size: 1em; color: rgba(255, 255, 255, 0.6); } .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0); z-index: 150; pointer-events: none; transition: background-color 0.5s; } body.sidenav-open .page-overlay { background-color: rgba(0, 0, 0, 0.6); pointer-events: auto; }
+        .site-footer { background: rgba(0, 0, 0, 0.2); text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; } @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } } @media (max-width: 900px) { .desktop-nav { display: none; } .site-header { padding: 0 80px 0 20px; } .hamburger-menu { right: 20px; width: 45px; height: 45px; } }
+        /* このページ専用のCSS */
+        .page-header { text-align: center; padding: 40px 20px; }
+        .page-title { font-size: 3em; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .info-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 30px 40px; margin-bottom: 40px; color: rgba(255,255,255,0.9); }
+        .info-card h2 { font-size: 1.8em; font-weight: 700; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); color: white; }
+        .info-card ul { list-style-type: none; padding-left: 0; } .info-card li { padding: 10px 0; font-size: 1.1em; line-height: 1.7; border-bottom: 1px dashed rgba(255,255,255,0.15); } .info-card li:last-child { border-bottom: none; } .info-card strong { color: white; font-weight: 600; }
+        .map-container { width: 100%; height: 450px; border-radius: 15px; overflow: hidden; }
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
+        .access-map-image { width: 100%; height: auto; border-radius: 15px; margin-top: 15px; }
+        /* アニメーション */
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+        .fade-up.is-visible { opacity: 1; transform: translateY(0); }
+
+.cta-button {
+    display: inline-block;
+    background: var(--secondary-gradient);
+    color: white;
+    padding: 15px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: var(--shadow-medium);
+}
+.cta-button:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-strong);
+}
+
+    </style>
+</head>
+<body>
+    <header class="site-header"> <div class="site-title"><a href="index.htm">南陵祭'25</a></div> <nav class="desktop-nav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li></ul></nav> </header>
+    <div class="hamburger-menu"> <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span> </div> <div class="page-overlay"></div>
+    <nav class="sidenav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li><li class="about-us"><a href="about-us.htm">About Us</a></li></ul></nav>
+    
+    <main>
+        <div class="content-wrapper">
+            <header class="page-header fade-up">
+                <h1 class="page-title">アクセス</h1>
+            </header>
+
+ <!-- セクション3：住所 -->
+            <div class="info-card fade-up">
+                <h2>所在地</h2>
+                <ul>
+                    <li><strong>住所:</strong> 〒234-0053 神奈川県横浜市港南区日野中央2丁目26番1号</li>
+                    <li><strong>電話番号:</strong> 045-842-3764</li>
+                </ul>
+            </div>
+
+            <!-- セクション1：メインのアクセス方法 -->
+            <div class="info-card fade-up">
+                <h2>交通アクセス</h2>
+                <ul>
+                    <li><strong>JR根岸線 洋光台駅</strong>より 徒歩 約15分</li>
+                </ul>
+
+                <h3>バスをご利用の場合</h3>
+                <ul>
+                    <li>
+                        <strong>洋光台北口 (徒歩 約5分)</strong>
+                        <p style="font-size:0.9em; opacity:0.8; margin-top:5px;">本校から最も近いバス停です。市営バス133系統などが停車します。</p>
+                    </li>
+                    <li>
+                        <strong>日野中央公園入口 (徒歩 約10分)</strong>
+                        <p style="font-size:0.9em; opacity:0.8; margin-top:5px;">停車するバスの本数が多く、上大岡駅方面からのアクセスに便利です。</p>
+                    </li>
+                    <li>
+                        <strong>日野小学校前 (徒歩 約8分)</strong>
+                        <p style="font-size:0.9em; opacity:0.8; margin-top:5px;">日野中央公園入口より前での乗車により混雑を避けられます。</p>
+                    </li>
+                </ul>
+                <!-- ★ここに最寄り駅からの地図画像を配置する！ -->
+                <img src="https://www.pen-kanagawa.ed.jp/y-nanryo-h/documents/map.jpg?text=駅・バス停からの地図" alt="駅・バス停からの地図" class="access-map-image">
+            <div style="text-align: center; margin-top: 30px;">
+                    <a href="https://www.pen-kanagawa.ed.jp/y-nanryo-h/access.html" class="cta-button" target="_blank" rel="noopener noreferrer">
+                        詳細を確認
+                    </a>
+                </div>
+</div>
+
+            <!-- セクション2：Googleマップ埋め込み -->
+            <div class="info-card fade-up">
+                <h2>Googleマップ</h2>
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13009.541439383403!2d139.60040833940255!3d35.39569750649437!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601844c91f1ac9df%3A0x59ebbb2dc0bd08df!2z56We5aWI5bed55yM56uL5qiq5rWc5Y2X6Zm16auY562J5a2m5qCh!5e0!3m2!1sja!2sjp!4v1756410512050!5m2!1sja!2sjp" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+
+           
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+    <p>&copy; 2025 横浜南陵高校 コンピューター科学部</p>
+    <p>記載されている情報は古い可能性があります。</p>
+</footer>
+
+    <!-- アニメーション用のJavaScript -->
+    <script defer>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- テンプレート共通処理 ---
+            const body = document.body; const hamburger = document.querySelector('.hamburger-menu'); const overlay = document.querySelector('.page-overlay'); function toggleSidenav() { body.classList.toggle('sidenav-open'); } hamburger.addEventListener('click', toggleSidenav); overlay.addEventListener('click', toggleSidenav); let lastScrollTop = 0; const header = document.querySelector('.site-header'); if (header) { const headerHeight = header.offsetHeight; window.addEventListener('scroll', function() { let scrollTop = window.pageYOffset || document.documentElement.scrollTop; if (scrollTop > lastScrollTop && scrollTop > headerHeight) { header.classList.add('hidden'); } else { header.classList.remove('hidden'); } lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; }); }
+            // --- アニメーション実行 ---
+            const animatedElements = document.querySelectorAll('.fade-up'); animatedElements.forEach((el, index) => { setTimeout(() => { el.classList.add('is-visible'); }, index * 150); });
+        });
+    </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企画一覧|南陵祭'25</title>
+    <style>
+        /* (CSSは変更ありません) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root { --header-height: 80px; --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --sidenav-width: 320px; --shadow-medium: 0 15px 50px rgba(0, 0, 0, 0.15); --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; } 
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-gradient); min-height: 100vh; display: flex; flex-direction: column; padding-top: var(--header-height); overflow-x: hidden; position: relative; color: white;} 
+        body.sidenav-open { overflow: hidden; } 
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; } 
+        main { flex-grow: 1; position: relative; z-index: 2; }
+        .content-wrapper { max-width: 960px; margin: 0 auto; padding: 40px 20px; } 
+        .site-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); padding: 0 80px 0 30px; display: flex; align-items: center; } .site-header.hidden { transform: translateY(-100%); opacity: 0; } 
+        .site-title a { font-size: 1.8em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; transition: all 0.3s ease; animation: float 6s ease-in-out infinite; } 
+        .desktop-nav { margin-left: auto; } .desktop-nav ul { display: flex; list-style: none; gap: 30px; } .desktop-nav a { text-decoration: none; color: rgba(255, 255, 255, 0.9); font-weight: 500; padding: 10px 20px; border-radius: 25px; position: relative; transition: all 0.3s ease; } .desktop-nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 25px; opacity: 0; transition: opacity 0.3s ease; } .desktop-nav a:hover::before { opacity: 1; } .desktop-nav a:hover { color: white; transform: translateY(-2px); } 
+        .hamburger-menu { position: fixed; top: 20px; right: 30px; width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; cursor: pointer; z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .hamburger-menu:hover { transform: scale(1.1) rotate(5deg); box-shadow: var(--shadow-strong); } .hamburger-menu .bar { width: 22px; height: 2px; background-color: white; border-radius: 2px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .hamburger-menu { background: white; backdrop-filter: blur(10px); } body.sidenav-open .hamburger-menu .bar { background-color: #2c3e50; } body.sidenav-open .hamburger-menu .bar1 { transform: translateY(6px) rotate(45deg); } body.sidenav-open .hamburger-menu .bar2 { opacity: 0; transform: scaleX(0); } body.sidenav-open .hamburger-menu .bar3 { transform: translateY(-6px) rotate(-45deg); } 
+        .sidenav { position: fixed; top: 0; right: 0; width: var(--sidenav-width); max-width: 90vw; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(30px); border-left: 1px solid rgba(255, 255, 255, 0.2); z-index: 200; padding: 100px 30px 30px; transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .sidenav { transform: translateX(0); } .sidenav ul { list-style: none; } .sidenav li { margin-bottom: 8px; opacity: 0; transform: translateX(30px); transition: opacity 0.4s ease, transform 0.4s ease; } body.sidenav-open .sidenav li { opacity: 1; transform: translateX(0); } body.sidenav-open .sidenav li:nth-child(1) { transition-delay: 0.1s; } body.sidenav-open .sidenav li:nth-child(2) { transition-delay: 0.15s; } body.sidenav-open .sidenav li:nth-child(3) { transition-delay: 0.2s; } body.sidenav-open .sidenav li:nth-child(4) { transition-delay: 0.25s; } body.sidenav-open .sidenav li:nth-child(5) { transition-delay: 0.3s; } body.sidenav-open .sidenav li:nth-child(6) { transition-delay: 0.35s; } body.sidenav-open .sidenav li:nth-child(7) { transition-delay: 0.4s; } .sidenav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; display: block; font-size: 1.1em; font-weight: 500; padding: 18px 25px; border-radius: 15px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); } .sidenav a:hover { color: white; background: rgba(255, 255, 255, 0.1); transform: translateX(10px); } .sidenav .about-us { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); } .sidenav .about-us a { font-size: 1em; color: rgba(255, 255, 255, 0.6); } 
+        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0); z-index: 150; pointer-events: none; transition: background-color 0.5s; } body.sidenav-open .page-overlay { background-color: rgba(0, 0, 0, 0.6); pointer-events: auto; } 
+        .site-footer { background: rgba(0, 0, 0, 0.2); text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; } 
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } } 
+        @media (max-width: 900px) { .desktop-nav { display: none; } .site-header { padding: 0 80px 0 20px; } .hamburger-menu { right: 20px; width: 45px; height: 45px; } }
+        .page-header { text-align: center; padding: 40px 20px; margin-bottom: 40px; animation: fadeInDown 1s ease-out; }
+        .page-title { color: white; font-size: 3em; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .project-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; overflow: hidden; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); display: flex; flex-direction: column; text-decoration: none; color: white; opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s ease-out forwards; }
+        .project-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: var(--shadow-strong); }
+        .card-image { height: 200px; overflow: hidden; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .project-card:hover .card-image img { transform: scale(1.1); }
+        .card-content { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-content .group-name { color: rgba(255,255,255,0.7); font-size: 1em; font-weight: 500; display: block; margin: 0 0 5px 0; }
+        .card-content .project-title { font-size: 1.5em; font-weight: 700; line-height: 1.3; margin: 0 0 10px 0; }
+        .card-content .catchphrase { font-size: 1em; line-height: 1.6; margin-bottom: 20px; flex-grow: 1; opacity: 0.8; }
+        .card-button-wrapper { margin-top: auto; text-align: center; padding-top: 15px; }
+        .card-button { display: inline-block; background: var(--secondary-gradient); color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.9em; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; }
+        .project-card:hover .card-button { transform: scale(1.05); }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .filter-section { background: rgba(0,0,0,0.2); padding: 30px; border-radius: 15px; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .filter-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .filter-group:not(:last-child) { margin-bottom: 15px; }
+        .filter-label { color: rgba(255,255,255,0.8); font-weight: 500; white-space: nowrap; }
+        .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .filter-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s ease-in-out; }
+        .filter-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .filter-btn.active { background: var(--secondary-gradient); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-color: transparent; }
+        .no-results { color: white; font-size: 1.5em; font-weight: 500; text-align: center; padding: 80px 20px; background: rgba(0,0,0,0.2); border-radius: 15px; display: none; }
+        @media (max-width: 768px) { .project-grid { grid-template-columns: 1fr; } .filter-group { flex-direction: column; } }
+        .search-box-wrapper { width: 100%; max-width: 600px; }
+        .search-input { width: 100%; padding: 15px 25px; font-size: 1.1em; color: white; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; transition: all 0.3s ease; }
+        .search-input::placeholder { color: rgba(255,255,255,0.5); }
+        .search-input:focus { outline: none; border-color: rgba(255,255,255,0.7); box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-title"><a href="index.htm">南陵祭'25</a></div>
+        <nav class="desktop-nav">
+            <ul>
+                <li><a href="about.htm">概要</a></li>
+                <li><a href="projects-list.htm">企画一覧</a></li>
+                <li><a href="stage-list.htm">ステージ発表</a></li>
+                <li><a href="map.htm">校内マップ</a></li>
+                <li><a href="access.htm">アクセス</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hamburger-menu"> <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span> </div>
+    <div class="page-overlay"></div>
+    <nav class="sidenav">
+        <ul>
+            <li><a href="about.htm">概要</a></li>
+            <li><a href="projects-list.htm">企画一覧</a></li>
+            <li><a href="stage-list.htm">ステージ発表</a></li>
+            <li><a href="map.htm">校内マップ</a></li>
+            <li><a href="access.htm">アクセス</a></li>
+            <li class="about-us"><a href="about-us.htm">About Us</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+    <div class="content-wrapper">
+
+        <header class="page-header">
+            <h1 class="page-title">企画一覧</h1>
+        </header>
+
+        <div class="filter-section">
+            <div class="search-box-wrapper">
+                <input type="search" id="search-input" class="search-input" placeholder="企画名で検索...">
+            </div>
+            <div class="filter-group">
+                <strong class="filter-label">団体</strong>
+                <div id="filter-by-grade" class="filter-buttons">
+                    <button class="filter-btn active" data-filter="すべて">すべて</button>
+                    <button class="filter-btn" data-filter="1年生">1年生</button>
+                    <button class="filter-btn" data-filter="2年生">2年生</button>
+                    <button class="filter-btn" data-filter="3年生">3年生</button>
+                    <button class="filter-btn" data-filter="部活動・同好会">部活動・同好会</button>
+                    <button class="filter-btn" data-filter="委員会">委員会</button>
+                    <button class="filter-btn" data-filter="その他">その他</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <strong class="filter-label">ジャンル</strong>
+                <div id="filter-by-type" class="filter-buttons">
+                    <button class="filter-btn active" data-filter="すべて">すべて</button>
+                    <button class="filter-btn" data-filter="体験・ゲーム">体験・ゲーム</button>
+                    <button class="filter-btn" data-filter="お化け屋敷">お化け屋敷</button>
+                    <button class="filter-btn" data-filter="カフェ">カフェ</button>
+                    <button class="filter-btn" data-filter="展示">展示</button>
+                    <button class="filter-btn" data-filter="販売">販売</button>
+                    <button class="filter-btn" data-filter="その他">その他</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="project-grid-container" class="project-grid"></div>
+        <div id="no-results-message" class="no-results"></div>
+
+    </div>
+</main>
+
+    <footer class="site-footer">
+    <p>&copy; 2025 横浜南陵高校 コンピューター科学部</p>
+    <p>記載されている情報は古い可能性があります。</p>
+</footer>
+
+<script defer src="data.js"></script>
+<script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const body = document.body;
+        const hamburger = document.querySelector('.hamburger-menu');
+        const overlay = document.querySelector('.page-overlay');
+        function toggleSidenav() { body.classList.toggle('sidenav-open'); }
+        hamburger.addEventListener('click', toggleSidenav);
+        overlay.addEventListener('click', toggleSidenav);
+        let lastScrollTop = 0;
+        const header = document.querySelector('.site-header');
+        if (header) { const headerHeight = header.offsetHeight; window.addEventListener('scroll', function() { let scrollTop = window.pageYOffset || document.documentElement.scrollTop; if (scrollTop > lastScrollTop && scrollTop > headerHeight) { header.classList.add('hidden'); } else { header.classList.remove('hidden'); } lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; }); }
+    
+        const gridContainer = document.getElementById('project-grid-container');
+        const noResultsMessage = document.getElementById('no-results-message');
+
+        function renderCards(projectsToRender) {
+            if (!gridContainer || !noResultsMessage) return;
+            if (projectsToRender.length === 0) {
+                gridContainer.innerHTML = '';
+                noResultsMessage.innerText = '該当する企画はありませんでした。';
+                noResultsMessage.style.display = 'block';
+                return;
+            }
+            
+            noResultsMessage.style.display = 'none';
+            gridContainer.innerHTML = ''; 
+            
+            let cardsHTML = '';
+            projectsToRender.forEach((project, index) => {
+                const nameParts = project.name.match(/^(.+?)(?:「(.*)」)?$/);
+                const groupName = nameParts ? nameParts[1].trim() : project.name;
+                const projectName = nameParts && nameParts[2] ? nameParts[2].trim() : '';
+                
+                cardsHTML += `
+                    <a href="project-detail.htm?id=${project.id}" class="project-card" style="animation-delay: ${index * 0.05}s">
+                        <div class="card-image"><img src="${project.image || 'images/placeholder.jpg'}" alt="${project.name} のイメージ画像"></div>
+                        <div class="card-content">
+                            <span class="group-name">${groupName}</span>
+                            <h3 class="project-title">${projectName}</h3>
+                            <p class="catchphrase">${project.catchphrase || ''}</p>
+                            <div class="card-button-wrapper"><span class="card-button">詳しく見る</span></div>
+                        </div>
+                    </a>`;
+            });
+            gridContainer.innerHTML = cardsHTML;
+        }
+
+        if (typeof projectData !== 'undefined') {
+            const gradeFilterContainer = document.getElementById('filter-by-grade');
+            const typeFilterContainer = document.getElementById('filter-by-type');
+            const searchInput = document.getElementById('search-input');
+            let activeFilters = { grade: 'すべて', type: 'すべて', search: '' };
+            
+            function applyAllFilters() {
+                // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+                // ★ ここが修正点です！ stageDataを読み込まないようにしました ★
+                // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+                const allProjects = projectData; 
+                let filtered = allProjects;
+
+                if (activeFilters.grade !== 'すべて') { filtered = filtered.filter(p => p.tags && p.tags.includes(activeFilters.grade)); }
+                if (activeFilters.type !== 'すべて') { filtered = filtered.filter(p => p.tags && p.tags.includes(activeFilters.type)); }
+                if (activeFilters.search) {
+                    const searchTerm = activeFilters.search.toLowerCase();
+                    filtered = filtered.filter(p => 
+                        p.name.toLowerCase().includes(searchTerm) ||
+                        (p.catchphrase && p.catchphrase.toLowerCase().includes(searchTerm)) ||
+                        (p.description && p.description.toLowerCase().includes(searchTerm))
+                    );
+                }
+                renderCards(filtered);
+            }
+
+            if(searchInput) { searchInput.addEventListener('input', function() { activeFilters.search = searchInput.value.trim(); applyAllFilters(); }); }
+            if(gradeFilterContainer) { gradeFilterContainer.addEventListener('click', function(e) { if (!e.target.matches('.filter-btn')) return; gradeFilterContainer.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); activeFilters.grade = e.target.dataset.filter; applyAllFilters(); }); }
+            if(typeFilterContainer) { typeFilterContainer.addEventListener('click', function(e) { if (!e.target.matches('.filter-btn')) return; typeFilterContainer.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); activeFilters.type = e.target.dataset.filter; applyAllFilters(); }); }
+            
+            applyAllFilters();
+        } else {
+            console.error("data.jsが読み込めていないか、データが存在しません。");
+            if(noResultsMessage) { noResultsMessage.innerText = 'データ読み込みエラー。ページを再読み込みしてください。'; noResultsMessage.style.display = 'block'; }
+        }
+    });
+</script>
+</body>
+</html>

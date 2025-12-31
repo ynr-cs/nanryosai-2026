@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | 南陵祭'25</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NV5VBBQNY7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NV5VBBQNY7');
+</script>
+    <!-- 全てのCSSをここに統合 -->
+    <style>
+        /* --- テンプレートの基本CSS (省略) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root { --header-height: 80px; --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --sidenav-width: 320px; --shadow-medium: 0 15px 50px rgba(0, 0, 0, 0.15); --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-gradient); min-height: 100vh; display: flex; flex-direction: column; padding-top: var(--header-height); overflow-x: hidden; position: relative; color: white;} body.sidenav-open { overflow: hidden; } body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; } main { flex-grow: 1; position: relative; z-index: 2; }
+        .content-wrapper { max-width: 800px; margin: 0 auto; padding: 40px 20px; } /* このページ用に少し幅を狭める */
+        /* --- テンプレートのナビゲーションCSS (省略) --- */
+        .site-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); padding: 0 80px 0 30px; display: flex; align-items: center; } .site-header.hidden { transform: translateY(-100%); opacity: 0; } .site-title a { font-size: 1.8em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; transition: all 0.3s ease; animation: float 6s ease-in-out infinite; } .desktop-nav { margin-left: auto; } .desktop-nav ul { display: flex; list-style: none; gap: 30px; } .desktop-nav a { text-decoration: none; color: rgba(255, 255, 255, 0.9); font-weight: 500; padding: 10px 20px; border-radius: 25px; position: relative; transition: all 0.3s ease; } .desktop-nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 25px; opacity: 0; transition: opacity 0.3s ease; } .desktop-nav a:hover::before { opacity: 1; } .desktop-nav a:hover { color: white; transform: translateY(-2px); } .hamburger-menu { position: fixed; top: 20px; right: 30px; width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; cursor: pointer; z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .hamburger-menu:hover { transform: scale(1.1) rotate(5deg); box-shadow: var(--shadow-strong); } .hamburger-menu .bar { width: 22px; height: 2px; background-color: white; border-radius: 2px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .hamburger-menu { background: white; backdrop-filter: blur(10px); } body.sidenav-open .hamburger-menu .bar { background-color: #2c3e50; } body.sidenav-open .hamburger-menu .bar1 { transform: translateY(6px) rotate(45deg); } body.sidenav-open .hamburger-menu .bar2 { opacity: 0; transform: scaleX(0); } body.sidenav-open .hamburger-menu .bar3 { transform: translateY(-6px) rotate(-45deg); } .sidenav { position: fixed; top: 0; right: 0; width: var(--sidenav-width); max-width: 90vw; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(30px); border-left: 1px solid rgba(255, 255, 255, 0.2); z-index: 200; padding: 100px 30px 30px; transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .sidenav { transform: translateX(0); } .sidenav ul { list-style: none; } .sidenav li { margin-bottom: 8px; opacity: 0; transform: translateX(30px); transition: opacity 0.4s ease, transform 0.4s ease; } body.sidenav-open .sidenav li { opacity: 1; transform: translateX(0); } body.sidenav-open .sidenav li:nth-child(1) { transition-delay: 0.1s; } body.sidenav-open .sidenav li:nth-child(2) { transition-delay: 0.15s; } body.sidenav-open .sidenav li:nth-child(3) { transition-delay: 0.2s; } body.sidenav-open .sidenav li:nth-child(4) { transition-delay: 0.25s; } body.sidenav-open .sidenav li:nth-child(5) { transition-delay: 0.3s; } body.sidenav-open .sidenav li:nth-child(6) { transition-delay: 0.35s; } body.sidenav-open .sidenav li:nth-child(7) { transition-delay: 0.4s; } .sidenav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; display: block; font-size: 1.1em; font-weight: 500; padding: 18px 25px; border-radius: 15px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); } .sidenav a:hover { color: white; background: rgba(255, 255, 255, 0.1); transform: translateX(10px); } .sidenav .about-us { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); } .sidenav .about-us a { font-size: 1em; color: rgba(255, 255, 255, 0.6); } .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0); z-index: 150; pointer-events: none; transition: background-color 0.5s; } body.sidenav-open .page-overlay { background-color: rgba(0, 0, 0, 0.6); pointer-events: auto; }
+        .site-footer { background: rgba(0, 0, 0, 0.2); text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; } @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } } @media (max-width: 900px) { .desktop-nav { display: none; } .site-header { padding: 0 80px 0 20px; } .hamburger-menu { right: 20px; width: 45px; height: 45px; } }
+        
+        /* ★★★ ここからがこのページ専用のCSS ★★★ */
+.page-header { text-align: center; padding: 40px 20px; }
+.page-title { font-size: 3em; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+/* index.htmでも使った、汎用の情報カードデザイン */
+.info-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 30px 40px;
+    margin-bottom: 40px;
+    color: rgba(255,255,255,0.9);
+}
+.info-card h2 {
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+.info-card p {
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+.info-card h3 {
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: white;
+}
+.info-card ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+.info-card li {
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
+}
+.info-card li:last-child {
+    border-bottom: none;
+}
+
+.tech-stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+.tech-item {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+}
+.tech-category {
+    font-size: 0.8em;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.cta-button { display: inline-block; background: var(--secondary-gradient); color: white; padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1em; transition: all 0.3s ease; box-shadow: var(--shadow-medium); }
+.cta-button:hover { transform: translateY(-5px); box-shadow: var(--shadow-strong); }
+.text-center { text-align: center; }
+
+/* styleタグのどこかに追加 */
+
+.qa-list { margin-top: 30px; }
+.qa-item { margin-bottom: 25px; }
+.qa-q {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+}
+.qa-q span {
+    color: var(--accent-gradient); /* ちょっと色を付ける */
+    font-size: 1.5em;
+    margin-right: 5px;
+}
+.qa-a {
+    padding-left: 2em;
+    border-left: 3px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.9);
+}
+
+/* styleタグの、ページ専用CSSエリアに追加 */
+
+/* ページ表示時のアニメーション */
+.fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+    </style>
+</head>
+<body>
+    <header class="site-header"> <div class="site-title"><a href="index.htm">南陵祭'25</a></div> <nav class="desktop-nav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li></ul></nav> </header>
+    <div class="hamburger-menu"> <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span> </div> <div class="page-overlay"></div>
+    <nav class="sidenav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li><li class="about-us"><a href="about-us.htm">About Us</a></li></ul></nav>
+    
+    <!-- ▼▼▼ <main>...</main> を、これでまるごと上書き ▼▼▼ -->
+<!-- ▼▼▼ <main>...</main> を、これでまるごと上書き ▼▼▼ -->
+<main>
+    <div class="content-wrapper">
+        <header class="page-header fade-up">
+            <!-- 1. タイトル変更 -->
+            <h1 class="page-title">About Us</h1>
+        </header>
+
+        <!-- 2. コンピューター科学部紹介 (内容差し替え) -->
+        <div class="info-card fade-up">
+            <h2>横浜南陵高校コンピューター科学部</h2>
+            <p>
+                <strong>「次、どこ行く？をスマホで。」</strong><br>
+                これが、私たちが掲げるこのサイトのモットーです。<br>
+                私たちはプログラミングやWebサイト制作を通じて、ただPCと向き合うだけでなく、南陵祭や学校行事をより楽しく、便利にするためのツールを作り出しています。
+            </p>
+            <h3>主な活動内容</h3>
+            <ul>
+                <li>プログラミング (Python, JavaScript, etc...)</li>
+                <li>Webサイト制作</li>
+                <li>その他PCでできることほぼすべて</li>
+            </ul>
+        </div>
+
+        <!-- 3. 技術スタック (スリム化) -->
+        <div class="info-card fade-up">
+            <h2>このサイトを支える技術</h2>
+            <div class="tech-stack-grid">
+                <div class="tech-item"><span class="tech-category">言語</span>HTML / CSS / JS</div>
+                <div class="tech-item"><span class="tech-category">API連携</span>Google Apps Script</div>
+                <div class="tech-item"><span class="tech-category">データベース</span>Google Sheets</div>
+                <div class="tech-item"><span class="tech-category">ホスティング</span>GitHub Pages</div>
+                <div class="tech-item"><span class="tech-category">制作協力</span>Gemini / Claude etc.</div>
+            </div>
+        </div>
+
+        <!-- ★★★ セクション3：制作の裏側 (NEW!) ★★★ -->
+        <div class="info-card fade-up">
+            <h2>制作の裏側 </h2>
+            <div class="qa-list">
+                <div class="qa-item">
+                    <div class="qa-q"><span>Q1.</span>このサイト、何人くらいで作ってるの？</div>
+                    <div class="qa-a">リーダーの1年山本がWebサイトの大部分を構築しました。<br>しかし、バグと戦ってくれたGeminiやデザインの方向性を定めてくれたClaude、そして情報収集と構築に協力してくれた人を含めば、本当に数え切れません。<br>ご協力ありがとうございました。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-q"><span>Q2.</span>一番大変だったことは？</div>
+                    <div class="qa-a">data.jsが読み込めないエラーとの6時間に及ぶ死闘です。<br>原因はたった3文字の"js/"という文字でした。<br>Web開発の奥深さと、デバッグの重要性を痛感しました。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-q"><span>Q3.</span>こだわったポイントは？</div>
+                    <div class="qa-a">単なる情報サイトで終わらせないための「リアルタイム更新機能」と「検索機能」です。<br>構築に数日つぶしました。</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 4. お問い合わせ (文言修正) -->
+        <div class="info-card text-center fade-up">
+            <h2>Contact</h2>
+            <p style="margin-bottom: 25px;">
+                このサイトに関するご質問やお問い合わせは、<br>以下のフォームよりお気軽にご連絡ください。
+            </p>
+            <!-- ★ここにお問い合わせ用Googleフォームのリンクを貼るのを忘れずにな！ -->
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeVjThkdpre23viym3-86K20-VOdhOBDR3OGlhoBcXldMrENg/viewform?usp=header" class="cta-button" target="_blank" rel="noopener noreferrer">お問い合わせフォームへ</a>
+        </div>
+
+    </div>
+</main>
+
+    <footer class="site-footer">
+    <p>&copy; 2025 横浜南陵高校 コンピューター科学部</p>
+    <p>記載されている情報は古い可能性があります。</p>
+</footer>
+
+    <!-- このページは複雑なJSは不要。テンプレートの基本機能だけでOK -->
+    <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        // === 1. テンプレート共通の処理 (変更なし) ===
+        const body = document.body; const hamburger = document.querySelector('.hamburger-menu'); const overlay = document.querySelector('.page-overlay'); function toggleSidenav() { body.classList.toggle('sidenav-open'); } hamburger.addEventListener('click', toggleSidenav); overlay.addEventListener('click', toggleSidenav); let lastScrollTop = 0; const header = document.querySelector('.site-header'); if (header) { const headerHeight = header.offsetHeight; window.addEventListener('scroll', function() { let scrollTop = window.pageYOffset || document.documentElement.scrollTop; if (scrollTop > lastScrollTop && scrollTop > headerHeight) { header.classList.add('hidden'); } else { header.classList.remove('hidden'); } lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; }); }
+        
+        // ★★★ 2. ページ表示アニメーションの実行 ★★★
+        const animatedElements = document.querySelectorAll('.fade-up');
+        animatedElements.forEach((el, index) => {
+            // setTimeoutを使って、各要素の表示タイミングを少しずつずらす
+            setTimeout(() => {
+                el.classList.add('is-visible');
+            }, index * 150); // 0.15秒ずつ遅延させる
+        });
+    });
+</script>
+</body>
+</html>
+
+

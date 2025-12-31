@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ステージ発表 | 南陵祭'25</title>
+    <style>
+        /* CSS部分は変更ありません (省略) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root { --header-height: 80px; --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --sidenav-width: 320px; --shadow-medium: 0 15px 50px rgba(0, 0, 0, 0.15); --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; } 
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-gradient); min-height: 100vh; display: flex; flex-direction: column; padding-top: var(--header-height); overflow-x: hidden; position: relative; color: white;} 
+        body.sidenav-open { overflow: hidden; } 
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; } 
+        main { flex-grow: 1; position: relative; z-index: 2; }
+        .site-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 100; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); padding: 0 80px 0 30px; display: flex; align-items: center; } .site-header.hidden { transform: translateY(-100%); opacity: 0; } .site-title a { font-size: 1.8em; font-weight: 700; background: linear-gradient(45deg, #fff, #e8f4f8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; transition: all 0.3s ease; animation: float 6s ease-in-out infinite; } .desktop-nav { margin-left: auto; } .desktop-nav ul { display: flex; list-style: none; gap: 30px; } .desktop-nav a { text-decoration: none; color: rgba(255, 255, 255, 0.9); font-weight: 500; padding: 10px 20px; border-radius: 25px; position: relative; transition: all 0.3s ease; } .desktop-nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 25px; opacity: 0; transition: opacity 0.3s ease; } .desktop-nav a:hover::before { opacity: 1; } .desktop-nav a:hover { color: white; transform: translateY(-2px); } .hamburger-menu { position: fixed; top: 20px; right: 30px; width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; cursor: pointer; z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-medium); } .hamburger-menu:hover { transform: scale(1.1) rotate(5deg); box-shadow: var(--shadow-strong); } .hamburger-menu .bar { width: 22px; height: 2px; background-color: white; border-radius: 2px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .hamburger-menu { background: white; backdrop-filter: blur(10px); } body.sidenav-open .hamburger-menu .bar { background-color: #2c3e50; } body.sidenav-open .hamburger-menu .bar1 { transform: translateY(6px) rotate(45deg); } body.sidenav-open .hamburger-menu .bar2 { opacity: 0; transform: scaleX(0); } body.sidenav-open .hamburger-menu .bar3 { transform: translateY(-6px) rotate(-45deg); } .sidenav { position: fixed; top: 0; right: 0; width: var(--sidenav-width); max-width: 90vw; height: 100%; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(30px); border-left: 1px solid rgba(255, 255, 255, 0.2); z-index: 200; padding: 100px 30px 30px; transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); } body.sidenav-open .sidenav { transform: translateX(0); } .sidenav ul { list-style: none; } .sidenav li { margin-bottom: 8px; opacity: 0; transform: translateX(30px); transition: opacity 0.4s ease, transform 0.4s ease; } body.sidenav-open .sidenav li { opacity: 1; transform: translateX(0); } body.sidenav-open .sidenav li:nth-child(1) { transition-delay: 0.1s; } body.sidenav-open .sidenav li:nth-child(2) { transition-delay: 0.15s; } body.sidenav-open .sidenav li:nth-child(3) { transition-delay: 0.2s; } body.sidenav-open .sidenav li:nth-child(4) { transition-delay: 0.25s; } body.sidenav-open .sidenav li:nth-child(5) { transition-delay: 0.3s; } body.sidenav-open .sidenav li:nth-child(6) { transition-delay: 0.35s; } body.sidenav-open .sidenav li:nth-child(7) { transition-delay: 0.4s; } .sidenav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; display: block; font-size: 1.1em; font-weight: 500; padding: 18px 25px; border-radius: 15px; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); } .sidenav a:hover { color: white; background: rgba(255, 255, 255, 0.1); transform: translateX(10px); } .sidenav .about-us { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); } .sidenav .about-us a { font-size: 1em; color: rgba(255, 255, 255, 0.6); } .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0); z-index: 150; pointer-events: none; transition: background-color 0.5s; } body.sidenav-open .page-overlay { background-color: rgba(0, 0, 0, 0.6); pointer-events: auto; }
+        .site-footer { background: rgba(0, 0, 0, 0.2); text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; } @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } } @media (max-width: 900px) { .desktop-nav { display: none; } .site-header { padding: 0 80px 0 20px; } .hamburger-menu { right: 20px; width: 45px; height: 45px; } }
+        .content-wrapper { max-width: 100%; padding: 40px 10px; }
+        @media (min-width: 768px) { .content-wrapper { padding: 40px 30px; } }
+        .page-header { text-align: center; padding: 0 20px 20px; }
+        .page-title { font-size: 3em; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .day-selector { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
+        .day-btn { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px 30px; border-radius: 50px; cursor: pointer; font-size: 1.1em; font-weight: 600; transition: all 0.3s ease; }
+        .day-btn:hover { background: rgba(255,255,255,0.2); }
+        .day-btn.active { background: var(--secondary-gradient); box-shadow: var(--shadow-medium); border-color: transparent; }
+        .gantt-chart-container { overflow-x: auto; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; position: relative; }
+        .gantt-chart { display: grid; border-collapse: collapse; min-width: 1000px; }
+        .gantt-header, .gantt-row { display: contents; }
+        .gantt-place-header, .gantt-place, .gantt-time-header, .gantt-time-cell { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); }
+        .gantt-time-header:last-child, .gantt-time-cell:last-child { border-right: none; }
+        .gantt-place-header, .gantt-place { font-weight: 700; font-size: 1.1em; background: rgba(0,0,0,0.4); position: sticky; left: 0; z-index: 10; border-right: 1px solid rgba(255,255,255,0.2) !important; }
+        .gantt-time-header { text-align: center; font-size: 0.9em; }
+        .gantt-events { grid-column-start: 2; position: relative; }
+        .gantt-event-bar { position: absolute; background: var(--accent-gradient); color: white; padding: 10px; border-radius: 8px; font-size: 0.9em; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
+        /* ★ガントチャートのバーに団体名も表示するためのスタイル */
+        .gantt-event-bar .event-group-name { font-weight: 700; display: block; font-size: 1em; }
+        .gantt-event-bar .event-perf-name { font-size: 0.8em; opacity: 0.8; display: block; }
+        .gantt-event-bar:hover { filter: brightness(1.2); transform: scale(1.02); z-index: 20;}
+        #current-time-indicator { position: absolute; top: 0; height: 100%; width: 3px; background-color: #ff4757; z-index: 30; box-shadow: 0 0 15px #ff4757; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+        #current-time-indicator.visible { opacity: 1; }
+        #current-time-indicator .time-label { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #ff4757; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: 700; white-space: nowrap; }
+        .timeline-list-container { margin-top: 40px; }
+        .list-event-card { background: rgba(0,0,0,0.2); border-radius: 15px; margin-bottom: 15px; padding: 20px 25px; display: flex; align-items: center; gap: 20px; border: 1px solid transparent; transition: all 0.3s ease; }
+        .list-event-card.highlight { border-color: var(--accent-gradient); box-shadow: 0 0 20px rgba(79, 172, 254, 0.5); transform: scale(1.02); }
+        .list-time { font-size: 1.3em; font-weight: 700; min-width: 130px; }
+        .list-details { flex-grow: 1; }
+        .list-name { font-size: 1.4em; font-weight: 700; }
+        .list-place { font-size: 1em; opacity: 0.8; margin-top: 5px; }
+        .list-link-button { display: inline-block; background: var(--secondary-gradient); color: white; padding: 10px 22px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.9em; transition: all 0.3s ease; box-shadow: var(--shadow-medium); white-space: nowrap; border: none; }
+        .list-link-button:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--shadow-strong); }
+        @media (max-width: 768px) { .content-wrapper { padding: 20px 10px; } .page-title { font-size: 2.5em; } .list-event-card { flex-direction: column; align-items: flex-start; gap: 10px; } .list-details { width: 100%; } .list-link-button { align-self: flex-end; } }
+        .timeline-controls { display: flex; justify-content: flex-end; align-items: center; padding: 0 10px 20px; margin-top: 20px; }
+        .toggle-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; font-size: 1em; font-weight: 500; color: white; -webkit-user-select: none; user-select: none; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-switch .slider { width: 50px; height: 26px; background-color: rgba(0,0,0,0.4); border-radius: 34px; transition: .4s; margin-right: 12px; border: 1px solid rgba(255,255,255,0.2); }
+        .toggle-switch .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s cubic-bezier(0.23, 1, 0.32, 1); }
+        .toggle-switch input:checked + .slider { background: var(--accent-gradient); border-color: transparent; }
+        .toggle-switch input:checked + .slider:before { transform: translateX(24px); }
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+        .fade-up.is-visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <header class="site-header"> <div class="site-title"><a href="index.htm">南陵祭'25</a></div><nav class="desktop-nav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li></ul></nav> </header>
+    <div class="hamburger-menu"> <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span> </div><div class="page-overlay"></div>
+    <nav class="sidenav"><ul><li><a href="about.htm">概要</a></li><li><a href="projects-list.htm">企画一覧</a></li><li><a href="stage-list.htm">ステージ発表</a></li><li><a href="map.htm">校内マップ</a></li><li><a href="access.htm">アクセス</a></li><li class="about-us"><a href="about-us.htm">About Us</a></li></ul></nav>
+    
+    <main>
+    <div class="content-wrapper">
+        <header class="page-header">
+            <h1 class="page-title">ステージ発表</h1>
+        </header>
+        
+        <div class="day-selector">
+            <button class="day-btn active" data-day="DAY1">DAY 1</button>
+            <button class="day-btn" data-day="DAY2">DAY 2</button>
+        </div>
+
+        <div id="gantt-chart-container" class="gantt-chart-container">
+            <div id="gantt-chart" class="gantt-chart"></div>
+        </div>
+
+        <div class="timeline-controls">
+            <label class="toggle-switch">
+                <input type="checkbox" id="show-past-events-toggle">
+                <span class="slider"></span>
+                過去の発表も表示する
+            </label>
+        </div>
+
+        <div id="timeline-list-container" class="timeline-list-container"></div>
+    </div>
+</main>
+
+    <footer class="site-footer">
+    <p>&copy; 2025 横浜南陵高校 コンピューター科学部</p>
+    <p>記載されている情報は古い可能性があります。</p>
+</footer>
+
+<script defer src="data.js"></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    // === 1. テンプレート共通の処理 (変更なし) ===
+    const body = document.body;
+    const hamburger = document.querySelector('.hamburger-menu');
+    const overlay = document.querySelector('.page-overlay');
+    function toggleSidenav() { body.classList.toggle('sidenav-open'); }
+    hamburger.addEventListener('click', toggleSidenav);
+    overlay.addEventListener('click', toggleSidenav);
+    let lastScrollTop = 0;
+    const header = document.querySelector('.site-header');
+    if (header) {
+        const headerHeight = header.offsetHeight;
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > headerHeight) { header.classList.add('hidden'); }
+            else { header.classList.remove('hidden'); }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    }
+
+    // === 2. ページ固有要素の取得 (変更なし) ===
+    const chartWrapper = document.getElementById('gantt-chart-container');
+    const chartContainer = document.getElementById('gantt-chart');
+    const listContainer = document.getElementById('timeline-list-container');
+    const daySelector = document.querySelector('.day-selector');
+    const pastEventsToggle = document.getElementById('show-past-events-toggle');
+
+    // === 3. 定数とヘルパー関数の定義 (変更なし) ===
+    const timeHeaders = ['9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
+    const totalMinutes = (timeHeaders.length - 1) * 60;
+    const startHour = 9;
+    const festivalDates = {
+        DAY1: new Date(2025, 8, 5),
+        DAY2: new Date(2025, 8, 6)
+    };
+    function timeToMinutes(timeStr) {
+        if (typeof timeStr !== 'string' || !timeStr.includes(':')) return null;
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        if (isNaN(hours) || isNaN(minutes)) return null;
+        return hours * 60 + minutes;
+    }
+
+    // === 4. ガントチャート描画関数 (★★★ 修正 ★★★) ===
+    function renderGanttChart(day) {
+        if (!chartContainer || typeof stageData === 'undefined') return;
+        
+        // hubTypeを持つ場所データを除外して純粋なパフォーマンスだけを対象にする
+        const dayData = stageData.filter(event => !event.hubType && event.tags && event.tags.includes(day) && event.time && event.time !== '不明');
+        
+        const places = [...new Set(dayData.map(event => event.place))].sort();
+        if (places.length === 0) {
+            chartContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 40px; text-align: center; font-size: 1.2em; opacity: 0.8;">この日の発表予定はありません。</div>`;
+            chartContainer.style.gridTemplateColumns = '1fr';
+            return;
+        }
+        const columnWidth = 180;
+        chartContainer.style.gridTemplateColumns = `120px repeat(${timeHeaders.length - 1}, ${columnWidth}px)`;
+        let html = '<div class="gantt-header"><div class="gantt-place-header">場所</div>';
+        timeHeaders.forEach(time => { html += `<div class="gantt-time-header">${time}</div>`; });
+        html += '</div>';
+        places.forEach((place, placeIndex) => {
+            const placeEvents = dayData.filter(event => event.place === place);
+            html += `<div class="gantt-row"><div class="gantt-place" style="grid-row: ${placeIndex + 2}">${place}</div>`;
+            for (let i = 0; i < timeHeaders.length; i++) { html += `<div class="gantt-time-cell" style="grid-row: ${placeIndex + 2}; grid-column: ${i + 2}"></div>`; }
+            html += `<div class="gantt-events" style="grid-row: ${placeIndex + 2}; grid-column: 2 / span ${timeHeaders.length -1}">`;
+            placeEvents.forEach(event => {
+                const [startTime, endTime] = (event.time || " - ").split('-').map(s => s.trim());
+                const startMinutes = timeToMinutes(startTime);
+                const endMinutes = timeToMinutes(endTime);
+                if (startMinutes !== null && endMinutes !== null) {
+                    const left = ((startMinutes - (startHour * 60)) / totalMinutes) * 100;
+                    const width = ((endMinutes - startMinutes) / totalMinutes) * 100;
+                    if (width > 0) {
+                        // ★修正点1: 表示内容を groupName と name に変更
+                        html += `<div class="gantt-event-bar" 
+                                    style="left: ${left}%; width: ${width}%" 
+                                    data-target-id="list-${event.id}" 
+                                    data-id="${event.id}"> 
+                                    <span class="event-group-name">${event.groupName}</span>
+                                    <span class="event-perf-name">${event.name}</span>
+                                </div>`;
+                    }
+                }
+            });
+            html += `</div></div>`;
+        });
+        chartContainer.innerHTML = html;
+    }
+
+    // === 5. 時系列リスト描画関数 (★★★ 修正 ★★★) ===
+    function renderTimelineList(day, showPastEvents) {
+        if (!listContainer || typeof stageData === 'undefined') return;
+    
+        const now = new Date();
+        const festivalDay = festivalDates[day];
+        if (!festivalDay) return;
+
+        const todayDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const festivalDateOnly = new Date(festivalDay.getFullYear(), festivalDay.getMonth(), festivalDay.getDate());
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    
+        // hubTypeを持つ場所データを除外
+        let dayData = stageData.filter(event => !event.hubType && event.tags && event.tags.includes(day) && event.time && event.time !== '不明');
+
+        if (!showPastEvents) {
+            dayData = dayData.filter(event => {
+                const timeParts = (event.time || "").split('-');
+                if (timeParts.length < 2) return true;
+                const endMinutes = timeToMinutes(timeParts[1].trim());
+                if (endMinutes === null) return true;
+                
+                if (todayDateOnly.getTime() < festivalDateOnly.getTime()) { return true; }
+                if (todayDateOnly.getTime() > festivalDateOnly.getTime()) { return false; }
+                return endMinutes > currentMinutes;
+            });
+        }
+    
+        dayData.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+
+        let listHTML = '';
+        if (dayData.length === 0) {
+            listHTML = `<div style="padding: 40px; text-align: center; font-size: 1.1em; opacity: 0.8;">表示できる発表はありません。</div>`;
+        } else {
+            dayData.forEach(event => {
+                // ★修正点2: 表示内容とリンク先を新しいデータ構造に合わせる
+                listHTML += `
+                    <div class="list-event-card fade-up" id="list-${event.id}">
+                        <div class="list-time">${event.time}</div>
+                        <div class="list-details">
+                            <div class="list-name">${event.groupName}</div>
+                            <div class="list-place">${event.place}</div>
+                        </div>
+                        <a href="stage-group-detail.htm?group=${event.groupId}" class="list-link-button">詳しく見る</a>
+                    </div>`;
+            });
+        }
+    
+        listContainer.innerHTML = listHTML;
+
+        const newCards = listContainer.querySelectorAll('.fade-up');
+        newCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('is-visible');
+            }, index * 150);
+        });
+    }
+    
+    // === 6. 現在時刻インジケーターの処理 (変更なし) ===
+    function manageCurrentTimeIndicator() {
+        let indicator = document.getElementById('current-time-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'current-time-indicator';
+            const timeLabel = document.createElement('div');
+            timeLabel.className = 'time-label';
+            indicator.appendChild(timeLabel);
+            chartWrapper.appendChild(indicator);
+        }
+        const timeLabel = indicator.querySelector('.time-label');
+        const placeHeaderWidth = 120;
+        function update() {
+            const currentChartContainer = document.getElementById('gantt-chart');
+            if (!currentChartContainer) { requestAnimationFrame(update); return; }
+            const now = new Date();
+            const activeDayBtn = daySelector.querySelector('.day-btn.active');
+            if (!activeDayBtn) { indicator.classList.remove('visible'); requestAnimationFrame(update); return; }
+            
+            const activeFestivalDate = festivalDates[activeDayBtn.dataset.day];
+            const isTodayTheActiveDay = now.getFullYear() === activeFestivalDate.getFullYear() &&
+                                        now.getMonth() === activeFestivalDate.getMonth() &&
+                                        now.getDate() === activeFestivalDate.getDate();
+
+            if (isTodayTheActiveDay && now.getHours() >= startHour && now.getHours() < (startHour + timeHeaders.length - 1)) {
+                const currentMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+                const chartAreaWidth = currentChartContainer.scrollWidth - placeHeaderWidth;
+                if (chartAreaWidth <= 0) { requestAnimationFrame(update); return; }
+                const leftPosition = ((currentMinutes - (startHour * 60)) / totalMinutes) * chartAreaWidth;
+                indicator.style.left = `${placeHeaderWidth + leftPosition}px`;
+                indicator.classList.add('visible');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                timeLabel.textContent = `${hours}:${minutes}`;
+            } else {
+                indicator.classList.remove('visible');
+            }
+            requestAnimationFrame(update);
+        }
+        update();
+    }
+    
+    // === 7. 全描画を統括する司令官 (変更なし) ===
+    function renderPage(day, isInitialLoad = false) {
+        if (typeof stageData === 'undefined') { console.error("data.jsが読み込めていません。"); return; }
+        renderGanttChart(day);
+        const showPast = pastEventsToggle ? pastEventsToggle.checked : false;
+        renderTimelineList(day, showPast);
+        if (isInitialLoad) {
+            setTimeout(() => {
+                const indicator = document.getElementById('current-time-indicator');
+                if (indicator && indicator.classList.contains('visible')) {
+                    const scrollPosition = indicator.offsetLeft - (chartWrapper.clientWidth / 2) + (indicator.clientWidth / 2);
+                    chartWrapper.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+                }
+            }, 500);
+        }
+    }
+
+    // === 8. イベントリスナー (★★★ 修正 ★★★) ===
+    if (daySelector) {
+        daySelector.addEventListener('click', function(e) {
+            if (!e.target.matches('.day-btn')) return;
+            daySelector.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            renderPage(e.target.dataset.day, false);
+        });
+    }
+    
+    if(chartWrapper) {
+        chartWrapper.addEventListener('click', function(e){
+            const eventBar = e.target.closest('.gantt-event-bar');
+            if(!eventBar) return;
+            const targetId = eventBar.dataset.targetId;
+            const targetElement = document.getElementById(targetId);
+            if(targetElement) {
+                document.querySelectorAll('.list-event-card.highlight').forEach(el => el.classList.remove('highlight'));
+                targetElement.classList.add('highlight');
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+        // ★修正点3: ダブルクリック時のリンク先を groupId を使うように変更
+        chartWrapper.addEventListener('dblclick', function(e){
+            const eventBar = e.target.closest('.gantt-event-bar');
+            if(!eventBar) return;
+
+            const eventId = eventBar.dataset.id;
+            const eventData = stageData.find(event => event.id === eventId);
+            
+            if(eventData && eventData.groupId) {
+                window.location.href = `stage-group-detail.htm?group=${eventData.groupId}`;
+            }
+        });
+    }
+
+    if (pastEventsToggle) {
+        pastEventsToggle.addEventListener('change', function() {
+            const activeDayBtn = daySelector.querySelector('.day-btn.active');
+            if (activeDayBtn) {
+                const currentDay = activeDayBtn.dataset.day;
+                renderTimelineList(currentDay, this.checked);
+            }
+        });
+    }
+
+    // === 9. 初回実行ロジック (変更なし) ===
+    function initializePage() {
+        const now = new Date();
+        const todayDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const day2Date = festivalDates.DAY2;
+        let initialDay = 'DAY1';
+        
+        if (todayDateOnly.getTime() === (day2Date ? day2Date.getTime() : null)) {
+            initialDay = 'DAY2';
+        }
+        
+        daySelector.querySelectorAll('.day-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.day === initialDay);
+        });
+        
+        renderPage(initialDay, true);
+        manageCurrentTimeIndicator();
+    }
+    
+    if (typeof stageData !== 'undefined') {
+        initializePage();
+    } else {
+        window.addEventListener('load', initializePage, { once: true });
+    }
+});
+</script>
+</body>
+</html>

@@ -279,15 +279,36 @@
             let isDown = false;
             let startX;
             let scrollLeft;
+            let resumeTimeout; // Timer for resuming animation
+
+            const resumeAnimation = () => {
+                if (!isPaused) {
+                    // Clear any existing timer
+                    if (resumeTimeout) clearTimeout(resumeTimeout);
+                    // Set new timer for 1 second delay
+                    resumeTimeout = setTimeout(() => {
+                        if (!isDown && !isPaused) {
+                            container.style.animationPlayState = 'running';
+                        }
+                    }, 1000);
+                }
+            };
+
+            const pauseAnimation = () => {
+                if (resumeTimeout) clearTimeout(resumeTimeout);
+                container.style.animationPlayState = 'paused';
+            };
 
             // Pause on hover
             scroller.addEventListener('mouseenter', () => {
-                if (!isPaused) container.style.animationPlayState = 'paused';
+                // If not manually paused, pause on hover
+                if (!isPaused) pauseAnimation();
             });
+            
             scroller.addEventListener('mouseleave', () => {
                 isDown = false;
                 scroller.classList.remove('active');
-                if (!isPaused) container.style.animationPlayState = 'running';
+                resumeAnimation(); // Resume after delay
             });
 
             // Drag events
@@ -296,13 +317,13 @@
                 scroller.classList.add('active');
                 startX = e.pageX - scroller.offsetLeft;
                 scrollLeft = scroller.scrollLeft;
-                container.style.animationPlayState = 'paused'; // Always pause on interaction
+                pauseAnimation(); // Always pause on interaction
             });
 
             scroller.addEventListener('mouseup', () => {
                 isDown = false;
                 scroller.classList.remove('active');
-                if (!isPaused) container.style.animationPlayState = 'running';
+                resumeAnimation(); // Resume after delay
             });
 
             scroller.addEventListener('mousemove', (e) => {
@@ -315,11 +336,11 @@
             
             // Touch events
             scroller.addEventListener('touchstart', () => {
-                container.style.animationPlayState = 'paused';
+                pauseAnimation();
             }, { passive: true });
             
             scroller.addEventListener('touchend', () => {
-                if (!isPaused) container.style.animationPlayState = 'running';
+                resumeAnimation(); // Resume after delay
             });
         }
 

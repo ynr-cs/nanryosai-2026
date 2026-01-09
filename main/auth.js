@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 /* ==============================
@@ -23,26 +23,36 @@ const db = getFirestore(app);
 // Global User State
 let currentUser = null;
 
+// Handle Redirect Login Result (Run on page load)
+// This captures the user returning from the Google auth page
+getRedirectResult(auth)
+    .then(async (result) => {
+        if (result) {
+            const user = result.user;
+            // Save/Update user profile in Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                lastLogin: serverTimestamp()
+            }, { merge: true });
+        }
+    })
+    .catch((error) => {
+        console.error("Redirect login failed:", error);
+    });
+
 /**
- * Initiates Google Login Popup
+ * Initiates Google Login via Redirect
+ * Note: Does not return user immediately. Page will redirect.
  */
 async function login() {
     try {
         const provider = new GoogleAuthProvider();
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        
-        // Save/Update user profile in Firestore
-        await setDoc(doc(db, "users", user.uid), {
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            lastLogin: serverTimestamp()
-        }, { merge: true });
-
-        return user;
+        await signInWithRedirect(auth, provider);
+        // Page will redirect, so no further code here is reachable in this session
     } catch (error) {
-        console.error("Login failed:", error);
+        console.error("Login initiation failed:", error);
         throw error;
     }
 }

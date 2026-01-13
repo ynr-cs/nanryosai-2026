@@ -231,6 +231,15 @@
         <button class="btn btn-warning" onclick="generateJSON()">
           <i class="fas fa-code"></i> data.js 生成 (全コピー用)
         </button>
+
+        <button
+          class="btn btn-success"
+          onclick="addNewStore()"
+          style="margin-left: 10px"
+        >
+          <i class="fas fa-plus"></i> 新規店舗追加
+        </button>
+
         <div style="flex-grow: 1"></div>
 
         <label class="test-mode-toggle">
@@ -564,6 +573,30 @@
           window.localData.splice(index, 1);
           renderTable();
         }
+      };
+
+      // Add New Store Logic
+      window.addNewStore = () => {
+        const newStore = {
+          id: "", // User must input
+          loginId: "",
+          groupName: "新規団体",
+          name: "",
+          place: "",
+          floor: 1,
+          contentType: "menu",
+          menu: [],
+          catchphrase: "",
+        };
+        window.localData.push(newStore);
+        renderTable();
+
+        // Scroll to bottom
+        setTimeout(() => {
+          const tableWrapper = document.querySelector(".data-table-wrapper");
+          tableWrapper.scrollTop = tableWrapper.scrollHeight;
+          log("🆕 New store added. Please fill in the ID.");
+        }, 100);
       };
 
       window.generateJSON = () => {

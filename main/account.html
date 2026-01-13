@@ -193,6 +193,16 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
+
+        .header-count-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: 8px;
+        }
         
         .guest-icon-box {
             background: var(--border-color); 
@@ -305,21 +315,31 @@
                 </div>
             </div>
 
-            <h3 class="section-title">📊 アクティビティ</h3>
-            <div class="dashboard-grid">
-                <div class="stat-card">
-                    <div class="stat-num" id="stat-fav">0</div>
-                    <div class="stat-label">お気に入り</div>
-                </div>
-                <div class="stat-card" id="card-order-count" style="cursor: pointer;">
-                    <div class="stat-num" id="stat-orders">-</div>
-                    <div class="stat-label">注文数</div>
+            <!-- Favorites Section -->
+            <div id="favorites-section" style="margin-top: 10px;">
+                <h3 class="section-title section-closed" id="favorites-toggle">
+                    <span style="display: flex; align-items: center;">
+                        🌟 お気に入り
+                        <span id="fav-count-badge" class="header-count-badge">0</span>
+                    </span>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </h3>
+                <div class="collapsible-content">
+                    <div id="favorites-list" style="padding: 0 20px 20px;">
+                        <div style="text-align:center; padding: 20px; color: var(--text-sub); background: var(--card-bg); border-radius: 16px; border: 1px dashed var(--border-color);">
+                            お気に入り機能は準備中です
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div id="order-history-section" style="display: none;">
-                <h3 class="section-title section-closed" id="order-history-toggle" style="margin-top: 20px">
-                    <span>📦 注文履歴</span>
+            <!-- Order History Section -->
+            <div id="order-history-section" style="margin-top: 10px;">
+                <h3 class="section-title section-closed" id="order-history-toggle">
+                    <span style="display: flex; align-items: center;">
+                        📦 注文履歴
+                        <span id="order-count-badge" class="header-count-badge">-</span>
+                    </span>
                     <i class="bi bi-chevron-down toggle-icon"></i>
                 </h3>
                 <div class="collapsible-content">
@@ -406,7 +426,7 @@
                     </p>
                 </div>
 
-                <button onclick="window.triggerLogin()" class="btn-primary-custom">
+                <button id="btn-login-account" onclick="window.triggerLogin()" class="btn-primary-custom">
                     <!-- SVG for Google Icon to avoid Bootstrap Icons dependency if any, but bi-google usually works if css loads. 
                          However, BI css IS NOT loaded in account.html based on my read. 
                          Wait, mobile-order uses CDN for BI. account.html has no BI link. 
@@ -441,7 +461,7 @@
     <!-- Account Page specific logic -->
     <script type="module">
         import { watchUser, logout, db, app, auth } from './auth.js';
-        import { collection, query, where, getCountFromServer, getDocs, orderBy, limit, updateDoc, doc, arrayUnion, arrayRemove, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { collection, query, where, getCountFromServer, getDocs, getDoc, orderBy, limit, updateDoc, doc, arrayUnion, arrayRemove, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging.js";
         import { deleteUser } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         
@@ -451,21 +471,15 @@
         const orderHistorySection = document.getElementById('order-history-section');
         const orderList = document.getElementById('order-list');
         const orderHistoryToggle = document.getElementById('order-history-toggle');
+        const favoritesToggle = document.getElementById('favorites-toggle');
         
-        
-        // Toggle Logic for History Section
-        orderHistoryToggle.addEventListener('click', () => {
-            orderHistoryToggle.classList.toggle('section-closed');
-        });
-
-        // Link Order Count Card to History
-        document.getElementById('card-order-count').addEventListener('click', () => {
-             // Open section if closed
-             orderHistoryToggle.classList.remove('section-closed');
-             orderHistorySection.style.display = 'block'; // Ensure it's visible (though logic handles this)
-             
-             // Scroll
-             orderHistorySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Generalized Toggle Logic
+        [orderHistoryToggle, favoritesToggle].forEach(toggle => {
+            if(toggle) {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('section-closed');
+                });
+            }
         });
 
         // Notification Logic
@@ -564,9 +578,12 @@
             }
         }, 2500);
 
-        watchUser((user) => {
-            clearTimeout(authTimeout); // Auth responded, clear timeout
-            authLoader.style.display = 'none'; // Hide loader
+        import { login } from './auth.js';
+
+        // UI Update Logic extracted for manual trigger
+        function handleUserUpdate(user) {
+            clearTimeout(authTimeout); 
+            authLoader.style.display = 'none';
             
             window.CURRENT_USER_OBJ = user;
             if (user) {
@@ -580,194 +597,183 @@
                 document.getElementById('auth-content').style.display = 'none';
                 document.getElementById('guest-content').style.display = 'block';
             }
-        });
-
-        logoutBtn.addEventListener('click', async () => {
-            await logout();
-            window.location.href = 'index.html';
-        });
-
-        // Account Deletion Logic
-        const deleteAccountBtn = document.getElementById('btn-delete-account');
-        deleteAccountBtn.addEventListener('click', async () => {
-            const user = window.CURRENT_USER_OBJ;
-            if (!user) return alert('ユーザー情報が見つかりません。');
-
-            const confirmDelete = confirm('【警告】\nアカウントを削除すると、すべてのデータが完全に消去され、元に戻すことはできません。\n\n本当に削除しますか？');
-            
-            if (confirmDelete) {
-                try {
-                    // 1. Delete Firestore User Document
-                    await deleteDoc(doc(db, "users", user.uid));
-                    
-                    // 2. Delete Auth User
-                    // Note: This requires recent login. If it fails with 'requires-recent-login', we might need re-auth flow.
-                    // For MVP, we'll try direct delete and catch errors.
-                    const authUser = auth.currentUser;
-                    if (authUser) {
-                        await deleteUser(authUser);
-                        alert('アカウントを削除しました。');
-                        window.location.href = 'index.html';
-                    } else {
-                        throw new Error("認証ユーザーが見つかりません。");
-                    }
-                } catch (error) {
-                    console.error("Account deletion error:", error);
-                    if (error.code === 'auth/requires-recent-login') {
-                        alert('セキュリティ保護のため、再ログインが必要です。\nログアウト後、再度ログインしてから実行してください。');
-                         await logout();
-                         window.location.href = 'index.html';
-                    } else {
-                        alert('アカウント削除中にエラーが発生しました:\n' + error.message);
-                    }
-                }
-            }
-        });
-
-
-        async function fetchStores() {
-            if (Object.keys(storesCache).length > 0) return;
-            try {
-                const snapshot = await getDocs(collection(db, "stores"));
-                snapshot.forEach(doc => {
-                    storesCache[doc.id] = doc.data();
-                });
-            } catch (e) {
-                console.error("Failed to fetch stores", e);
-            }
         }
 
-        async function fetchOrderHistory(uid) {
-            orderHistorySection.style.display = 'block';
-            orderList.innerHTML = `
-                <div class="loading-skeleton" style="height: 100px; margin-bottom: 15px;"></div>
-                <div class="loading-skeleton" style="height: 100px; margin-bottom: 15px;"></div>
-            `;
+        // Initialize Listener
+        watchUser(handleUserUpdate);
+
+        // Enhanced Login Trigger
+        window.triggerLogin = async () => {
+            const btn = document.getElementById('btn-login-account');
+            const originalContent = btn.innerHTML;
             
+            // UI Feedback
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="width: 1rem; height: 1rem; border-width: 0.15em;"></span> 処理中...';
+
             try {
-                // Ensure stores are loaded first
-                await fetchStores();
-
-                const coll = collection(db, "orders");
-                // Note: Requires index on userId ASC, createdAt DESC
-                // If index missing, it might fail or require creating one in console.
-                // For now, let's try simple query. If it fails due to index, we might need to remove orderBy or create index.
-                const q = query(coll, where("userId", "==", uid), orderBy("createdAt", "desc"), limit(10));
+                const user = await login(); // auth.js login handles popup params
                 
-                const snapshot = await getDocs(q);
-                
-                if (snapshot.empty) {
-                    orderList.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:20px;">注文履歴はありません</div>`;
-                    return;
+                 // Force UI Update immediately
+                if (user) {
+                    handleUserUpdate(user); 
                 }
+            } catch (e) {
+                // Error handled in auth.js mostly, but reset button here
+                console.error("Login Trigger Error:", e);
+                // alert("ログインに失敗しました: " + e.message); // auth.js already alerts
+            } finally {
+                // Reset button (if we haven't navigated away or completely replaced the view)
+                // If we logged in, the view might switch, but it's safe to reset just in case we stay.
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            }
+        };
 
-                let html = "";
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const store = storesCache[data.storeId] || { name: 'Unknown Store' };
-                    
-                    // Date formatting
-                    let dateStr = "---";
-                    if (data.createdAt && data.createdAt.toDate) {
-                        const d = data.createdAt.toDate();
-                        dateStr = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-                    }
+        // --- Missing Functions Implementation ---
 
-                    // Status Badge
-                    let statusLabel = data.status;
-                    let badgeColor = "var(--text-sub)";
-                    let badgeBg = "var(--border-color)";
+        async function renderProfile(user) {
+            const nameEl = document.querySelector('.profile-name');
+            const emailEl = document.querySelector('.profile-email');
+            const imgContainer = document.querySelector('.profile-img-lg');
+            
+            if(nameEl) {
+                nameEl.classList.remove('loading-skeleton');
+                nameEl.removeAttribute('style'); // Clear fixed width/height from skeleton
+            }
+            if(emailEl) {
+                emailEl.classList.remove('loading-skeleton');
+                emailEl.removeAttribute('style'); // Clear fixed width/height from skeleton
+            }
+            if(imgContainer) imgContainer.classList.remove('loading-skeleton'); 
+            
+            if(nameEl) nameEl.textContent = user.displayName || "ゲストユーザー";
+            if(emailEl) emailEl.textContent = user.email || "";
 
-                    switch(data.status) {
-                        case 'authorized': 
-                        case 'unpaid_at_pos':
-                            statusLabel = '調理中'; badgeColor = '#2196f3'; badgeBg = '#e3f2fd'; break;
-                        case 'ready_to_serve': 
-                            statusLabel = '調理完了'; badgeColor = '#ff9800'; badgeBg = '#fff3e0'; break;
-                        case 'ready_for_pickup': 
-                            statusLabel = '呼出中'; badgeColor = '#e91e63'; badgeBg = '#fce4ec'; break;
-                        case 'completed_online': 
-                        case 'completed_at_store':
-                            statusLabel = '受取済'; badgeColor = '#4caf50'; badgeBg = '#e8f5e9'; break;
-                        case 'abandoned_and_paid':
-                            statusLabel = '期限切れ'; badgeColor = '#9e9e9e'; badgeBg = '#eeeeee'; break;
-                        case 'cancelled': 
-                            statusLabel = 'キャンセル'; badgeColor = '#f44336'; badgeBg = '#ffebee'; break;
-                        default:
-                            statusLabel = '待機中'; badgeColor = '#var(--text-sub)'; badgeBg = 'var(--border-color)'; break;
-                    }
-
-                    // Items formatting
-                    const itemsSummary = (data.items || []).map(i => {
-                        return `<div style="font-size:0.9rem;">${i.name} <span style="font-size:0.8em; color:var(--text-sub)">x${i.quantity}</span></div>`;
-                    }).join("");
-
-                    html += `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <span class="store-name">${store.name}</span>
-                            <span class="order-date">${dateStr}</span>
-                        </div>
-                        <div class="order-body">
-                            <div class="order-items">${itemsSummary}</div>
-                            <div class="order-meta">
-                                <span class="order-price">¥${data.totalPrice}</span>
-                                <span class="status-badge" style="color:${badgeColor}; background:${badgeBg}">${statusLabel}</span>
-                            </div>
-                        </div>
-                        <div style="margin-top:8px; font-size:0.75rem; color:var(--text-sub); text-align:right;">NO. ${data.receiptNumber || '-'}</div>
-                    </div>
-                    `;
-                });
-
-                orderList.innerHTML = html;
-
-            } catch (error) {
-                console.error("Failed to fetch history:", error);
-                
-                // Fallback for missing index error
-                if (error.message.includes("index")) {
-                     orderList.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:20px;">※インデックス構築中のため表示できません<br>開発者ツールを確認してください</div>`;
+            if (imgContainer) {
+                if (user.photoURL) {
+                    imgContainer.innerHTML = `<img src="${user.photoURL}" alt="Profile">`;
                 } else {
-                     orderList.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:20px;">履歴の読み込みに失敗しました</div>`;
+                     imgContainer.innerHTML = `<i class="bi bi-person-fill" style="font-size: 60px; color: #ccc; display: flex; align-items: center; justify-content: center; height: 100%;"></i>`;
                 }
             }
         }
 
         async function fetchOrderCount(uid) {
-            try {
-                const coll = collection(db, "orders");
-                const q = query(coll, where("userId", "==", uid));
+             try {
+                const q = query(collection(db, "orders"), where("userId", "==", uid));
                 const snapshot = await getCountFromServer(q);
-                document.getElementById("stat-orders").textContent = snapshot.data().count;
-            } catch (error) {
-                console.error("Failed to fetch orders:", error);
-                document.getElementById("stat-orders").textContent = "0";
-            }
+                const count = snapshot.data().count;
+                const badge = document.getElementById('order-count-badge');
+                if(badge) badge.textContent = count;
+             } catch (e) {
+                console.error("Order Count Error:", e);
+             }
         }
 
-        function renderProfile(user) {
-            const photo = user.photoURL ? `<img src="${user.photoURL}">` : '';
-            profileArea.innerHTML = `
-                <div class="profile-header">
-                    <div class="profile-img-lg">
-                        ${photo}
-                    </div>
-                    <div class="profile-name">${user.displayName || '名無しさん'}</div>
-                    <div class="profile-email">${user.email}</div>
-                </div>
-            `;
-        }
-
-        // Expose login for guest button
-        import { login } from './auth.js';
-        window.triggerLogin = async () => {
+        async function fetchOrderHistory(uid) {
+            const list = document.getElementById('order-list');
+            if(!list) return;
+            
             try {
-                await login();
+                const q = query(
+                    collection(db, "orders"), 
+                    where("userId", "==", uid), 
+                    orderBy("createdAt", "desc"), 
+                    limit(10)
+                );
+                
+                const snap = await getDocs(q);
+                list.innerHTML = ""; 
+                
+                if (snap.empty) {
+                    list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-sub);">注文履歴がありません</div>`;
+                    return;
+                }
+
+                for (const d of snap.docs) {
+                    const data = d.data();
+                    const orderId = d.id;
+                    const date = data.createdAt ? data.createdAt.toDate().toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '---';
+                    const total = data.totalPrice;
+                    const statusText = translateStatus(data.status);
+                    const statusColor = getStatusColor(data.status);
+                    
+                    // Fetch Store Name
+                    let storeName = "読み込み中...";
+                    if (storesCache[data.storeId]) {
+                        storeName = storesCache[data.storeId];
+                    } 
+                    
+                    const el = document.createElement('div');
+                    el.className = 'order-card animate__animated animate__fadeIn';
+                    // Link to Status Page
+                    el.onclick = () => {
+                        window.location.href = `../pos/status.html?orderId=${orderId}`;
+                    };
+                    el.style.cursor = "pointer";
+
+                    // Items Summary
+                    const itemNames = (data.items || []).map(i => `${i.name} x${i.quantity}`).join('、');
+
+                    el.innerHTML = `
+                        <div class="order-header">
+                            <span class="store-name" id="store-name-${orderId}">${storeName}</span>
+                            <span class="order-date">${date}</span>
+                        </div>
+                        <div class="order-items text-truncate" style="max-width: 100%;">
+                            ${itemNames}
+                        </div>
+                        <div class="order-meta">
+                            <span class="order-price">¥${total}</span>
+                            <span class="status-badge" style="background: ${statusColor}; color: white;">${statusText}</span>
+                        </div>
+                    `;
+                    list.appendChild(el);
+                    
+                    if (!storesCache[data.storeId]) {
+                        fetchStoreName(data.storeId, `store-name-${orderId}`);
+                    }
+                }
             } catch (e) {
-                alert("ログインに失敗しました: " + e.message);
+                console.error("History Error:", e);
+                list.innerHTML = `<div style="color:red; text-align:center;">読み込みエラー</div>`;
             }
-        };
+        }
+        
+        async function fetchStoreName(storeId, elementId) {
+             if (storesCache[storeId]) {
+                 const el = document.getElementById(elementId);
+                 if(el) el.textContent = storesCache[storeId];
+                 return;
+             }
+             try {
+                 const snap = await getDoc(doc(db, "stores", storeId));
+                 if (snap.exists()) {
+                     const name = snap.data().name;
+                     storesCache[storeId] = name;
+                     const el = document.getElementById(elementId);
+                     if(el) el.textContent = name;
+                 } else {
+                    storesCache[storeId] = "不明な店舗"; // Cache failed lookup to avoid loops
+                 }
+             } catch(e) { console.warn(e); }
+        }
+
+        function translateStatus(s) {
+            if (s === 'ready_for_pickup') return '呼出中';
+            if (s === 'completed_at_store' || s === 'completed_online') return '受取完了';
+            if (s === 'cancelled') return 'キャンセル';
+            if (s === 'abandoned_and_paid') return '期限切れ';
+            return '調理中'; 
+        }
+        
+        function getStatusColor(s) {
+             if (s === 'ready_for_pickup') return '#f59e0b'; // Warning/Attention
+             if (s === 'completed_at_store' || s === 'completed_online') return '#10b981'; // Success
+             if (s === 'cancelled' || s === 'abandoned_and_paid') return '#9ca3af'; // Grey
+             return '#3b82f6'; // Blue (Cooking)
+        }
 
 
     </script>

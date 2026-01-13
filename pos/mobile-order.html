@@ -1110,8 +1110,48 @@
 
       // Handlers
       document.getElementById("btn-login").onclick = async () => {
-        try { await signInWithPopup(auth, new GoogleAuthProvider()); } 
-        catch (e) { alert("ログインエラー: " + e.message); }
+        const btn = document.getElementById("btn-login");
+        
+        // 1. In-App Browser Check
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const isInApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1) || (ua.indexOf("Line") > -1);
+        if (isInApp) {
+            alert("⚠️ 注意: アプリ内ブラウザではログインが正常に動作しない場合があります。\n\nもしログインできない場合は、右上のメニューから「ブラウザで開く」を選択してください。");
+        }
+
+        // 2. UI Feedback
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> 処理中...';
+
+        try { 
+            const provider = new GoogleAuthProvider();
+            // Force account selection to avoid "auto-login loop" issues and "blank popup" confusion
+            provider.setCustomParameters({
+              prompt: 'select_account'
+            });
+
+            const result = await signInWithPopup(auth, provider);
+            
+            // Explicitly trigger UI update to prevent "Reload required" issues
+            currentUser = result.user;
+            await checkFlow(); 
+        } 
+        catch (e) { 
+            console.error(e);
+            if (e.code === 'auth/popup-blocked') {
+                alert("ポップアップがブロックされました。\nブラウザの設定でポップアップを許可するか、外部ブラウザで開いてください。");
+            } else if (e.code === 'auth/cancelled-popup-request' || e.code === 'auth/popup-closed-by-user') {
+                // User closed it intentionally, do nothing or show subtle toast
+                console.log("Login cancelled by user");
+            } else {
+                alert("ログインエラー: " + e.message);
+            }
+            
+            // Reset Button only on error
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
       };
 
       document.getElementById("btn-req-notification").onclick = async () => {

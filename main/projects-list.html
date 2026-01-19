@@ -223,6 +223,15 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
+        /* Auto dark mode (system setting) support */
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .project-card {
+                background: rgba(30, 41, 59, 0.6);
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+        }
+
         .project-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);

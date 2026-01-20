@@ -1,0 +1,51 @@
+# ポータル (`pos/portal.html`) コンテキスト
+
+## 1. 概要
+
+店舗管理者が自身の店舗（模擬店）を管理するためのポータル画面です。
+一般ユーザーはアクセスできず、二段階認証（Googleログイン + 店舗パスワード）が必要です。
+
+## 2. 認証 (Authentication)
+
+- **Step 1: Googleログイン**: `firebase.auth` を使用。ドメイン制限などは現状なし（誰でもユーザー作成自体は可能）。
+- **Step 2: 店舗ログイン**: `loginStore` (Cloud Function) を呼び出し。
+  - 入力されたパスワードを検証。
+  - 成功時、Custom Claims (`role: store_admin`, `storeId`) を付与された状態で認証トークンがリフレッシュされる。
+  - `localStorage` に `nanryosai_store_id` をキャッシュし、次回以降のログインを簡略化。
+
+## 3. 主な機能
+
+### A. 商品管理 (Item Management)
+
+- **CRUD**: 商品の追加・編集・削除・販売ステータス(売切/販売中)の切り替え。
+- **画像アップロード**:
+  - `compressImage` 関数による **クライアントサイド圧縮** を実装。
+    - **フォーマット**: WebP
+    - **画質 (Quality)**: 0.8
+    - **最大幅 (Max Width)**: 1200px
+  - Google Cloud Storage の `products/{storeId}/{timestamp}_{filename}.webp` に保存。
+- **UI**:
+  - **保存ボタン**: 保存処理中、ボタンが無効化され「保存中...」スピナーが表示される。
+
+### B. 売上ダッシュボード (Sales Dashboard)
+
+- **指標 (Metrics)**: 本日の売上総額、注文数、客単価。
+- **グラフ**:
+  - `chart-hourly`: 時間別売上 (棒グラフ)
+  - `chart-products`: 商品別売上構成 (ドーナツグラフ)
+- **データソース**: Firestore `orders` コレクション (本日のデータのみ `onSnapshot` でリアルタイム監視)。
+
+### C. 注文検索 (Order Search)
+
+- **フィルタ**: 日付、ステータス、キーワード（レシート番号など）。
+- **詳細モーダル**: 注文内容の詳細表示とステータス変更が可能。
+
+### D. ナビゲーション
+
+- **サイドバー**: デスクトップ用。
+- **ボトムナビ**: モバイル用。
+
+## 4. 技術的制約・セキュリティ
+
+- **セキュリティルール**: `firestore.rules` および `storage.rules` により、認証された `storeId` 以外のデータへのアクセスは厳格にブロックされる。
+- **ストレージ**: 画像アップロードは `image/webp` などの画像ContentTypeのみ許可。
